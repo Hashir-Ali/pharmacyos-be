@@ -13,7 +13,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    // console.log(payload);
+    console.log(payload);
     // here we can do database lookups for more user data as well...
     return { userId: payload.sub, username: payload.username };
   }

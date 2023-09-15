@@ -21,10 +21,4 @@ export class AuthController {
         return this.authService.login(signInDto.username, signInDto.password);
     }
 
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
-    @Get('profile')
-    getProfile(@Request() req) {
-        return req.user;
-    }
 }

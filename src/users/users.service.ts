@@ -1,23 +1,40 @@
 import { Injectable } from '@nestjs/common';
-// This should be a real class/interface representing a user entity
-export type User = any;
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './user.entity';
+import { MongoRepository } from 'typeorm';
+import { CreateUserDto } from './dto/create-user-dto';
+import { ObjectId } from 'mongodb';
+import { UpdateUserDto } from './dto/update-user-dto';
+import { encodePassword } from 'src/common/utils';
+
+
 @Injectable()
 export class UsersService {
 
-    private readonly users = [
-        {
-          userId: 1,
-          username: 'john@cena.com',
-          password: 'changeme',
-        },
-        {
-          userId: 2,
-          username: 'maria@db.com',
-          password: 'guess',
-        },
-      ];
-    
-    async findOne(username: string): Promise<User | undefined> {
-    return this.users.find(user => user.username === username);
+    constructor(
+        @InjectRepository(User)
+        private userRepository: MongoRepository<User>
+    ){}
+
+    async findOne(id: string): Promise<User | undefined> {
+        return this.userRepository.findOne({where: {_id: new ObjectId(id)}});
+    }
+
+    async findAll(){
+        return this.userRepository.find();
+    }
+
+    async create(data: CreateUserDto){
+        const password = encodePassword(data.password);
+        const newData = {...data, password: password}
+        return await this.userRepository.save(newData);
+    }
+
+    async findOneByMail(email: string){
+        return await this.userRepository.findOneBy({where: {email: email}});
+    }
+
+    async update(id: ObjectId, updateUserDto: UpdateUserDto){
+        return this.userRepository.update(id, updateUserDto);
     }
 }

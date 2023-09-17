@@ -7,34 +7,32 @@ import { ObjectId } from 'mongodb';
 import { UpdateUserDto } from './dto/update-user-dto';
 import { encodePassword } from 'src/common/utils';
 
-
 @Injectable()
 export class UsersService {
+  constructor(
+    @InjectRepository(User)
+    private userRepository: MongoRepository<User>,
+  ) {}
 
-    constructor(
-        @InjectRepository(User)
-        private userRepository: MongoRepository<User>
-    ){}
+  async findOne(id: string): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { _id: new ObjectId(id) } });
+  }
 
-    async findOne(id: string): Promise<User | undefined> {
-        return this.userRepository.findOne({where: {_id: new ObjectId(id)}});
-    }
+  async findAll() {
+    return this.userRepository.find();
+  }
 
-    async findAll(){
-        return this.userRepository.find();
-    }
+  async create(data: CreateUserDto) {
+    const password = encodePassword(data.password);
+    const newData = { ...data, password: password };
+    return await this.userRepository.save(newData);
+  }
 
-    async create(data: CreateUserDto){
-        const password = encodePassword(data.password);
-        const newData = {...data, password: password}
-        return await this.userRepository.save(newData);
-    }
+  async findOneByMail(email: string) {
+    return await this.userRepository.findOneBy({ where: { email: email } });
+  }
 
-    async findOneByMail(email: string){
-        return await this.userRepository.findOneBy({where: {email: email}});
-    }
-
-    async update(id: ObjectId, updateUserDto: UpdateUserDto){
-        return this.userRepository.update(id, updateUserDto);
-    }
+  async update(id: ObjectId, updateUserDto: UpdateUserDto) {
+    return this.userRepository.update(id, updateUserDto);
+  }
 }

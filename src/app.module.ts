@@ -8,19 +8,22 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({
-    isGlobal: true,
-  }),
-  TypeOrmModule.forRoot({
-    type: 'mongodb',
-    "url": process.env.DB_CONNECTION_URL,
-    "useNewUrlParser": true,
-    "synchronize": true,// shall be avoided in production...
-    "logging": true,
-    autoLoadEntities: true,
-  }),
-  
-  AuthModule, UsersModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    TypeOrmModule.forRoot({
+      type: 'mongodb',
+      url: process.env.DB_CONNECTION_URL,
+      useNewUrlParser: true,
+      synchronize: true, // shall be avoided in production...
+      logging: true,
+      autoLoadEntities: true,
+    }),
+
+    AuthModule,
+    UsersModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

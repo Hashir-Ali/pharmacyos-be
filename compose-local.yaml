@@ -13,7 +13,7 @@ services:
   pharmacy-os-be:
     build:
       context: .
-      dockerfile: docker/DockerfileDev
+      dockerfile: docker/DockerfileStaging
     environment: #To be used in docker file when starting the backend service.
       - Environment=dev
     env_file: .env

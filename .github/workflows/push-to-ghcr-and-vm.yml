@@ -84,8 +84,8 @@ jobs:
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
             -t ghcr.io/future-arc/pharmacyos-be:myimagelatest \
-            -f docker/DockerfileStaging .
-          docker push ghcr.io/future-arc/pharmacyos-be:myimagelatest
+            -f docker/DockerfileStaging \
+            --push .
         env:
           DOCKER_BUILDKIT: 1
           EXT_PORT: ${{ secrets.EXT_PORT }}

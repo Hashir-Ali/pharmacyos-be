@@ -21,18 +21,18 @@ jobs:
         run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
       - name: Build Docker image
-        uses: docker/build-push-action@v4.1.1
-        with:
-          push: true
-          tags: ${{ github.repository_owner }}/pharmacyos-be
-          context: .
-          file: 'docker/dockerfileStaging'
-        # run: |
-        #   echo 'building docker image...'
-        #   docker buildx build \
-        #     --platform linux/amd64,linux/arm64 \
-        #     -t ghcr.io/${{ github.repository_owner }}/pharmacyos-be:latest \
-        #     -f ./docker/DockerfileStaging .
+        # uses: docker/build-push-action@v4.1.1
+        # with:
+        #   push: true
+        #   tags: ${{ github.repository_owner }}/pharmacyos-be
+        #   context: .
+        #   file: 'docker/dockerfileStaging'
+        run: |
+          echo 'building docker image...'
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            -t ghcr.io/${{ github.repository_owner }}/pharmacyos-be:latest \
+            -f ./docker/DockerfileStaging .
         env:
           DOCKER_BUILDKIT: 1
           EXT_PORT:  ${{ secrets.EXT_PORT }}

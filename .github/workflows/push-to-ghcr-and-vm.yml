@@ -78,6 +78,12 @@ jobs:
         uses: docker/setup-buildx-action@v1
       - name: Docker build done
         run: echo 'building docker image'
+      - name: Login to GHCR
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Docker image
         run: |
           echo 'building docker image...'
@@ -91,12 +97,6 @@ jobs:
           EXT_PORT: ${{ secrets.EXT_PORT }}
           INT_PORT: ${{ secrets.INT_PORT }}
           DB_URL: ${{ secrets.DB_URL }}
-      - name: Login to GHCR
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push Docker image to GHCR
         run: |
           docker push ghcr.io/future-arc/pharmacyos-be:myimagelatest

@@ -1,114 +1,74 @@
-# name: Push to GHCR and Deploy to VM
+ name: Push to GHCR and Deploy to VM
 
-# on:
-#   push:
-#     branches:
-#       - main
-#       - setup_ci_cd
+ on:
+   push:
+     branches:
+       - main
+       - setup_ci_cd
+       - ci-cd-fixes
 
-# jobs:
-#   push-and-deploy:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v2
-
-#       - name: Set up Docker Buildx
-#         uses: docker/setup-buildx-action@v2
-      
-#       - name: Login to GHCR
-#         run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
-
-#       - name: Build Docker image
-#         # uses: docker/build-push-action@v4.1.1
-#         # with:
-#         #   push: true
-#         #   tags: ${{ github.repository_owner }}/pharmacyos-be
-#         #   context: .
-#         #   file: 'docker/dockerfileStaging'
-#         run: |
-#           echo 'building docker image...'
-#           docker buildx build \
-#             --platform linux/amd64,linux/arm64 \
-#             -t myimagelatest \
-#             -f ./docker/DockerfileStaging .
-#         env:
-#           DOCKER_BUILDKIT: 1
-#           EXT_PORT:  ${{ secrets.EXT_PORT }}
-#           INT_PORT:  ${{ secrets.INT_PORT }}
-#           DB_URL: ${{ secrets.DB_URL }}
-
-#       - name: Push Docker image to GHCR
-#         run: |
-#           docker push myimagelatest
-
-#       - name: List Docker Images
-#         run: docker images
-
-#       - name: Set up SSH key
-#         uses: webfactory/ssh-agent@v0.8.0
+ jobs:
+   push-and-deploy:
+     runs-on: ubuntu-latest
+     permissions:
+       packages: write
+     env:
+       DB_URL: mongodb://mongo:27017/${{ vars.DB_NAME }}
+     steps:
+       - name: Checkout code
+         uses: actions/checkout@v2
 #         with:
-#           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-#           known-hosts: ${{ secrets.KNOWN_HOSTS }}
+#           ref: main
+       - name: Use Node.js
+         uses: actions/setup-node@v2
+         with:
+           node-version: '18'
+       - name: Install dependencies
+         run: yarn --frozen-lockfile
 
-#       - name: Pull Docker Image from GHCR and Deploy to VM
-#         run: |
-#           # Connect to your AWS VM via SSH
-#           ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ubuntu@35.178.122.100 << 'EOF'
-#             # docker-compose -f compose-staging.yaml pull
-#             docker-compose -f compose-staging.yaml up -d --build
-#           EOF
+       - name: Login to GitHub Packages
+         uses: docker/login-action@v3
+         with:
+           registry: ghcr.io
+           username: ${{ github.actor }}
+           password: ${{ secrets.GITHUB_TOKEN }}
 
-
-
-name: Push to GHCR and Deploy to VM
-on:
-  push:
-    branches:
-      - main
-      - setup_ci_cd
-jobs:
-  push-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - name: Docker build done
-        run: echo 'building docker image'
-      - name: Login to GHCR
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build Docker image
-        run: |
-          echo 'building docker image...'
-          docker buildx build \
-            --platform linux/amd64,linux/arm64 \
-            -t ghcr.io/future-arc/pharmacyos-be:myimagelatest \
-            -f docker/DockerfileStaging \
-            --push .
-        env:
-          DOCKER_BUILDKIT: 1
-          EXT_PORT: ${{ secrets.EXT_PORT }}
-          INT_PORT: ${{ secrets.INT_PORT }}
-          DB_URL: ${{ secrets.DB_URL }}
-      - name: Push Docker image to GHCR
-        run: |
-          docker push ghcr.io/future-arc/pharmacyos-be:myimagelatest
-      - name: Set up SSH key
-        uses: webfactory/ssh-agent@v0.8.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known-hosts: ${{ secrets.KNOWN_HOSTS }}
-      - name: Pull Docker Image from GHCR and Deploy to VM
-        run: |
-          # Connect to your AWS VM via SSH
-          ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ubuntu@35.178.122.100 << 'EOF'
-            # docker-compose -f compose-staging.yaml pull
-            docker-compose -f compose-staging.yaml up -d --build
-          EOF
+       - name: Set up Docker Buildx
+         uses: docker/setup-buildx-action@v1
+       - name: Build and push docker image
+         uses: docker/build-push-action@v2
+         with:
+           context: .
+           file: ./docker/DockerfileStaging
+           push: true
+           tags: |
+             ghcr.io/{{ github.repository }}:${{ github.sha }}
+         env:
+           EXT_PORT:  ${{ vars.PORT }}
+           INT_PORT:  ${{ vars.PORT }}
+       -
+         name: Remote docker login to Github docker registry and create/update .env file for docker compose
+         uses: fifsky/ssh-action@master
+         with:
+           command: |
+             echo ${{ secrets.DOCKER_REGISTRY_READ }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+             touch /srv/www/pharma-os/.env
+             echo PORT={{ vars.PORT }}
+             echo DB_URL=mongodb://mongo:27017/${{ vars.DB_NAME }} > /srv/www/pharma-os/.env
+           host: ${{ secrets.STAGING_BE_HOST }}
+           user: www
+           key: ${{ secrets.STAGING_BE_HOST_PRIVATE_KEY }}
+       -
+         name: Deploy to Docker Host
+         uses: wshihadeh/docker-deployment-action@master
+         with:
+           remote_docker_host: www@${{ secrets.STAGING_BE_HOST }}
+           ssh_private_key: ${{ secrets.STAGING_BE_HOST_PRIVATE_KEY }}
+           ssh_public_key: ${{ secrets.STAGING_BE_HOST_SERVER_PUBLIC_KEY }}
+           stack_file_name: staging-docker-compose.yml
+           deployment_mode: docker-compose
+           args: --env-file /srv/www/platform-api-compose/.env up -d
+           docker_prune: 'true'
+           deploy_path: '/srv/www/platform-api-compose'
+           copy_stack_file: 'true'
+           pull_images_first: 'true'

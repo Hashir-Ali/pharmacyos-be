@@ -20,7 +20,6 @@ jobs:
       - name: Build Docker image
         run: |
           echo 'building docker image...'
-          echo "::error::This is an error message"  # Log an error
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
             -t ghcr.io/${{ github.repository_owner }}/${{ github.repository_name }}:latest \

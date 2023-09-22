@@ -20,10 +20,11 @@ jobs:
       - name: Build Docker image
         run: |
           echo 'building docker image...'
+          echo "::error::This is an error message"  # Log an error
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
             -t ghcr.io/${{ github.repository_owner }}/${{ github.repository_name }}:latest \
-            -f docker/DockerfileStaging .
+            -f ./docker/DockerfileStaging .
         env:
           DOCKER_BUILDKIT: 1
           EXT_PORT:  ${{ secrets.EXT_PORT }}
@@ -38,7 +39,7 @@ jobs:
           docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository_name }}:latest
 
       - name: Set up SSH key
-        uses: webfactory/ssh-agent
+        uses: webfactory/ssh-agent@v0.5
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
           known-hosts: ${{ secrets.KNOWN_HOSTS }}

@@ -3,5 +3,15 @@ services:
   pharmacyos-be:
     image: ghcr.io/future-arc/pharmacyos-BE:latest  # use existing image from ghcr...
     container_name: pharmacyos-be
+    environment:
+      - EXT_PORT=${EXT_PORT}
+      - INT_PORT=${INT_PORT}
+      - DB_URL=${DB_URL}
     ports:
-      - "80:5000"
+      - "${EXT_PORT}:${INT_PORT}"
+    depends_on:
+      - mongo  
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - setup_ci_cd
 
 jobs:
   push-and-deploy:
@@ -21,9 +22,12 @@ jobs:
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
             -t ghcr.io/${{ github.repository_owner }}/${{ github.repository_name }}:latest \
-            -f docker/DockerfileDev .
+            -f docker/DockerfileStaging .
         env:
           DOCKER_BUILDKIT: 1
+          EXT_PORT:  ${{ secrets.EXT_PORT }}
+          INT_PORT:  ${{ secrets.INT_PORT }}
+          DB_URL: ${{ secrets.DB_URL }}
 
       - name: Login to GHCR
         run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin

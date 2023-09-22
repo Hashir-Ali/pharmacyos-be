@@ -15,15 +15,22 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
       
+      - name: Login to GHCR
+        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
       - name: Build Docker image
-        run: |
-          echo 'building docker image...'
-          docker buildx build \
-            --platform linux/amd64,linux/arm64 \
-            -t ghcr.io/${{ github.repository_owner }}/pharmacyos-be:latest \
-            -f ./docker/DockerfileStaging .
+        uses: docker/build-push-action@v4.1.1
+        with:
+          push: true
+          tags: ${{ github.repository_owner }}/pharmacyos-be
+        # run: |
+        #   echo 'building docker image...'
+        #   docker buildx build \
+        #     --platform linux/amd64,linux/arm64 \
+        #     -t ghcr.io/${{ github.repository_owner }}/pharmacyos-be:latest \
+        #     -f ./docker/DockerfileStaging .
         env:
           DOCKER_BUILDKIT: 1
           EXT_PORT:  ${{ secrets.EXT_PORT }}
@@ -32,13 +39,10 @@ jobs:
 
       - name: List Docker Images
         run: docker images
-        
-      - name: Login to GHCR
-        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Push Docker image to GHCR
-        run: |
-          docker push ghcr.io/${{ github.repository_owner }}/pharmacyos-be:latest
+      # - name: Push Docker image to GHCR
+      #   run: |
+      #     docker push ghcr.io/${{ github.repository_owner }}/pharmacyos-be:latest
 
       - name: Set up SSH key
         uses: webfactory/ssh-agent@v0.8.0

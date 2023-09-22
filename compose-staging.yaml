@@ -1,7 +1,7 @@
 version: '1'
 services:
   pharmacyos-be:
-    image: ghcr.io/future-arc/pharmacyos-be:latest  # use existing image from ghcr...
+    image: ghcr.io/future-arc/pharmacyos-be/myimagelatest  # use existing image from ghcr...
     container_name: pharmacyos-be
     environment:
       - EXT_PORT=${EXT_PORT}

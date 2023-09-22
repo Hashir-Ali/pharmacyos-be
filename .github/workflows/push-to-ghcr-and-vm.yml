@@ -25,7 +25,8 @@ jobs:
         with:
           push: true
           tags: ${{ github.repository_owner }}/pharmacyos-be
-          dockerfile: './docker/dockerfileStaging'
+          context: .
+          dockerfile: 'docker/dockerfileStaging'
         # run: |
         #   echo 'building docker image...'
         #   docker buildx build \

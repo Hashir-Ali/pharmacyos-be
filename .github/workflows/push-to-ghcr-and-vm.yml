@@ -83,7 +83,7 @@ jobs:
           echo 'building docker image...'
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
-            -t ghcr.io/${{ github.repository_owner }}/${{ github.repository_name }}/myimagelatest \
+            -t ghcr.io/future-arc/pharmacyos-BE/myimagelatest \
             -f docker/DockerfileStaging .
         env:
           DOCKER_BUILDKIT: 1
@@ -98,7 +98,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push Docker image to GHCR
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository_name }}/myimagelatest
+          docker push ghcr.io/future-arc/pharmacyos-BE/myimagelatest
       - name: Set up SSH key
         uses: webfactory/ssh-agent@v0.8.0
         with:

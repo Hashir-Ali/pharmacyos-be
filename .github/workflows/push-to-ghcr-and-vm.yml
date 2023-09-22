@@ -31,7 +31,7 @@ jobs:
           echo 'building docker image...'
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
-            -t myImageLatest \
+            -t myimagelatest \
             -f ./docker/DockerfileStaging .
         env:
           DOCKER_BUILDKIT: 1
@@ -41,7 +41,7 @@ jobs:
 
       - name: Push Docker image to GHCR
         run: |
-          docker push myImageLatest
+          docker push myimagelatest
 
       - name: List Docker Images
         run: docker images

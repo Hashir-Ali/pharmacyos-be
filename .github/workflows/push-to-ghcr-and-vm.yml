@@ -30,6 +30,9 @@ jobs:
           INT_PORT:  ${{ secrets.INT_PORT }}
           DB_URL: ${{ secrets.DB_URL }}
 
+      - name: List Docker Images
+        run: docker images
+        
       - name: Login to GHCR
         run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 

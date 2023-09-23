@@ -28,7 +28,7 @@
          with:
            node-version: '18'
        - name: Install dependencies
-         run: yarn --frozen-lockfile
+         run: npm ci
 
        - name: Login to GitHub Packages
          uses: docker/login-action@v3
@@ -46,7 +46,7 @@
            file: ./docker/DockerfileStaging
            push: true
            tags: |
-             ghcr.io/${REPO}:${{ github.sha }}
+             ghcr.io/${{ env.REPO }}:${{ github.sha }}
          env:
            EXT_PORT:  ${{ vars.PORT }}
            INT_PORT:  ${{ vars.PORT }}

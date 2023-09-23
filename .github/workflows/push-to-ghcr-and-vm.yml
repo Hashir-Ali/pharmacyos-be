@@ -56,9 +56,9 @@
          with:
            command: |
              echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
-             touch /srv/www/pharma-os/.env
+             touch /usr/src/app/.env
              echo PORT={{ vars.PORT }}
-             echo DB_URL=mongodb://mongo:27017/${{ vars.DB_NAME }} > /srv/www/pharma-os/.env
+             echo DB_URL=mongodb://mongo:27017/${{ vars.DB_NAME }} > /usr/src/app/.env
            host: ${{ secrets.BE_HOST }}
            user: ubuntu
            key: ${{ secrets.BE_HOST_PRIVATE_KEY }}
@@ -71,8 +71,8 @@
            ssh_public_key: ${{ secrets.BE_HOST_SERVER_PUBLIC_KEY }}
            stack_file_name: staging-docker-compose.yml
            deployment_mode: docker-compose
-           args: --env-file /srv/www/pharma-os/.env up -d
+           args: --env-file /usr/src/app/.env up -d
            docker_prune: 'true'
-           deploy_path: '/srv/www/pharma-os'
+           deploy_path: '/usr/src/app/'
            copy_stack_file: 'true'
            pull_images_first: 'true'

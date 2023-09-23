@@ -59,9 +59,9 @@
              touch /srv/www/pharma-os/.env
              echo PORT={{ vars.PORT }}
              echo DB_URL=mongodb://mongo:27017/${{ vars.DB_NAME }} > /srv/www/pharma-os/.env
-           host: ${{ secrets.STAGING_BE_HOST }}
+           host: ${{ secrets.BE_HOST }}
            user: www
-           key: ${{ secrets.STAGING_BE_HOST_PRIVATE_KEY }}
+           key: ${{ secrets.BE_HOST_PRIVATE_KEY }}
        -
          name: Deploy to Docker Host
          uses: wshihadeh/docker-deployment-action@master

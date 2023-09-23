@@ -46,7 +46,7 @@
            file: ./docker/DockerfileStaging
            push: true
            tags: |
-             ghcr.io/${{ REPO }}:${{ github.sha }}
+             ghcr.io/${REPO}:${{ github.sha }}
          env:
            EXT_PORT:  ${{ vars.PORT }}
            INT_PORT:  ${{ vars.PORT }}

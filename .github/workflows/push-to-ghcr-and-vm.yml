@@ -55,7 +55,7 @@
          uses: fifsky/ssh-action@master
          with:
            command: |
-             echo ${{ secrets.DOCKER_REGISTRY_READ }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
              touch /srv/www/pharma-os/.env
              echo PORT={{ vars.PORT }}
              echo DB_URL=mongodb://mongo:27017/${{ vars.DB_NAME }} > /srv/www/pharma-os/.env

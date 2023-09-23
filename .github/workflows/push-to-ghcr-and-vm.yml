@@ -51,8 +51,7 @@
            EXT_PORT:  ${{ vars.PORT }}
            INT_PORT:  ${{ vars.PORT }}
        - name: List files in working directory
-          run: |
-            ls -l
+         run: ls -l
        -
          name: Remote docker login to Github docker registry and create/update .env file for docker compose
          uses: fifsky/ssh-action@master

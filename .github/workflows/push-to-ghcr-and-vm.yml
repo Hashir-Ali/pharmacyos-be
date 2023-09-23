@@ -50,8 +50,7 @@
          env:
            EXT_PORT:  ${{ vars.PORT }}
            INT_PORT:  ${{ vars.PORT }}
-           
-        - name: List files in working directory
+       - name: List files in working directory
           run: |
             ls -l
        -

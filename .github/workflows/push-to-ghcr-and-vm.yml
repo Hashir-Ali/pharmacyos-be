@@ -57,7 +57,6 @@
            command: |
              echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
              touch ./.env
-             echo ls
              echo PORT={{ vars.PORT }}
              echo DB_URL=mongodb://mongo:27017/${{ vars.DB_NAME }} > ./.env
            host: ${{ secrets.BE_HOST }}
@@ -70,7 +69,7 @@
            remote_docker_host: ubuntu@${{ secrets.BE_HOST }}
            ssh_private_key: ${{ secrets.BE_HOST_PRIVATE_KEY }}
            ssh_public_key: ${{ secrets.BE_HOST_SERVER_PUBLIC_KEY }}
-           stack_file_name: staging-docker-compose.yml
+           stack_file_name: compose-staging.yml
            deployment_mode: docker-compose
            args: --env-file /usr/src/app/.env up -d
            docker_prune: 'true'

@@ -16,6 +16,9 @@
      env:
        DB_URL: mongodb://mongo:27017/${{ vars.DB_NAME }}
      steps:
+       - name: downcase REPO
+         run: |
+             echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
        - name: Checkout code
          uses: actions/checkout@v2
 #         with:
@@ -43,7 +46,7 @@
            file: ./docker/DockerfileStaging
            push: true
            tags: |
-             ghcr.io/${{ github.repository }}:${{ github.sha }}
+             ghcr.io/${{ REPO }}:${{ github.sha }}
          env:
            EXT_PORT:  ${{ vars.PORT }}
            INT_PORT:  ${{ vars.PORT }}

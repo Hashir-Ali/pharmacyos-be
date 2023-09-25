@@ -52,9 +52,9 @@ FROM base as final
 # Use production node environment by default.
 ENV NODE_ENV production
 
-ARG EXT_PORT = 5000
-ARG INT_PORT = 5000
-ARG DB_URL = mongodb://mongo:27017/pharmacyOSDB
+ARG EXT_PORT=5000
+ARG INT_PORT=5000
+ARG DB_URL=mongodb://mongo:27017/pharmacyOSDB
 ENV EXT_PORT=${EXT_PORT}
 ENV INT_PORT=${INT_PORT}
 ENV DB_URL=${DB_URL}

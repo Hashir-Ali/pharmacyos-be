@@ -15,6 +15,7 @@
        contents: read
      env:
        DB_URL: mongodb://mongo:27017/${{ vars.DB_NAME }}
+       
      steps:
        - name: downcase REPO
          run: |

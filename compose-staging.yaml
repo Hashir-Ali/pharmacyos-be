@@ -3,7 +3,8 @@ services:
   pharmacyos-be:
     image: ghcr.io/future-arc/pharmacyos-be/main:latest  # use existing image from ghcr...
     container_name: pharmacyos-be
-    env_file: .env
+    env_file: 
+      - .env
     ports:
       - "${PORT}:${PORT}"
     depends_on:

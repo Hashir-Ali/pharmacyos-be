@@ -70,7 +70,7 @@
            remote_docker_host: ubuntu@${{ secrets.BE_HOST }}
            ssh_private_key: ${{ secrets.BE_HOST_PRIVATE_KEY }}
            ssh_public_key: ${{ secrets.BE_HOST_SERVER_PUBLIC_KEY }}
-           stack_file_name: compose-staging.yaml
+           stack_file_name: ./compose-staging.yaml
            deployment_mode: docker-compose
            args: --env-file ./backend/.env up -d
            docker_prune: 'true'

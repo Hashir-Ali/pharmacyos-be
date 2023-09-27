@@ -6,7 +6,8 @@ services:
     env_file: 
       - ./backend/.env
     ports:
-      - "${PORT}:${PORT}"
+      # - "${PORT}:${PORT}"
+      - 3000:3000
     depends_on:
       - mongo  
 #  mongo:

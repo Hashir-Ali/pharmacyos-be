@@ -57,13 +57,13 @@ ARG INT_PORT=5000
 ARG DB_CONNECTION_URL=mongodb://mongo:27017/pharmacyOSDB
 ENV EXT_PORT=${EXT_PORT}
 ENV INT_PORT=${INT_PORT}
-ENV DB_URL=${DB_URL}
+ENV DB_CONNECTION_URL=${DB_URL}
 # Run the application as a non-root user.
 USER node
 
 # Copy package.json so that package manager commands can be used.
 COPY package.json .
-COPY .env .
+
 # Copy the production dependencies from the deps stage and also
 # the built application from the build stage into the image.
 COPY --from=deps /usr/src/app/node_modules ./node_modules

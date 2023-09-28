@@ -60,7 +60,7 @@
              echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
              touch ./backend/.env
              echo "PORT=${{vars.PORT}}" >> ./backend/.env
-             echo "DB_URL=mongodb://mongo:27017/${{ vars.DB_NAME }}" >> ./backend/.env
+             echo "DB_CONNECTION_URL=mongodb://mongo:27017/${{ vars.DB_NAME }}" >> ./backend/.env
            host: ${{ secrets.BE_HOST }}
            user: ubuntu
            key: ${{ secrets.BE_HOST_PRIVATE_KEY }}

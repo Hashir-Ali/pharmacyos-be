@@ -6,6 +6,7 @@
        - main
        - setup_ci_cd
        - ci-cd-fixes
+       - authorization
 
  jobs:
    push-and-deploy:

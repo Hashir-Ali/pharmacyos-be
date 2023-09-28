@@ -7,7 +7,7 @@ services:
       - ./backend/.env
     ports:
       # - "${PORT}:${PORT}"
-      - 3000:3000
+      - 3030:3030
     depends_on:
       - mongo  
   mongo:

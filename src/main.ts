@@ -19,7 +19,7 @@ async function bootstrap() {
       'Local environment',
     )
     .addServer(
-      process.env.PRODUCTION_SERVER_URL + ':' + process.env.PORT,
+      process.env.PRODUCTION_SERVER_URL,
       'Production environment',
     )
     .build();

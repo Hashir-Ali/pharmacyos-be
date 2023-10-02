@@ -19,8 +19,8 @@ async function bootstrap() {
       'Local environment',
     )
     .addServer(
-      process.env.PRODUCTION_SERVER_URL,
-      'Production environment',
+      process.env.STAGING_SERVER_URL,
+      'Staging Environment',
     )
     .build();
 

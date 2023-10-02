@@ -31,6 +31,12 @@
            node-version: '18'
        - name: Install dependencies
          run: npm ci
+       - name: Run Linters
+         uses: wearerequired/lint-action@v2
+         with:
+           eslint: true
+           prettier: true
+           auto_fix: true
 
        - name: Login to GitHub Packages
          uses: docker/login-action@v3
@@ -61,7 +67,7 @@
              touch ./backend/.env
              echo "PORT=${{vars.PORT}}" >> ./backend/.env
              echo "LOCAL_SERVER_URL=http://localhost" >> ./backend/.env
-             echo "PRODUCTION_SERVER_URL=http://pharmacyos-api.dev.future-arc.com/" >> ./backend/.env
+             echo "PRODUCTION_SERVER_URL=http://pharmacyos-api.dev.future-arc.com" >> ./backend/.env
              echo "DB_CONNECTION_URL=mongodb://mongo:27017/${{ vars.DB_NAME }}" >> ./backend/.env
            host: ${{ secrets.BE_HOST }}
            user: ubuntu

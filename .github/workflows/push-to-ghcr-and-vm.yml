@@ -37,6 +37,7 @@
            eslint: true
            prettier: true
            auto_fix: true
+           eslint_extensions: js, ts
 
        - name: Login to GitHub Packages
          uses: docker/login-action@v3

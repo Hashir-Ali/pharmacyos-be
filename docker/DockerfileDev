@@ -27,11 +27,6 @@ RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=cache,target=/root/.npm \
     npm ci --omit=dev
 
-RUN echo "Installing nestjs-cli"
-# Install the Nest.js CLI globally
-RUN npm install -g @nestjs/cli
-
-RUN echo "Installation done"
 
 ################################################################################
 # Create a stage for building the application.

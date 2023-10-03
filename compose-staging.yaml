@@ -1,14 +1,13 @@
 version: '1'
 services:
   pharmacyos-be:
-    image: ghcr.io/future-arc/pharmacyos-be:myimagelatest  # use existing image from ghcr...
+    image: ghcr.io/future-arc/pharmacyos-be/main:latest  # use existing image from ghcr...
     container_name: pharmacyos-be
-    environment:
-      - EXT_PORT=${EXT_PORT}
-      - INT_PORT=${INT_PORT}
-      - DB_URL=${DB_URL}
+    env_file: 
+      - ./backend/.env
     ports:
-      - "${EXT_PORT}:${INT_PORT}"
+      # - "${PORT}:${PORT}"
+      - 3030:3030
     depends_on:
       - mongo  
   mongo:

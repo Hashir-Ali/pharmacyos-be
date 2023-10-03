@@ -11,9 +11,13 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { CreateUserDto } from './dto/create-user-dto';
 import { ObjectId } from 'mongodb';
 import { UpdateUserDto } from './dto/update-user-dto';
+import { Roles } from 'src/common/roles.decorator';
+import { Role } from 'src/common/role.enum';
+
 
 @ApiTags('User')
 @Controller('users')
@@ -30,6 +34,9 @@ export class UsersController {
     return result;
   }
 
+  // @ApiBearerAuth()
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles(Role.Admin)
   @Post()
   // @UseGuards(JwtAuthGuard)
   create(@Body() createUserDto: CreateUserDto) {
@@ -47,7 +54,8 @@ export class UsersController {
 
   @ApiBearerAuth()
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin, Role.SuperAdmin)
   findAll() {
     return this.userService.findAll();
   }

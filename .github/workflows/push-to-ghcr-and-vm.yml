@@ -1,0 +1,88 @@
+ name: Push to GHCR and Deploy to VM
+
+ on:
+   push:
+     branches:
+       - main
+       - setup_ci_cd
+       - ci-cd-fixes
+       - authorization
+
+ jobs:
+   push-and-deploy:
+     runs-on: ubuntu-latest
+     permissions:
+       packages: write
+       contents: read
+     env:
+       DB_URL: mongodb://mongo:27017/${{ vars.DB_NAME }}
+       
+     steps:
+       - name: downcase REPO
+         run: |
+             echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
+       - name: Checkout code
+         uses: actions/checkout@v2
+#         with:
+#           ref: main
+       - name: Use Node.js
+         uses: actions/setup-node@v2
+         with:
+           node-version: '18'
+       - name: Install dependencies
+         run: npm ci
+       - name: Run Linters
+         uses: wearerequired/lint-action@v2
+         with:
+           eslint: true
+           prettier: true
+           eslint_extensions: js,ts,tsx
+
+       - name: Login to GitHub Packages
+         uses: docker/login-action@v3
+         with:
+           registry: ghcr.io
+           username: ${{ github.actor }}
+           password: ${{ secrets.GITHUB_TOKEN }}
+
+       - name: Set up Docker Buildx
+         uses: docker/setup-buildx-action@v1
+       - name: Build and push docker image
+         uses: docker/build-push-action@v5
+         with:
+           context: .
+           file: ./docker/DockerfileStaging
+           push: true
+           tags: |
+             ghcr.io/future-arc/pharmacyos-be/main:latest
+         env:
+           EXT_PORT:  ${{ vars.PORT }}
+           INT_PORT:  ${{ vars.PORT }}
+       -
+         name: Remote docker login to Github docker registry and create/update .env file for docker compose
+         uses: fifsky/ssh-action@master
+         with:
+           command: |
+             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+             touch ./backend/.env
+             echo "PORT=${{vars.PORT}}" >> ./backend/.env
+             echo "LOCAL_SERVER_URL=http://localhost" >> ./backend/.env
+             echo "STAGING_SERVER_URL=https://pharmacyos-api.dev.future-arc.com" >> ./backend/.env
+             echo "DB_CONNECTION_URL=mongodb://mongo:27017/${{ vars.DB_NAME }}" >> ./backend/.env
+           host: ${{ secrets.BE_HOST }}
+           user: ubuntu
+           key: ${{ secrets.BE_HOST_PRIVATE_KEY }}
+       -
+         name: Deploy to Docker Host
+         uses: wshihadeh/docker-deployment-action@master
+         with:
+           remote_docker_host: ubuntu@${{ secrets.BE_HOST }}
+           ssh_private_key: ${{ secrets.BE_HOST_PRIVATE_KEY }}
+           ssh_public_key: ${{ secrets.BE_HOST_SERVER_PUBLIC_KEY }}
+           stack_file_name: compose-staging.yaml
+           deployment_mode: docker-compose
+           args: --env-file ./backend/.env up -d
+           docker_prune: 'true'
+           deploy_path: './'
+           copy_stack_file: 'true'
+           pull_images_first: 'true'

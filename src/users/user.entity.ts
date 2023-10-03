@@ -1,3 +1,4 @@
+import { Role } from 'src/common/role.enum';
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 
 @Entity('users')
@@ -16,6 +17,9 @@ export class User {
 
   @Column()
   password: string;
+
+  @Column()
+  roles: Role[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   date_registered: string;

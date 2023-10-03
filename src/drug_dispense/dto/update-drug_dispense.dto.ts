@@ -1,28 +1,23 @@
 import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import { CreateStockDto } from './create-stock.dto';
-import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { CreateDrugDispenseDto } from './create-drug_dispense.dto';
+import { IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class UpdateStockDto extends PartialType(CreateStockDto) {
+export class UpdateDrugDispenseDto extends PartialType(CreateDrugDispenseDto) {
+
     @ApiPropertyOptional()
     @IsOptional()
     @IsString()
-    drugId: String;
-    
+    drugDispense: String;
 
     @ApiPropertyOptional()
     @IsOptional()
-    @IsNumber()
-    stockRuleMin?: Number;
+    @IsString()
+    quantity?: String;
 
     @ApiPropertyOptional()
     @IsOptional()
-    @IsNumber()
-    stockRuleMax?: Number;
-
-    @ApiPropertyOptional()
-    @IsOptional()
-    @IsNumber()
-    LooseUnits: Number;
+    @IsString()
+    dispenseValue?: String;
 
     @ApiPropertyOptional()
     @IsOptional()
@@ -36,6 +31,8 @@ export class UpdateStockDto extends PartialType(CreateStockDto) {
 
     @ApiPropertyOptional()
     @IsOptional()
-    @IsBoolean()
+    @IsString()
     is_enabled?: Boolean;
+
+
 }

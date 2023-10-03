@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { DrugModule } from './drug/drug.module';
 import { StockModule } from './stock/stock.module';
+import { DrugDispenseModule } from './drug_dispense/drug_dispense.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { StockModule } from './stock/stock.module';
     UsersModule,
     DrugModule,
     StockModule,
+    DrugDispenseModule,
   ],
   controllers: [AppController],
   providers: [AppService],

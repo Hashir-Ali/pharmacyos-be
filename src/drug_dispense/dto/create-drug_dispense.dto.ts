@@ -1,7 +1,9 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { IsBoolean, IsDate, IsNotEmpty, IsString } from "class-validator";
+import { Column, PrimaryGeneratedColumn } from "typeorm";
 
-export class CreateStockDto {
+export class CreateDrugDispenseDto {
+   
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
@@ -9,18 +11,13 @@ export class CreateStockDto {
 
     @ApiProperty()
     @IsNotEmpty()
-    @IsNumber()
-    stockRuleMin: Number;
+    @IsString()
+    quantity: String;
 
     @ApiProperty()
     @IsNotEmpty()
-    @IsNumber()
-    stockRuleMax: Number;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @IsNumber()
-    LooseUnits: Number;
+    @IsString()
+    dispenseValue: String;
 
     @ApiProperty()
     @IsNotEmpty()
@@ -36,4 +33,5 @@ export class CreateStockDto {
     @IsNotEmpty()
     @IsBoolean()
     is_enabled: Boolean;
+
 }

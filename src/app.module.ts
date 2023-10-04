@@ -11,6 +11,7 @@ import { StockModule } from './stock/stock.module';
 import { DrugDispenseModule } from './drug_dispense/drug_dispense.module';
 import { DrugOrderModule } from './drug_order/drug_order.module';
 import { DistributorModule } from './distributor/distributor.module';
+import { DrugDistributorModule } from './drug_distributor/drug_distributor.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { DistributorModule } from './distributor/distributor.module';
     DrugDispenseModule,
     DrugOrderModule,
     DistributorModule,
+    DrugDistributorModule,
   ],
   controllers: [AppController],
   providers: [AppService],

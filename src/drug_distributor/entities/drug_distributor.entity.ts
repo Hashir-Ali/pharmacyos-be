@@ -3,16 +3,16 @@ import { Entity, ObjectIdColumn, Column } from "typeorm";
 export class DrugDistributor {
 
     @ObjectIdColumn()
-    drugDistributorId: String;
+    drugDistributorId: string;
 
     @Column()
-    distributorId: String;
+    distributorId: string;
 
     @Column()
-    drugId: String;
+    drugId: string;
 
     @Column()
-    type: String; // Shall be an enum...!
+    type: string; // Shall be an enum...!
 
     @Column()
     is_preferred: Boolean;

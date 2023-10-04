@@ -1,23 +1,23 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsDate, IsDateString, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateDrugOrderDto {
 
     @ApiPropertyOptional()
     @IsOptional()
     @IsString()
-    supplierId: String;
+    supplierId: string;
 
     @ApiPropertyOptional()
     @IsOptional()
     @IsString()
-    drugId: String;
+    drugId: string;
 
     
     @ApiPropertyOptional()
     @IsOptional()
     @IsString()
-    ordered_by: String;
+    ordered_by: string;
 
     @ApiPropertyOptional()
     @IsOptional()
@@ -34,7 +34,6 @@ export class UpdateDrugOrderDto {
     @IsNumber()
     cost: number;
 
-
     @ApiPropertyOptional()
     @IsOptional()
     @IsBoolean()
@@ -43,17 +42,17 @@ export class UpdateDrugOrderDto {
     
     @ApiPropertyOptional()
     @IsOptional()
-    @IsDate()
+    @IsDateString()
     expected_delivery_date: Date;
 
     @ApiPropertyOptional()
     @IsOptional()
-    @IsDate()
+    @IsDateString()
     created_at: Date;
 
     @ApiPropertyOptional()
     @IsOptional()
-    @IsDate()
+    @IsDateString()
     updated_at: Date;
 
     @ApiPropertyOptional()

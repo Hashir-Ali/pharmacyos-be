@@ -7,17 +7,17 @@ export class UpdateDrugDistributorDto{
     @ApiPropertyOptional()
     @IsOptional()
     @IsString()
-    distributorId: String;
+    distributorId: string;
 
     @ApiPropertyOptional()
     @IsOptional()
     @IsString()
-    drugId: String;
+    drugId: string;
 
     @ApiPropertyOptional()
     @IsOptional()
     @IsString()
-    type: String; // Shall be an enum...!
+    type: string; // Shall be an enum...!
 
     @ApiPropertyOptional()
     @IsOptional()

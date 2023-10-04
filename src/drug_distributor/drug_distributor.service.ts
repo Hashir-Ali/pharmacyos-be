@@ -24,8 +24,18 @@ export class DrugDistributorService {
     return this.drugDistributorRepo.find();
   }
 
-  async findOne(id: string) {
-    return await this.drugDistributorRepo.findOne({where: {drugId: id}}) || [];
+  async findOne(drugId: string) {
+    return await this.drugDistributorRepo.findOne({where: {drugId}}) || [];
+  }
+
+  async getType(drugID: string, distributorID: string): Promise<string | null>{
+    const type = await this.drugDistributorRepo.findOne({where: {drugId: drugID, distributorId: distributorID} });
+    if(type){
+      // const {distributorId, drugDistributorId, drugId, ...result} = type;
+      return type.type;
+    }else{
+      return null;
+    }
   }
 
 }

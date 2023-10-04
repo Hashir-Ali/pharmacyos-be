@@ -1,21 +1,21 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsBoolean, IsDate, IsDateString, IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class CreateDrugOrderDto {
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
-    supplierId: String;
+    supplierId: string;
 
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
-    drugId: String;
+    drugId: string;
 
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
-    ordered_by: String; // user Id....!
+    ordered_by: string; // user Id....!
 
     @ApiProperty()
     @IsNotEmpty()
@@ -32,7 +32,6 @@ export class CreateDrugOrderDto {
     @IsNumber()
     cost: number;
 
-
     @ApiProperty()
     @IsNotEmpty()
     @IsBoolean()
@@ -40,17 +39,17 @@ export class CreateDrugOrderDto {
 
     @ApiProperty()
     @IsNotEmpty()
-    @IsDate()
+    @IsDateString()
     expected_delivery_date: Date;
 
     @ApiProperty()
     @IsNotEmpty()
-    @IsDate()
+    @IsDateString()
     created_at: Date;
 
     @ApiProperty()
     @IsNotEmpty()
-    @IsDate()
+    @IsDateString()
     updated_at: Date;
 
     @ApiProperty()

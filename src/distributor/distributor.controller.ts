@@ -26,7 +26,7 @@ export class DistributorController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.distributorService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return await this.distributorService.findOneById(id);
   }
 }

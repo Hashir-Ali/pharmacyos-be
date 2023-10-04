@@ -2,9 +2,9 @@ import { Entity, Column, ObjectIdColumn } from "typeorm";
 @Entity('Distributor')
 export class Distributor {
     @ObjectIdColumn()
-    distributorId: String;
+    _id: string;
     @Column()
-    name: String;
+    name: string;
     @Column()
     NHS_Contract_End_Date: Date;
     @Column()

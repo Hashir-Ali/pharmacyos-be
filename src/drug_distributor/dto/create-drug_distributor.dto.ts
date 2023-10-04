@@ -6,17 +6,17 @@ export class CreateDrugDistributorDto {
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
-    distributorId: String;
+    distributorId: string;
 
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
-    drugId: String;
+    drugId: string;
 
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
-    type: String; // Shall be an enum...!
+    type: string; // Shall be an enum...!
 
     @ApiProperty()
     @IsNotEmpty()

@@ -2,16 +2,16 @@ import { Entity, ObjectIdColumn, Column } from "typeorm";
 @Entity('DrugOrder')
 export class DrugOrder {
     @ObjectIdColumn()
-    orderId: String;
+    orderId: string;
 
     @Column()
-    supplierId: String;
+    supplierId: string;
 
     @Column()
-    drugId: String;
+    drugId: string;
 
     @Column()
-    ordered_by: String; // user Id.
+    ordered_by: string; // user Id.
 
     @Column()
     quantityOrdered: Number;

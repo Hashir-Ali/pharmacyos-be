@@ -12,10 +12,15 @@ export class DrugOrderService {
   ){}
 
   findAll() {
+    // populate distributor name using supplierId field..
+    // get type from drug distributor on basis of drugId and distributorId field..
     return this.DrugOrderRepository.find();
   }
 
   findOne(id: string) {
+    // populate distributor name using supplierId field..
+    // get type from drug distributor on basis of drugId and distributorId field..
+    // get user data from ordered by (id field of registered user)..
     return this.DrugOrderRepository.findBy({where: {drugId: id}})
   }
 }

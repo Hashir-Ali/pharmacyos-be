@@ -13,6 +13,12 @@ export class UpdateDrugOrderDto {
     @IsString()
     drugId: String;
 
+    
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsString()
+    ordered_by: String;
+
     @ApiPropertyOptional()
     @IsOptional()
     @IsNumber()
@@ -33,6 +39,12 @@ export class UpdateDrugOrderDto {
     @IsOptional()
     @IsBoolean()
     isReceived: Boolean;
+
+    
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsDate()
+    expected_delivery_date: Date;
 
     @ApiPropertyOptional()
     @IsOptional()

@@ -14,6 +14,11 @@ export class CreateDrugOrderDto {
 
     @ApiProperty()
     @IsNotEmpty()
+    @IsString()
+    ordered_by: String; // user Id....!
+
+    @ApiProperty()
+    @IsNotEmpty()
     @IsNumber()
     quantityOrdered: Number;
 
@@ -32,6 +37,11 @@ export class CreateDrugOrderDto {
     @IsNotEmpty()
     @IsBoolean()
     isReceived: Boolean;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsDate()
+    expected_delivery_date: Date;
 
     @ApiProperty()
     @IsNotEmpty()

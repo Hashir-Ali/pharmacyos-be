@@ -11,6 +11,9 @@ export class DrugOrder {
     drugId: String;
 
     @Column()
+    ordered_by: String; // user Id.
+
+    @Column()
     quantityOrdered: Number;
 
     @Column()
@@ -20,7 +23,10 @@ export class DrugOrder {
     cost: Number;
 
     @Column()
-    isReceived: Number;
+    isReceived: Boolean;
+
+    @Column()
+    expected_delivery_date: Date;
 
     @Column()
     created_at: Date;

@@ -6,7 +6,7 @@ export class UpdateDrugDto {
     @ApiPropertyOptional()
     @IsOptional()
     @IsString()
-    name: String;
+    name: string;
 
     @ApiPropertyOptional()
     @IsOptional()
@@ -16,22 +16,22 @@ export class UpdateDrugDto {
     @ApiProperty()
     @IsOptional()
     @IsString()
-    dosageUnit: String;
+    dosageUnit: string;
 
     @ApiPropertyOptional()
     @IsOptional()
     @IsString()
-    dosageForm: String;
+    dosageForm: string;
 
     @ApiProperty()
     @IsOptional()
     @IsString()
-    BNFCode: String;
+    BNFCode: string;
 
     @ApiPropertyOptional()
     @IsOptional()
     @IsString()
-    fullDescription: String;
+    fullDescription: string;
 
     @ApiPropertyOptional()
     @IsOptional()
@@ -41,7 +41,7 @@ export class UpdateDrugDto {
     @ApiPropertyOptional()
     @IsOptional()
     @IsString()
-    location: String;
+    location: string;
 
     @ApiPropertyOptional()
     @IsOptional()

@@ -11,5 +11,6 @@ import { DrugDistributorModule } from 'src/drug_distributor/drug_distributor.mod
   imports: [TypeOrmModule.forFeature([DrugOrder]), UsersModule, DistributorModule, DrugDistributorModule],
   controllers: [DrugOrderController],
   providers: [DrugOrderService],
+  exports: [DrugOrderService]
 })
 export class DrugOrderModule {}

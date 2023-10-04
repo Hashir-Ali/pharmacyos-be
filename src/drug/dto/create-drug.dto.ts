@@ -4,7 +4,7 @@ import { IsBoolean, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString } f
 export class CreateDrugDto {
     @ApiProperty()
     @IsString()
-    name: String;
+    name: string;
 
     @ApiProperty()
     @IsNumber()
@@ -12,22 +12,22 @@ export class CreateDrugDto {
 
     @ApiProperty()
     @IsString()
-    dosageUnit: String;
+    dosageUnit: string;
 
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
-    dosageForm: String;
+    dosageForm: string;
 
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
-    BNFCode: String;
+    BNFCode: string;
 
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
-    fullDescription: String;
+    fullDescription: string;
 
     @ApiProperty()
     @IsNotEmpty()
@@ -37,7 +37,7 @@ export class CreateDrugDto {
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
-    location: String;
+    location: string;
 
     @ApiProperty()
     @IsNotEmpty()

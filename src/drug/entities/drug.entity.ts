@@ -4,23 +4,23 @@ import { Column, PrimaryGeneratedColumn } from "typeorm";
 @Entity('Drug')
 export class Drug {
     @ObjectIdColumn()
-    drugId: String;
+    _id: string;
     @Column()
-    name: String;
+    name: string;
     @Column()
     dosage: Number;
     @Column()
-    dosageUnit: String;
+    dosageUnit: string;
     @Column()
-    dosageForm: String; // dosage form shall be an enum...!
+    dosageForm: string; // dosage form shall be an enum...!
     @Column()
-    BNFCode: String;
+    BNFCode: string;
     @Column()
-    fullDescription: String;
+    fullDescription: string;
     @Column()
     containerSize: Number;
     @Column()
-    location: String;
+    location: string;
     @Column()
     drugEAN: Number;
     @Column()

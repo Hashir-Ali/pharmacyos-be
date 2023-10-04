@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
 import { DrugOrder } from './entities/drug_order.entity';
 import { UsersService } from 'src/users/users.service';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class DrugOrderService {
@@ -26,12 +27,12 @@ export class DrugOrderService {
     // populate distributor name using supplierId field..
     // get type from drug distributor on basis of drugId and distributorId field..
     const orders = await this.DrugOrderRepository.find();
-    return await Promise.all(orders.map(async (value, index)=>{
-      const distributor = await this.DistributorService.findOneById(value?.supplierId);
-      const ordered_by = await this.UserService.findOne(value.ordered_by);
-      const type = await this.DrugDistributorService.getType(value.drugId, value.supplierId);
-      return {...value, From: distributor?.name, ordered_by: ordered_by, type: type};
-    }));
+    return await this.populateOrders(orders);
+  }
+
+  async findDrugOrders(drugId: string){
+    const orders = await this.DrugOrderRepository.find({where: {drugId: drugId}});
+    return await this.populateOrders(orders);
   }
 
   async findOne(drugId: string) {
@@ -39,9 +40,15 @@ export class DrugOrderService {
     // get type from drug distributor on basis of drugId and distributorId field..
     // get user data from ordered by (id field of registered user)..
     const drug_order = await this.DrugOrderRepository.findOne({where: {drugId}});
-    const distributor = await this.DistributorService.findOneById(drug_order?.supplierId);
-    const ordered_by = await this.UserService.findOne(drug_order.ordered_by);
-    const type = await this.DrugDistributorService.getType(drug_order.drugId, drug_order.supplierId);
-    return {...drug_order, From: distributor?.name, ordered_by: ordered_by, type: type};
+    return await this.populateOrders([drug_order]);
+  }
+
+  async populateOrders(orders: DrugOrder[]){
+    return await Promise.all(orders.map(async (value, index)=>{
+      const distributor = await this.DistributorService.findOneById(value?.supplierId);
+      const ordered_by = await this.UserService.findOne(value.ordered_by);
+      const type = await this.DrugDistributorService.getType(value.drugId, value.supplierId);
+      return {...value, From: distributor?.name, ordered_by: ordered_by, type: type};
+    }));
   }
 }

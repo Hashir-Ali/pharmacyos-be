@@ -4,6 +4,7 @@ import { UpdateDrugDispenseDto } from './dto/update-drug_dispense.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DrugDispense } from './entities/drug_dispense.entity';
 import { MongoRepository } from 'typeorm';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class DrugDispenseService {
@@ -22,6 +23,6 @@ export class DrugDispenseService {
   }
 
   async findOne(id: string) {
-    return await this.drugDispenseRepo.findOne({where: {drugId: id}}) || [];
+    return await this.drugDispenseRepo.findOne({where: {drugId: new ObjectId(id)}}) || [];
   }
 }

@@ -4,7 +4,7 @@ import { Column, PrimaryGeneratedColumn } from "typeorm";
 @Entity('DrugDispense')
 export class DrugDispense {
     @ObjectIdColumn()
-    drugDispenseId: String;
+    _id: String;
 
     @Column()
     drugId: String;

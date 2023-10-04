@@ -4,6 +4,7 @@ import { UpdateDistributorDto } from './dto/update-distributor.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Distributor } from './entities/distributor.entity';
 import { MongoRepository } from 'typeorm';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class DistributorService {
@@ -23,6 +24,6 @@ export class DistributorService {
   }
 
   async findOneById(id: string) {
-    return await this.distributorRepo.findOne({where: {_id: id}});
+    return await this.distributorRepo.findOne({where: {_id: new ObjectId(id)}});
   }
 }

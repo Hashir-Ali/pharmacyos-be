@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { DrugModule } from './drug/drug.module';
 import { StockModule } from './stock/stock.module';
 import { DrugDispenseModule } from './drug_dispense/drug_dispense.module';
+import { DrugOrderModule } from './drug_order/drug_order.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { DrugDispenseModule } from './drug_dispense/drug_dispense.module';
     DrugModule,
     StockModule,
     DrugDispenseModule,
+    DrugOrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],

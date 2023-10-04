@@ -1,6 +1,6 @@
 import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { CreateDrugDispenseDto } from './create-drug_dispense.dto';
-import { IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsDateString, IsOptional, IsString } from 'class-validator';
 
 export class UpdateDrugDispenseDto extends PartialType(CreateDrugDispenseDto) {
 
@@ -21,17 +21,17 @@ export class UpdateDrugDispenseDto extends PartialType(CreateDrugDispenseDto) {
 
     @ApiPropertyOptional()
     @IsOptional()
-    @IsDate()
+    @IsDateString()
     created_at?: Date;
 
     @ApiPropertyOptional()
     @IsOptional()
-    @IsDate()
+    @IsDateString()
     updated_at?: Date;
 
     @ApiPropertyOptional()
     @IsOptional()
-    @IsString()
+    @IsBoolean()
     is_enabled?: Boolean;
 
 

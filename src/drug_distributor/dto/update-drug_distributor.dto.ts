@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsDate, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsDate, IsDateString, IsOptional, IsString } from 'class-validator';
 
 export class UpdateDrugDistributorDto{
 
@@ -24,15 +24,14 @@ export class UpdateDrugDistributorDto{
     @IsBoolean()
     is_preferred: Boolean;
     
-
     @ApiPropertyOptional()
     @IsOptional()
-    @IsDate()
+    @IsDateString()
     created_at: Date;
 
     @ApiPropertyOptional()
     @IsOptional()
-    @IsDate()
+    @IsDateString()
     updated_at: Date;
 
 }

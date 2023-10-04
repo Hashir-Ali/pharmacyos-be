@@ -1,5 +1,5 @@
 import { CreateDrugOrderDto } from './dto/create-drug_order.dto';
-import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { DrugOrderService } from './drug_order.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -12,7 +12,7 @@ export class DrugOrderController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(CreateDrugOrderDto: CreateDrugOrderDto){
+  async create(@Body() CreateDrugOrderDto: CreateDrugOrderDto){
     return await this.drugOrderService.create(CreateDrugOrderDto);
   }
 

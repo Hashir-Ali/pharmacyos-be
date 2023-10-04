@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsDate, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsDateString, IsOptional, IsString } from 'class-validator';
 
 export class UpdateDistributorDto {
     @ApiPropertyOptional()
@@ -14,12 +14,12 @@ export class UpdateDistributorDto {
 
     @ApiPropertyOptional()
     @IsOptional()
-    @IsDate()
+    @IsDateString()
     created_at: Date;
 
     @ApiPropertyOptional()
     @IsOptional()
-    @IsDate()
+    @IsDateString()
     updated_at: Date;
 
     @ApiPropertyOptional()

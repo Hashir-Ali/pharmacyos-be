@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsDate, IsNotEmpty, IsString } from "class-validator";
+import { IsBoolean, IsDateString, IsNotEmpty, IsString } from "class-validator";
 
 export class CreateDistributorDto {
 
@@ -15,12 +15,12 @@ export class CreateDistributorDto {
 
     @ApiProperty()
     @IsNotEmpty()
-    @IsDate()
+    @IsDateString()
     created_at: Date;
 
     @ApiProperty()
     @IsNotEmpty()
-    @IsDate()
+    @IsDateString()
     updated_at: Date;
 
     @ApiProperty()

@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsBoolean, IsDate, IsDateString, IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class CreateStockDto {
     @ApiProperty()
@@ -24,12 +24,12 @@ export class CreateStockDto {
 
     @ApiProperty()
     @IsNotEmpty()
-    @IsDate()
+    @IsDateString()
     created_at: Date;
 
     @ApiProperty()
     @IsNotEmpty()
-    @IsDate()
+    @IsDateString()
     updated_at: Date;
 
     @ApiProperty()

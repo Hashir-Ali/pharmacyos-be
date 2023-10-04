@@ -1,9 +1,7 @@
-import { Entity } from "typeorm";
-import { Column, PrimaryGeneratedColumn } from "typeorm";
-
+import { Entity, Column, ObjectIdColumn } from "typeorm";
 @Entity('Distributor')
 export class Distributor {
-    @PrimaryGeneratedColumn()
+    @ObjectIdColumn()
     distributorId: String;
     @Column()
     name: String;

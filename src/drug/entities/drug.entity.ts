@@ -1,9 +1,9 @@
-import { Entity } from "typeorm";
+import { Entity, ObjectIdColumn } from "typeorm";
 import { Column, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('Drug')
 export class Drug {
-    @PrimaryGeneratedColumn()
+    @ObjectIdColumn()
     drugId: String;
     @Column()
     name: String;
@@ -12,7 +12,7 @@ export class Drug {
     @Column()
     dosageUnit: String;
     @Column()
-    dosageForm: String;
+    dosageForm: String; // dosage form shall be an enum...!
     @Column()
     BNFCode: String;
     @Column()

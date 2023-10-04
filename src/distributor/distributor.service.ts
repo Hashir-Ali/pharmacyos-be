@@ -14,8 +14,8 @@ export class DistributorService {
   ){}
   
   // this will be a template function, till required...!
-  create(createDistributorDto: CreateDistributorDto) {
-    return 'This action adds a new distributor';
+  async create(createDistributorDto: CreateDistributorDto) {
+    return await this.distributorRepo.save(createDistributorDto);
   }
 
   findAll() {

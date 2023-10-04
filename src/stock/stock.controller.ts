@@ -10,10 +10,12 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 export class StockController {
   constructor(private readonly stockService: StockService) {}
 
-  // @Post()
-  // create(@Body() createStockDto: CreateStockDto) {
-  //   return this.stockService.create(createStockDto);
-  // }
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  create(@Body() createStockDto: CreateStockDto) {
+    return this.stockService.create(createStockDto);
+  }
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)

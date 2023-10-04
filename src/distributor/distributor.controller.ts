@@ -1,4 +1,5 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { CreateDistributorDto } from './dto/create-distributor.dto';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { DistributorService } from './distributor.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -7,6 +8,13 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 @Controller('distributor')
 export class DistributorController {
   constructor(private readonly distributorService: DistributorService) {}
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  async create(@Body() CreateDistributorDto: CreateDistributorDto){
+    return await this.distributorService.create(CreateDistributorDto);
+  }
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)

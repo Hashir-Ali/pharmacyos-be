@@ -13,9 +13,9 @@ export class DrugService {
   ){}
 
   // commented for later use...!
-  // create(createDrugDto: CreateDrugDto) {
-  //   return this.drugRepository.save(createDrugDto);
-  // }
+  async create(createDrugDto: CreateDrugDto) {
+    return await this.drugRepository.save(createDrugDto);
+  }
 
   findAll() {
     return this.drugRepository.find();

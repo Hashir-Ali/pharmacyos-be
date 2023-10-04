@@ -13,9 +13,9 @@ export class StockService {
   ){}
 
   // commented for later use...!
-  // create(createStockDto: CreateStockDto) {
-  //   return this.stockRepository.save(createStockDto);
-  // }
+  async create(createStockDto: CreateStockDto) {
+    return await this.stockRepository.save(createStockDto);
+  }
 
   findAll() {
     return this.stockRepository.find();

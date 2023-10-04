@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsDate, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateDrugDto {
     @ApiProperty()
@@ -46,12 +46,12 @@ export class CreateDrugDto {
 
     @ApiProperty()
     @IsOptional()
-    @IsDate()
+    @IsDateString()
     created_at: Date;
 
     @ApiPropertyOptional()
     @IsOptional()
-    @IsDate()
+    @IsDateString()
     updated_at: Date;
 
     @ApiProperty()

@@ -15,9 +15,9 @@ export class DrugDistributorService {
   }
 
   // will be a template funtion untill required...!
-  create(createDrugDistributorDto: CreateDrugDistributorDto) {
+  async create(createDrugDistributorDto: CreateDrugDistributorDto) {
     // return this.drugDistributorRepo.save(createDrugDistributorDto);
-    return 'This action adds a new drugDistributor';
+    return await this.drugDistributorRepo.save(createDrugDistributorDto);
   }
 
   findAll() {

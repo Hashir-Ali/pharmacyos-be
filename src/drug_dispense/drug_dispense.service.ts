@@ -12,6 +12,11 @@ export class DrugDispenseService {
     private drugDispenseRepo: MongoRepository<DrugDispense>
   ){}
 
+
+  async create(CreateDrugDispenseDto: CreateDrugDispenseDto){
+    return await this.drugDispenseRepo.save(CreateDrugDispenseDto);
+  }
+
   findAll() {
     return this.drugDispenseRepo.find();
   }

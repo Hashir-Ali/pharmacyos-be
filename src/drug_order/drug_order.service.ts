@@ -1,3 +1,4 @@
+import { CreateDrugOrderDto } from './dto/create-drug_order.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
@@ -10,6 +11,10 @@ export class DrugOrderService {
     @InjectRepository(DrugOrder)
     private DrugOrderRepository: MongoRepository<DrugOrder>
   ){}
+
+  async create(CreateDrugOrderDto: CreateDrugOrderDto){
+   return await this.DrugOrderRepository.save(CreateDrugOrderDto);
+  }
 
   findAll() {
     // populate distributor name using supplierId field..

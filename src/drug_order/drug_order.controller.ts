@@ -1,4 +1,5 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { CreateDrugOrderDto } from './dto/create-drug_order.dto';
+import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { DrugOrderService } from './drug_order.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -7,6 +8,13 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 @Controller('drug-order')
 export class DrugOrderController {
   constructor(private readonly drugOrderService: DrugOrderService) {}
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  async create(CreateDrugOrderDto: CreateDrugOrderDto){
+    return await this.drugOrderService.create(CreateDrugOrderDto);
+  }
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)

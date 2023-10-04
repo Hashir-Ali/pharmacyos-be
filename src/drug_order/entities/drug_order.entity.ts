@@ -1,10 +1,7 @@
-import { Entity } from "typeorm";
-import { Column, PrimaryGeneratedColumn } from "typeorm";
-
-
+import { Entity, ObjectIdColumn, Column } from "typeorm";
 @Entity('DrugOrder')
 export class DrugOrder {
-    @PrimaryGeneratedColumn()
+    @ObjectIdColumn()
     orderId: String;
 
     @Column()

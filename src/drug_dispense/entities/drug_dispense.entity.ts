@@ -1,9 +1,9 @@
-import { Entity } from "typeorm";
+import { Entity, ObjectIdColumn } from "typeorm";
 import { Column, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('DrugDispense')
 export class DrugDispense {
-    @PrimaryGeneratedColumn()
+    @ObjectIdColumn()
     drugDispenseId: String;
 
     @Column()

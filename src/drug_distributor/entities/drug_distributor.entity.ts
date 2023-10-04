@@ -1,5 +1,7 @@
+import { Entity } from "typeorm";
 import { Column, PrimaryGeneratedColumn } from "typeorm";
 
+@Entity('DrugDistributor')
 export class DrugDistributor {
 
     @PrimaryGeneratedColumn()
@@ -12,7 +14,7 @@ export class DrugDistributor {
     drugId: String;
 
     @Column()
-    type: String;
+    type: String; // Shall be an enum...!
 
     @Column()
     is_preferred: Boolean;

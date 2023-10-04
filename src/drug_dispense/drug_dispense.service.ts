@@ -16,7 +16,7 @@ export class DrugDispenseService {
     return this.drugDispenseRepo.find();
   }
 
-  findOne(id: string) {
-    return this.drugDispenseRepo.findOneBy({where: {drugId: id}});
+  async findOne(id: string) {
+    return await this.drugDispenseRepo.findOne({where: {drugId: id}}) || [];
   }
 }

@@ -21,7 +21,7 @@ export class StockService {
     return this.stockRepository.find();
   }
 
-  findOne(id: string) {
-    return this.stockRepository.findOneBy({where: {drugId: id}});
+  async findOne(id: string) {
+    return await this.stockRepository.findOne({where: {drugId: id}}) || [];
   }
 }

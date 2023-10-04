@@ -22,7 +22,7 @@ export class DistributorService {
     return this.distributorRepo.find();
   }
 
-  findOne(id: string) {
-    return this.distributorRepo.findBy({where: {distributorId: id}});
+  async findOne(id: string) {
+    return await this.distributorRepo.findOne({where: {distributorId: id}}) || [];
   }
 }

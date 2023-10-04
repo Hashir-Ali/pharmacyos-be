@@ -21,7 +21,7 @@ export class DrugService {
     return this.drugRepository.find();
   }
 
-  findOne(id: string) {
-    return this.drugRepository.findOneBy({where: {drugId: id}});
+  async findOne(id: string) {
+    return await this.drugRepository.findOne({where: {drugId: id}}) || [];
   }
 }

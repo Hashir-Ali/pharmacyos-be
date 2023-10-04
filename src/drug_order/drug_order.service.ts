@@ -17,10 +17,10 @@ export class DrugOrderService {
     return this.DrugOrderRepository.find();
   }
 
-  findOne(id: string) {
+  async findOne(id: string) {
     // populate distributor name using supplierId field..
     // get type from drug distributor on basis of drugId and distributorId field..
     // get user data from ordered by (id field of registered user)..
-    return this.DrugOrderRepository.findBy({where: {drugId: id}})
+    return await this.DrugOrderRepository.findOne({where: {drugId: id}}) || [];
   }
 }

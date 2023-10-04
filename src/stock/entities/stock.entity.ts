@@ -1,5 +1,7 @@
+import { Entity } from "typeorm";
 import { Column, PrimaryGeneratedColumn } from "typeorm";
 
+@Entity('Stock')
 export class Stock {
     @PrimaryGeneratedColumn()
     stockId: String;

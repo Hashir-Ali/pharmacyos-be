@@ -1,7 +1,8 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsBoolean, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { ApiProperty, PartialType } from "@nestjs/swagger";
+import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { BaseDTO } from "src/common/base.dto";
 
-export class CreateDrugDto {
+export class CreateDrugDto extends PartialType(BaseDTO) {
     @ApiProperty()
     @IsString()
     name: string;
@@ -43,19 +44,4 @@ export class CreateDrugDto {
     @IsNotEmpty()
     @IsNumber()
     drugEAN: Number;
-
-    @ApiProperty()
-    @IsOptional()
-    @IsDateString()
-    created_at: Date;
-
-    @ApiPropertyOptional()
-    @IsOptional()
-    @IsDateString()
-    updated_at: Date;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @IsBoolean()
-    is_enabled: Boolean;
 }

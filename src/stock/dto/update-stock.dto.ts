@@ -1,8 +1,8 @@
 import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import { CreateStockDto } from './create-stock.dto';
-import { IsBoolean, IsDate, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { BaseDTO } from 'src/common/base.dto';
 
-export class UpdateStockDto extends PartialType(CreateStockDto) {
+export class UpdateStockDto extends PartialType(BaseDTO) {
     @ApiPropertyOptional()
     @IsOptional()
     @IsString()
@@ -22,19 +22,4 @@ export class UpdateStockDto extends PartialType(CreateStockDto) {
     @IsOptional()
     @IsNumber()
     LooseUnits: Number;
-
-    @ApiPropertyOptional()
-    @IsOptional()
-    @IsDateString()
-    created_at?: Date;
-
-    @ApiPropertyOptional()
-    @IsOptional()
-    @IsDateString()
-    updated_at?: Date;
-
-    @ApiPropertyOptional()
-    @IsOptional()
-    @IsBoolean()
-    is_enabled?: Boolean;
 }

@@ -8,13 +8,13 @@ export class BaseDTO {
     @IsDateString()
     created_at: Date;
 
-    @ApiProperty()
-    @IsNotEmpty()
-    @IsDateString()
-    updated_at: Date;
+    // @ApiProperty()
+    // @IsNotEmpty()
+    // @IsDateString()
+    // updated_at: Date;
 
-    @ApiProperty()
-    @IsNotEmpty()
-    @IsBoolean()
-    is_enabled: Boolean;
+    // @ApiProperty()
+    // @IsNotEmpty()
+    // @IsBoolean()
+    // is_enabled: Boolean;
 }

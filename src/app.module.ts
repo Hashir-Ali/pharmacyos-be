@@ -12,21 +12,14 @@ import { DrugDispenseModule } from './drug_dispense/drug_dispense.module';
 import { DrugOrderModule } from './drug_order/drug_order.module';
 import { DistributorModule } from './distributor/distributor.module';
 import { DrugDistributorModule } from './drug_distributor/drug_distributor.module';
+import { dataSourceOptions } from './db/data-source';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    TypeOrmModule.forRoot({
-      type: 'mongodb',
-      url: process.env.DB_CONNECTION_URL,
-      useNewUrlParser: true,
-      synchronize: true, // shall be avoided in production...
-      logging: true,
-      autoLoadEntities: true,
-    }),
-
+    TypeOrmModule.forRoot(dataSourceOptions),
     AuthModule,
     UsersModule,
     DrugModule,

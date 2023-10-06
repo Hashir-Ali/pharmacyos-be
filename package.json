@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "seed": "npm run build && ts-node ./node_modules/typeorm-extension/dist/cli/index.js seed -d ./src/db/data-source.ts",
+    "seed": "npm run build && ts-node ./node_modules/typeorm-extension/dist/index.mjs seed -d ./src/db/data-source.ts",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",

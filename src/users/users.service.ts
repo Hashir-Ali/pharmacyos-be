@@ -32,7 +32,7 @@ export class UsersService {
     return await this.userRepository.findOneBy({ where: { email: email } });
   }
 
-  async update(id: ObjectId, updateUserDto: UpdateUserDto) {
+  async update(id: ObjectId | string, updateUserDto: UpdateUserDto) {
     return this.userRepository.update(id, updateUserDto);
   }
 }

@@ -26,4 +26,8 @@ export class DistributorService {
   async findOneById(id: string) {
     return await this.distributorRepo.findOne({where: {_id: new ObjectId(id)}});
   }
+
+  async update(id: ObjectId | string, updateDistributorDto: UpdateDistributorDto){
+    return this.distributorRepo.update(id, updateDistributorDto);
+  }
 }

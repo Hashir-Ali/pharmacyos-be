@@ -1,9 +1,7 @@
-import { Entity, ObjectIdColumn, Column } from "typeorm";
+import { BasicEntity } from "src/common/base.entity";
+import { Entity, Column } from "typeorm";
 @Entity('Stock')
-export class Stock {
-    @ObjectIdColumn()
-    stockId: String;
-
+export class Stock extends BasicEntity{
     @Column()
     drugId: String;
 
@@ -18,13 +16,4 @@ export class Stock {
 
     @Column()
     LooseUnits: Number;
-
-    @Column()
-    created_at: Date;
-
-    @Column()
-    updated_at: Date;
-
-    @Column()
-    is_enabled: Boolean;
 }

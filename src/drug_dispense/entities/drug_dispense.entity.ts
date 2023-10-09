@@ -1,10 +1,8 @@
-import { Entity, ObjectIdColumn } from "typeorm";
-import { Column, PrimaryGeneratedColumn } from "typeorm";
+import { BasicEntity } from "src/common/base.entity";
+import { Entity, ObjectIdColumn, Column } from "typeorm";
 
 @Entity('DrugDispense')
-export class DrugDispense {
-    @ObjectIdColumn()
-    _id: String;
+export class DrugDispense extends BasicEntity {
 
     @Column()
     drugId: String;
@@ -14,13 +12,4 @@ export class DrugDispense {
 
     @Column()
     dispenseValue: String;
-
-    @Column()
-    created_at: Date;
-
-    @Column()
-    updated_at: Date;
-
-    @Column()
-    is_enabled: Boolean;
 }

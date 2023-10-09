@@ -1,10 +1,7 @@
+import { BasicEntity } from "src/common/base.entity";
 import { Entity, ObjectIdColumn, Column } from "typeorm";
 @Entity('DrugDistributor')
-export class DrugDistributor {
-
-    @ObjectIdColumn()
-    drugDistributorId: string;
-
+export class DrugDistributor extends BasicEntity {
     @Column()
     distributorId: string;
 
@@ -16,13 +13,4 @@ export class DrugDistributor {
 
     @Column()
     is_preferred: Boolean;
-
-    @Column()
-    created_at: Date;
-
-    @Column()
-    updated_at: Date;
-
-    @Column()
-    is_enabled: Boolean;
 }

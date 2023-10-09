@@ -1,9 +1,7 @@
-import { Entity, ObjectIdColumn, Column } from "typeorm";
+import { BasicEntity } from "src/common/base.entity";
+import { Entity, Column } from "typeorm";
 @Entity('DrugOrder')
-export class DrugOrder {
-    @ObjectIdColumn()
-    orderId: string;
-
+export class DrugOrder extends BasicEntity {
     @Column()
     supplierId: string;
 
@@ -27,13 +25,4 @@ export class DrugOrder {
 
     @Column()
     expected_delivery_date: Date;
-
-    @Column()
-    created_at: Date;
-
-    @Column()
-    updated_at: Date;
-
-    @Column()
-    is_enabled: Boolean;
 }

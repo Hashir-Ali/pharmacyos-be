@@ -81,7 +81,7 @@ export class DBSeeder {
         for(let i=0; i<= seedCount; i++){
           const distributorId = distributor[randomInt(distributor.length -1)]._id;
           const drugId = drugs[randomInt(drugs.length - 1)]._id;
-          const userId = users[randomInt(users.length -1)]._id;
+          const userId = users[Math.ceil(Math.random()* users.length -1)]._id;
 
           savedDto.push({
             supplierId: distributorId,

@@ -37,10 +37,10 @@ export class DBSeeder {
           objectDto.push(
             {
               drugId: drugId,
-              stockRuleMin: faker.number.int({min: 10, max: 100}),
-              stockRuleMax: faker.number.int({min: 100, max: 1000}),
-              currentStock: faker.number.int({min: 50, max: 500}),
-              LooseUnits: faker.number.int({min: 20, max: 65}),
+              stockRuleMin: faker.number.int({min: 5, max: 20}),
+              stockRuleMax: faker.number.int({min: 40, max: 100}),
+              currentStock: faker.number.int({min: 5, max: 100}),
+              LooseUnits: faker.number.int({min: 5, max: 25}),
               created_at: faker.date.recent(),
               Updated_at: faker.date.recent(),
               is_enabled: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...  
@@ -89,7 +89,7 @@ export class DBSeeder {
             ordered_by: userId, // No magical Strings... This, I know is a bad code and it smells like rotten rats.,
             quantityOrdered: parseInt(faker.finance.amount(0, 50)),
             quantityReceived: parseInt(faker.finance.amount(0, 50)),
-            cost: parseInt(faker.finance.amount(100, 2000)),
+            cost: parseInt(faker.finance.amount(2, 300)),
             isReceived: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
             expected_delivery_date: faker.date.future({years: 2}),
             created_at: faker.date.recent(),

@@ -13,10 +13,12 @@ import { DrugOrder } from 'src/drug_order/entities/drug_order.entity';
 import { DrugDistributor } from 'src/drug_distributor/entities/drug_distributor.entity';
 import { Distributor } from 'src/distributor/entities/distributor.entity';
 import { Drug } from 'src/drug/entities/drug.entity';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class DBSeeder {
     constructor(
+        private readonly userService: UsersService,
         private readonly drugService: DrugService,
         private readonly distributorService: DistributorService,
         private drugDistributorService: DrugDistributorService,
@@ -74,15 +76,17 @@ export class DBSeeder {
         const savedDto: DrugOrder[] = [];
         const distributor = await this.distributorService.findAll();
         const drugs = await this.drugService.findAll();
+        const users = await this.userService.findAll();
         
         for(let i=0; i<= seedCount; i++){
           const distributorId = distributor[randomInt(distributor.length -1)]._id;
           const drugId = drugs[randomInt(drugs.length - 1)]._id;
-    
+          const userId = users[randomInt(users.length -1)]._id;
+
           savedDto.push({
             supplierId: distributorId,
             drugId: drugId,
-            ordered_by: 'Hashir Shah', // No magical Strings... This, I know is a bad code and it smells like rotten rats.,
+            ordered_by: userId, // No magical Strings... This, I know is a bad code and it smells like rotten rats.,
             quantityOrdered: parseInt(faker.finance.amount(0, 50)),
             quantityReceived: parseInt(faker.finance.amount(0, 50)),
             cost: parseInt(faker.finance.amount(100, 2000)),
@@ -91,7 +95,6 @@ export class DBSeeder {
             created_at: faker.date.recent(),
             Updated_at: faker.date.recent(),
             is_enabled: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
-          
           });
         }
         const savedItems = await this.drugOrderService.insertMany(savedDto);

@@ -3,10 +3,9 @@ import { DrugDispenseService } from './drug_dispense.service';
 import { DrugDispenseController } from './drug_dispense.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DrugDispense } from './entities/drug_dispense.entity';
-import { DrugModule } from 'src/drug/drug.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([DrugDispense]), DrugModule],
+  imports: [TypeOrmModule.forFeature([DrugDispense])],
   controllers: [DrugDispenseController],
   providers: [DrugDispenseService],
   exports: [DrugDispenseService],

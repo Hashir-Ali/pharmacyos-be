@@ -13,7 +13,6 @@ export class StockService {
   constructor(
     @InjectRepository(Stock)
     private stockRepository: MongoRepository<Stock>,
-    private DrugService: DrugService
   ){}
 
   // commented for later use...!
@@ -29,28 +28,8 @@ export class StockService {
     return await this.stockRepository.findOne({where: {drugId: id}}) || [];
   }
 
-  async seedStock(seedCount: number){
-
-    const objectDto: Stock[] = [];
-    const drugs = await this.DrugService.findAll();
-      
-    for(let i = 0; i <= seedCount; i++){
-      const drugId = drugs[randomInt(drugs.length - 1)]._id;
-      objectDto.push(
-        {
-          drugId: drugId,
-          stockRuleMin: faker.number.int({min: 10, max: 100}),
-          stockRuleMax: faker.number.int({min: 100, max: 1000}),
-          currentStock: faker.number.int({min: 50, max: 500}),
-          LooseUnits: faker.number.int({min: 20, max: 65}),
-          created_at: faker.date.recent(),
-          Updated_at: faker.date.recent(),
-          is_enabled: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...  
-        }
-      );
-    }
-
-    const savedStock = await this.stockRepository.insertMany(objectDto);
-    return savedStock;
+  async insertMany(objectDto: Stock[]){
+    const savedData = await this.stockRepository.insertMany(objectDto);
+    return savedData;
   }
 }

@@ -5,7 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Distributor } from './entities/distributor.entity';
 import { MongoRepository } from 'typeorm';
 import { ObjectId } from 'mongodb';
-import { faker } from '@faker-js/faker';
 
 @Injectable()
 export class DistributorService {
@@ -32,23 +31,8 @@ export class DistributorService {
     return this.distributorRepo.update(id, updateDistributorDto);
   }
 
-  async seedDistributor(seedCount: number){
-
-    const objectDto: Distributor[] = [];
-    for(let i = 0; i <= seedCount; i++){
-      objectDto.push(
-        {
-          name: faker.person.fullName(),
-          NHS_Contract_End_Date: faker.date.future(),
-          created_at: faker.date.recent(),
-          Updated_at: faker.date.recent(),
-          is_enabled: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
-        
-        }
-      )
-    }
-
-    const savedItems = await this.distributorRepo.insertMany(objectDto);
-    return savedItems;
+  async insertMany (objectDto: Distributor[]){
+    const savedData = await this.distributorRepo.insertMany(objectDto);
+    return savedData;
   }
 }

@@ -6,7 +6,7 @@ import { Drug } from './entities/drug.entity';
 import { DrugOrderModule } from 'src/drug_order/drug_order.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Drug]), forwardRef(()=>DrugOrderModule)], // using forwardRef because of circular dependencies.
+  imports: [TypeOrmModule.forFeature([Drug]), DrugOrderModule],
   controllers: [DrugController],
   providers: [DrugService],
   exports: [DrugService],

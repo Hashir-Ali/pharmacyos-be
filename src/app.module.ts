@@ -12,7 +12,8 @@ import { DrugDispenseModule } from './drug_dispense/drug_dispense.module';
 import { DrugOrderModule } from './drug_order/drug_order.module';
 import { DistributorModule } from './distributor/distributor.module';
 import { DrugDistributorModule } from './drug_distributor/drug_distributor.module';
-import { dataSourceOptions } from './db/data-source';
+import { dataSourceOptions } from './database/database.constants';
+
 
 @Module({
   imports: [

@@ -1,15 +1,13 @@
-import { DrugService } from './../drug/drug.service';
-import { DrugDistributorService } from './../drug_distributor/drug_distributor.service';
-import { DistributorService } from './../distributor/distributor.service';
-import { CreateDrugOrderDto } from './dto/create-drug_order.dto';
-import { Injectable, forwardRef, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
 import { DrugOrder } from './entities/drug_order.entity';
+
+import { DrugDistributorService } from './../drug_distributor/drug_distributor.service';
+import { DistributorService } from './../distributor/distributor.service';
+import { CreateDrugOrderDto } from './dto/create-drug_order.dto';
 import { UsersService } from 'src/users/users.service';
-import { ObjectId } from 'mongodb';
-import { randomInt } from 'crypto';
-import { faker } from '@faker-js/faker';
+
 @Injectable()
 export class DrugOrderService {
   
@@ -19,8 +17,6 @@ export class DrugOrderService {
     private UserService: UsersService,
     private DistributorService: DistributorService,
     private DrugDistributorService: DrugDistributorService,
-    @Inject(forwardRef(()=>DrugService))
-    private DrugService: DrugService,
   ){}
 
   async create(CreateDrugOrderDto: CreateDrugOrderDto){
@@ -56,29 +52,8 @@ export class DrugOrderService {
     }));
   }
 
-  async seedDrugOrder(seedCount: number){
-    const savedDto: DrugOrder[] = [];
-    const distributor = await this.DistributorService.findAll();
-    const drugs = await this.DrugService.findAll();
-    
-    for(let i=0; i<= seedCount; i++){
-      const distributorId = distributor[randomInt(distributor.length -1)]._id;
-      const drugId = drugs[randomInt(drugs.length - 1)]._id;
-
-      savedDto.push({
-        supplierId: distributorId,
-        drugId: drugId,
-        ordered_by: 'Hashir Shah', // No magical Strings... This, I know is a bad code and it smells like rotten rats.,
-        quantityOrdered: parseInt(faker.finance.amount(0, 50)),
-        quantityReceived: parseInt(faker.finance.amount(0, 50)),
-        cost: parseInt(faker.finance.amount(100, 2000)),
-        isReceived: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
-        expected_delivery_date: faker.date.future({years: 2}),
-        created_at: faker.date.recent(),
-        Updated_at: faker.date.recent(),
-        is_enabled: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
-      
-      });
-    }
+  async insertMany(objectDto: DrugOrder[]){
+    const savedData = await this.DrugOrderRepository.insertMany(objectDto);
+    return savedData;
   }
 }

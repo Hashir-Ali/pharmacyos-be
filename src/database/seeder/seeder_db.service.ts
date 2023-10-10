@@ -1,3 +1,4 @@
+import { StockService } from './../../stock/stock.service';
 import { DrugDispenseService } from './../../drug_dispense/drug_dispense.service';
 import { DistributorService } from 'src/distributor/distributor.service';
 import { DrugService } from './../../drug/drug.service';
@@ -13,7 +14,10 @@ export class DBSeeder {
         private drugDistributorService: DrugDistributorService,
         private drugOrderService: DrugOrderService,
         private drugDispenseService: DrugDispenseService,
+        private stockService: StockService,
     ){}
+    
+
 
     async seed(seedCount: number){
 
@@ -22,6 +26,7 @@ export class DBSeeder {
         await this.drugDistributorService.seedDrugDistributor(seedCount);
         await this.drugOrderService.seedDrugOrder(seedCount);
         await this.drugDispenseService.seedDrugDispense(seedCount);
+        await this.stockService.seedStock(seedCount);
 
         return Promise.resolve();
     }

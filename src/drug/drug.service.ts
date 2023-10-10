@@ -66,7 +66,7 @@ export class DrugService {
     // loop till seedCount.
     // create array of objectDTO...
     // pass objectDto to saveMany function...
-    const objectDTO: CreateDrugDto[]= [];
+    const objectDTO: Drug[]= [];
 
     for( let i = 0; i <= seedCount; i++ ){
         objectDTO.push(
@@ -80,6 +80,9 @@ export class DrugService {
             containerSize: randomInt(20),
             location: faker.location.zipCode(),
             drugEAN: faker.number.int({min: 1000000}),
+            created_at: faker.date.recent(),
+            Updated_at: faker.date.recent(),
+            is_enabled: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
           }
         );
     }

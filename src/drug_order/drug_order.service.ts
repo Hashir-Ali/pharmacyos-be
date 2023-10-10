@@ -57,15 +57,14 @@ export class DrugOrderService {
   }
 
   async seedDrugOrder(seedCount: number){
-    const savedDto: CreateDrugOrderDto[] = [];
-
+    const savedDto: DrugOrder[] = [];
     const distributor = await this.DistributorService.findAll();
-    const distributorId = distributor[randomInt(distributor.length -1)]._id;
-
     const drugs = await this.DrugService.findAll();
-    const drugId = drugs[randomInt(drugs.length - 1)]._id;
-
+    
     for(let i=0; i<= seedCount; i++){
+      const distributorId = distributor[randomInt(distributor.length -1)]._id;
+      const drugId = drugs[randomInt(drugs.length - 1)]._id;
+
       savedDto.push({
         supplierId: distributorId,
         drugId: drugId,
@@ -75,6 +74,10 @@ export class DrugOrderService {
         cost: parseInt(faker.finance.amount(100, 2000)),
         isReceived: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
         expected_delivery_date: faker.date.future({years: 2}),
+        created_at: faker.date.recent(),
+        Updated_at: faker.date.recent(),
+        is_enabled: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
+      
       });
     }
   }

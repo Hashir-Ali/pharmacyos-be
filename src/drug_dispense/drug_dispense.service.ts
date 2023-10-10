@@ -16,7 +16,6 @@ export class DrugDispenseService {
     private DrugService: DrugService,
   ){}
 
-
   async create(CreateDrugDispenseDto: CreateDrugDispenseDto){
     return await this.drugDispenseRepo.save(CreateDrugDispenseDto);
   }
@@ -30,7 +29,7 @@ export class DrugDispenseService {
   }
 
   async seedDrugDispense(seedCount: number){
-    const objectDto: CreateDrugDispenseDto[] = [];
+    const objectDto: DrugDispense[] = [];
     const drugs = await this.DrugService.findAll();
     const drugId = drugs[randomInt(drugs.length - 1)]._id;
 
@@ -39,6 +38,9 @@ export class DrugDispenseService {
         drugId: drugId,
         quantity: faker.finance.amount(5, 100, 0),
         dispenseValue: faker.finance.amount(1, 50, 0),
+        created_at: faker.date.recent(),
+        Updated_at: faker.date.recent(),
+        is_enabled: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
       })
     }
     const savedItems = await this.drugDispenseRepo.insertMany(objectDto);

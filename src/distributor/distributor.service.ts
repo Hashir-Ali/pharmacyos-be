@@ -34,12 +34,16 @@ export class DistributorService {
 
   async seedDistributor(seedCount: number){
 
-    const objectDto: CreateDistributorDto[] = [];
+    const objectDto: Distributor[] = [];
     for(let i = 0; i <= seedCount; i++){
       objectDto.push(
         {
           name: faker.person.fullName(),
           NHS_Contract_End_Date: faker.date.future(),
+          created_at: faker.date.recent(),
+          Updated_at: faker.date.recent(),
+          is_enabled: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
+        
         }
       )
     }

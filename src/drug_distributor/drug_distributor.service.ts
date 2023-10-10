@@ -1,12 +1,12 @@
 import { Injectable, forwardRef, Inject } from '@nestjs/common';
-import { CreateDrugDistributorDto } from './dto/create-drug_distributor.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DrugDistributor } from './entities/drug_distributor.entity';
 import { MongoRepository } from 'typeorm';
 import { randomInt } from 'crypto';
+import { DrugDistributor } from './entities/drug_distributor.entity';
 import { DistributorService } from 'src/distributor/distributor.service';
 import { DrugService } from 'src/drug/drug.service';
-
+import { CreateDrugDistributorDto } from './dto/create-drug_distributor.dto';
+import { faker } from '@faker-js/faker';
 @Injectable()
 export class DrugDistributorService {
 
@@ -43,22 +43,25 @@ export class DrugDistributorService {
   }
 
   async seedDrugDistributor(seedCount: number){
-    const objectDto: CreateDrugDistributorDto[] = [];
+    const objectDto: DrugDistributor[] = [];
     const drugDistributorTypes = ['Preferred Supplier', "Other Supplier", "Contracted Supplier"];
 
     const distributor = await this.distributorService.findAll();
     const distributorId = distributor[randomInt(distributor.length -1)]._id;
 
     const drugs = await this.drugService.findAll();
-    const drugId = drugs[randomInt(drugs.length - 1)]._id;
-
+ 
     for( let i = 0; i <= seedCount; i++){
+      const drugId = drugs[randomInt(drugs.length - 1)]._id;
       objectDto.push(
         {
           distributorId: distributorId,
           drugId: drugId,
           type: drugDistributorTypes[randomInt(2)],
-          is_preferred: true
+          is_preferred: true,
+          created_at: faker.date.recent(),
+          Updated_at: faker.date.recent(),
+          is_enabled: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
         }
       )
     }

@@ -1,3 +1,4 @@
+import { UsersModule } from './../../users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from "@nestjs/common";
 import { DBSeeder } from "./seeder_db.service";
@@ -10,7 +11,7 @@ import { StockModule } from 'src/stock/stock.module';
 import { dataSourceOptions } from '../database.constants';
 
 @Module({
-    imports: [TypeOrmModule.forRoot(dataSourceOptions), DrugModule, DistributorModule, DrugDistributorModule, DrugOrderModule, DrugDispenseModule, StockModule],
+    imports: [TypeOrmModule.forRoot(dataSourceOptions), UsersModule, DrugModule, DistributorModule, DrugDistributorModule, DrugOrderModule, DrugDispenseModule, StockModule],
     controllers: [],
     providers: [DBSeeder]
 })

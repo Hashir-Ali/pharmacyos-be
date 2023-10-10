@@ -2,7 +2,7 @@ import { Column, CreateDateColumn, ObjectIdColumn, UpdateDateColumn } from "type
 
 export abstract class BasicEntity {
     @ObjectIdColumn()
-    _id: string;
+    _id?: string;
 
     @CreateDateColumn()
     created_at: Date;
@@ -10,7 +10,7 @@ export abstract class BasicEntity {
     @UpdateDateColumn()
     Updated_at: Date;
 
-    @Column()
+    @Column({type: "boolean", default: true})
     is_enabled: Boolean;
 
 }

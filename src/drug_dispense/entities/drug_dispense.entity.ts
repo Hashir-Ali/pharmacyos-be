@@ -1,11 +1,12 @@
+import { ObjectId } from "mongodb";
 import { BasicEntity } from "src/common/base.entity";
-import { Entity, ObjectIdColumn, Column } from "typeorm";
+import { Entity, Column } from "typeorm";
 
 @Entity('DrugDispense')
 export class DrugDispense extends BasicEntity {
 
     @Column()
-    drugId: String;
+    drugId: ObjectId | String;
 
     @Column()
     quantity: String;

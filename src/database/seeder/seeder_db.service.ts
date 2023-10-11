@@ -14,6 +14,7 @@ import { DrugDistributor } from 'src/drug_distributor/entities/drug_distributor.
 import { Distributor } from 'src/distributor/entities/distributor.entity';
 import { Drug } from 'src/drug/entities/drug.entity';
 import { UsersService } from 'src/users/users.service';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class DBSeeder {
@@ -36,7 +37,7 @@ export class DBSeeder {
           const drugId = drugs[randomInt(drugs.length - 1)]._id;
           objectDto.push(
             {
-              drugId: drugId,
+              drugId: new ObjectId(drugId),
               stockRuleMin: faker.number.int({min: 5, max: 20}),
               stockRuleMax: faker.number.int({min: 40, max: 100}),
               currentStock: faker.number.int({min: 5, max: 100}),
@@ -60,7 +61,7 @@ export class DBSeeder {
           const drugId = drugs[randomInt(drugs.length - 1)]._id;
           
           objectDto.push({
-            drugId: drugId,
+            drugId: new ObjectId(drugId),
             quantity: faker.finance.amount(5, 100, 0),
             dispenseValue: faker.finance.amount(1, 50, 0),
             created_at: faker.date.recent(),
@@ -84,9 +85,9 @@ export class DBSeeder {
           const userId = users[Math.ceil(Math.random()* users.length -1)]._id;
 
           savedDto.push({
-            supplierId: distributorId,
-            drugId: drugId,
-            ordered_by: userId, // No magical Strings... This, I know is a bad code and it smells like rotten rats.,
+            supplierId: new ObjectId(distributorId),
+            drugId: new ObjectId(drugId),
+            ordered_by: new ObjectId(userId), // No magical Strings... This, I know is a bad code and it smells like rotten rats.,
             quantityOrdered: parseInt(faker.finance.amount(0, 50)),
             quantityReceived: parseInt(faker.finance.amount(0, 50)),
             cost: parseInt(faker.finance.amount(2, 300)),
@@ -114,9 +115,9 @@ export class DBSeeder {
           const drugId = drugs[randomInt(drugs.length - 1)]._id;
           objectDto.push(
             {
-              distributorId: distributorId,
-              drugId: drugId,
-              type: drugDistributorTypes[randomInt(2)],
+              distributorId: new ObjectId(distributorId),
+              drugId: new ObjectId(drugId),
+              type: drugDistributorTypes[Math.ceil(Math.random()*drugDistributorTypes.length -1)],
               is_preferred: true,
               created_at: faker.date.recent(),
               Updated_at: faker.date.recent(),

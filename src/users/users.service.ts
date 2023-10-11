@@ -14,7 +14,7 @@ export class UsersService {
     private userRepository: MongoRepository<User>,
   ) {}
 
-  async findOne(id: string): Promise<User | undefined> {
+  async findOne(id: string | ObjectId): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { _id: new ObjectId(id) } });
   }
 

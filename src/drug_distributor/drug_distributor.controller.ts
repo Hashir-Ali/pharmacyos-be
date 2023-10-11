@@ -25,9 +25,9 @@ export class DrugDistributorController {
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.drugDistributorService.findOne(id);
+  @Get(':drugId')
+  findOne(@Param('drugId') drugId: string) {
+    return this.drugDistributorService.findOne(drugId);
   }
 
 }

@@ -1,12 +1,9 @@
-import { faker } from '@faker-js/faker';
-import { DrugService } from 'src/drug/drug.service';
 import { Injectable } from '@nestjs/common';
 import { CreateStockDto } from './dto/create-stock.dto';
-import { UpdateStockDto } from './dto/update-stock.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Stock } from './entities/stock.entity';
 import { MongoRepository } from 'typeorm';
-import { randomInt } from 'crypto';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class StockService {
@@ -25,7 +22,11 @@ export class StockService {
   }
 
   async findOne(id: string) {
-    return await this.stockRepository.findOne({where: {drugId: id}}) || [];
+    return await this.stockRepository.findOne({where: {_id: new ObjectId(id)}}) || [];
+  }
+
+  async findDrugStock (drugId: string){
+    return await this.stockRepository.findOne({where: {drugId: new ObjectId(drugId)}}) || [];
   }
 
   async insertMany(objectDto: Stock[]){

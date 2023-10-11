@@ -21,7 +21,7 @@ export class DrugDispenseService {
   }
 
   async findOne(id: string) {
-    return await this.drugDispenseRepo.findOne({where: {drugId: new ObjectId(id)}}) || [];
+    return await this.drugDispenseRepo.findOne({where: {drugId: new ObjectId(id)}});
   }
 
   async insertMany (objectDto: DrugDispense[]){

@@ -13,13 +13,13 @@ export class DrugOrder extends BasicEntity {
     ordered_by: ObjectId | string; // user Id.
 
     @Column()
-    quantityOrdered: Number;
+    quantityOrdered: number;
 
     @Column()
-    quantityReceived: Number;
+    quantityReceived: number;
 
     @Column()
-    cost: Number;
+    cost: number;
 
     @Column()
     isReceived: Boolean;

@@ -21,12 +21,12 @@ export class CreateDrugOrderDto extends PartialType(BaseDTO) {
     @ApiProperty()
     @IsNotEmpty()
     @IsNumber()
-    quantityOrdered: Number;
+    quantityOrdered: number;
 
     @ApiProperty()
     @IsNotEmpty()
     @IsNumber()
-    quantityReceived: Number;
+    quantityReceived: number;
 
     @ApiProperty()
     @IsNotEmpty()

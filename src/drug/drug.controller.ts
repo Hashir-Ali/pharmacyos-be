@@ -15,6 +15,7 @@ export class DrugController {
   create(@Body() createDrugDto: CreateDrugDto) {
     return this.drugService.create(createDrugDto);
   }
+
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get()
@@ -27,5 +28,26 @@ export class DrugController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.drugService.findOne(id);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get(':drugId/orders')
+  findOrders(@Param('drugId') drugId: string) {
+    return this.drugService.findDrugOrders(drugId);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get(':drugId/distributors')
+  findDistributors(@Param('drugId') drugId: string) {
+    return this.drugService.findDrugDistributors(drugId);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get(':drugId/stock')
+  findStock(@Param('drugId') drugId: string) {
+    return this.drugService.findDrugStock(drugId);
   }
 }

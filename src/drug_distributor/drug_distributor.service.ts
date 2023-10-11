@@ -23,7 +23,7 @@ export class DrugDistributorService {
   }
 
   async findOne(drugId: string) {
-    return await this.drugDistributorRepo.findOne({where: {drugId}}) || [];
+    return await this.drugDistributorRepo.find({where: {drugId: new ObjectId(drugId)}}) || [];
   }
 
   async getType(drugID: string | ObjectId, distributorID: string | ObjectId): Promise<string | null>{

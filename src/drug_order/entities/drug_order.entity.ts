@@ -1,15 +1,16 @@
+import { ObjectId } from "mongodb";
 import { BasicEntity } from "src/common/base.entity";
 import { Entity, Column } from "typeorm";
 @Entity('DrugOrder')
 export class DrugOrder extends BasicEntity {
     @Column()
-    supplierId: string;
+    supplierId: ObjectId | string;
 
     @Column()
-    drugId: string;
+    drugId: ObjectId | string;
 
     @Column()
-    ordered_by: string; // user Id.
+    ordered_by: ObjectId | string; // user Id.
 
     @Column()
     quantityOrdered: Number;

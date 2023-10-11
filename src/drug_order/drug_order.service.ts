@@ -1,12 +1,14 @@
-import { Injectable } from '@nestjs/common';
+
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
-import { DrugOrder } from './entities/drug_order.entity';
+import { ObjectId } from 'mongodb';
 
+import { DrugOrder } from './entities/drug_order.entity';
 import { DrugDistributorService } from './../drug_distributor/drug_distributor.service';
 import { DistributorService } from './../distributor/distributor.service';
-import { CreateDrugOrderDto } from './dto/create-drug_order.dto';
 import { UsersService } from 'src/users/users.service';
+import { CreateDrugOrderDto } from './dto/create-drug_order.dto';
 
 @Injectable()
 export class DrugOrderService {
@@ -31,16 +33,16 @@ export class DrugOrderService {
   }
 
   async findDrugOrders(drugId: string){
-    const orders = await this.DrugOrderRepository.find({where: {drugId: drugId}});
+    const orders = await this.DrugOrderRepository.find({where: {drugId: new ObjectId(drugId)}});
     return await this.populateOrders(orders);
   }
 
-  async findOne(drugId: string) {
+  async findOne(id: string | ObjectId) {
     // populate distributor name using supplierId field..
     // get type from drug distributor on basis of drugId and distributorId field..
     // get user data from ordered by (id field of registered user)..
-    const drug_order = await this.DrugOrderRepository.findOne({where: {drugId}});
-    return await this.populateOrders([drug_order]);
+    const drug_order = await this.DrugOrderRepository.findOne({ where: {_id: new ObjectId(id)}});
+    return drug_order ? await this.populateOrders([drug_order]): new NotFoundException();
   }
 
   async populateOrders(orders: DrugOrder[]){
@@ -48,7 +50,8 @@ export class DrugOrderService {
       const distributor = await this.DistributorService.findOneById(value?.supplierId);
       const ordered_by = await this.UserService.findOne(value.ordered_by);
       const type = await this.DrugDistributorService.getType(value.drugId, value.supplierId);
-      return {...value, From: distributor?.name, ordered_by: ordered_by, type: type};
+      const {supplierId, drugId, ...result} = value;
+      return {...result, From: distributor?.name, ordered_by: ordered_by, type: type};
     }));
   }
 

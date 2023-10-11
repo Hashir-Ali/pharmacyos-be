@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   Patch,
+  NotFoundException,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
@@ -48,6 +49,9 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   async findOne(@Param('id') id: string) {
     const user = await this.userService.findOne(id);
+    if(!user){
+      throw new NotFoundException();
+    }
     const { password, ...result } = user;
     return result;
   }

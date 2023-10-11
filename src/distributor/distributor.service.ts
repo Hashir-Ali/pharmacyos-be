@@ -23,7 +23,7 @@ export class DistributorService {
     return this.distributorRepo.find();
   }
 
-  async findOneById(id: string) {
+  async findOneById(id: string | ObjectId) {
     return await this.distributorRepo.findOne({where: {_id: new ObjectId(id)}});
   }
 

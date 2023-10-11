@@ -3,9 +3,7 @@ import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/co
 import { DistributorService } from './distributor.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { UpdateDrugDispenseDto } from 'src/drug_dispense/dto/update-drug_dispense.dto';
 import { UpdateDistributorDto } from './dto/update-distributor.dto';
-import { ObjectId } from 'mongodb';
 
 @ApiTags('distributor')
 @Controller('distributor')

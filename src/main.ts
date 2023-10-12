@@ -18,10 +18,7 @@ async function bootstrap() {
       process.env.LOCAL_SERVER_URL + ':' + process.env.PORT,
       'Local environment',
     )
-    .addServer(
-      process.env.STAGING_SERVER_URL,
-      'Staging Environment',
-    )
+    .addServer(process.env.STAGING_SERVER_URL, 'Staging Environment')
     .build();
 
   const document = SwaggerModule.createDocument(app, options);

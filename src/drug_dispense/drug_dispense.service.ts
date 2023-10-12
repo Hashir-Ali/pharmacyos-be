@@ -4,34 +4,48 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DrugDispense } from './entities/drug_dispense.entity';
 import { MongoRepository, MoreThanOrEqual } from 'typeorm';
 import { ObjectId } from 'mongodb';
+import { SortOrder } from 'src/drug/drug.controller';
 
 @Injectable()
 export class DrugDispenseService {
   constructor(
     @InjectRepository(DrugDispense)
     private drugDispenseRepo: MongoRepository<DrugDispense>,
-  ){}
+  ) {}
 
-  async create(CreateDrugDispenseDto: CreateDrugDispenseDto){
+  async create(CreateDrugDispenseDto: CreateDrugDispenseDto) {
     return await this.drugDispenseRepo.save(CreateDrugDispenseDto);
   }
 
-  findAll() {
-    return this.drugDispenseRepo.find();
+  findAll(page: string, limit: string, sort: SortOrder, filters: any = {}) {
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    return this.drugDispenseRepo.findAndCount({
+      where: filters.filters ? { name: filters.filters } : {},
+      skip: skip,
+      take: parseInt(limit),
+      order: { dispenseValue: sort },
+    });
   }
 
   async findOne(id: string) {
-    return await this.drugDispenseRepo.findOne({where: {drugId: new ObjectId(id)}});
+    return await this.drugDispenseRepo.findOne({
+      where: { drugId: new ObjectId(id) },
+    });
   }
 
-  async findDrugDispense (drugId: string){
+  async findDrugDispense(drugId: string) {
     // get data for current year months...
     const d = new Date();
     d.setFullYear(d.getFullYear());
-    return this.drugDispenseRepo.find({where: {drugId: new ObjectId(drugId), created_at: MoreThanOrEqual(d.toISOString())}});
+    return this.drugDispenseRepo.find({
+      where: {
+        drugId: new ObjectId(drugId),
+        created_at: MoreThanOrEqual(d.toISOString()),
+      },
+    });
   }
 
-  async insertMany (objectDto: DrugDispense[]){
+  async insertMany(objectDto: DrugDispense[]) {
     const savedData = await this.drugDispenseRepo.insertMany(objectDto);
     return savedData;
   }

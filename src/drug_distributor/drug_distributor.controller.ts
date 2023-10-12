@@ -1,26 +1,42 @@
 import { CreateDrugDistributorDto } from './dto/create-drug_distributor.dto';
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { DrugDistributorService } from './drug_distributor.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { SortOrder } from 'src/drug/drug.controller';
 
 @ApiTags('drug-distributor')
 @Controller('drug-distributor')
 export class DrugDistributorController {
-  constructor(private readonly drugDistributorService: DrugDistributorService) {}
-  
+  constructor(
+    private readonly drugDistributorService: DrugDistributorService,
+  ) {}
+
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create (@Body() CreateDrugDistributorDto: CreateDrugDistributorDto){
-      return await this.drugDistributorService.create(CreateDrugDistributorDto);
+  async create(@Body() CreateDrugDistributorDto: CreateDrugDistributorDto) {
+    return await this.drugDistributorService.create(CreateDrugDistributorDto);
   }
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.drugDistributorService.findAll();
+  findAll(
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+    @Query('sort') sort: SortOrder,
+    @Query() filters: any,
+  ) {
+    return this.drugDistributorService.findAll(page, limit, sort, filters);
   }
 
   @ApiBearerAuth()
@@ -29,5 +45,4 @@ export class DrugDistributorController {
   findOne(@Param('drugId') drugId: string) {
     return this.drugDistributorService.findOne(drugId);
   }
-
 }

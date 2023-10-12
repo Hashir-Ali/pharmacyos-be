@@ -10,7 +10,14 @@ import { StockModule } from 'src/stock/stock.module';
 import { DrugDispenseModule } from 'src/drug_dispense/drug_dispense.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Drug]), DrugOrderModule, DrugDistributorModule, DistributorModule, StockModule, DrugDispenseModule],
+  imports: [
+    TypeOrmModule.forFeature([Drug]),
+    DrugOrderModule,
+    DrugDistributorModule,
+    DistributorModule,
+    StockModule,
+    DrugDispenseModule,
+  ],
   controllers: [DrugController],
   providers: [DrugService],
   exports: [DrugService],

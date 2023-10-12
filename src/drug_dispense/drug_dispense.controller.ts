@@ -1,8 +1,17 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { DrugDispenseService } from './drug_dispense.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateDrugDispenseDto } from './dto/create-drug_dispense.dto';
+import { SortOrder } from 'src/drug/drug.controller';
 
 @ApiTags('drug-dispense')
 @Controller('drug-dispense')
@@ -19,8 +28,13 @@ export class DrugDispenseController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.drugDispenseService.findAll();
+  findAll(
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+    @Query('sort') sort: SortOrder,
+    @Query() filters: any,
+  ) {
+    return this.drugDispenseService.findAll(page, limit, sort, filters);
   }
 
   @ApiBearerAuth()

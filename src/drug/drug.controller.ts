@@ -55,7 +55,6 @@ export class DrugController {
   @UseGuards(JwtAuthGuard)
   @Get(':drugId/reporting')
   async findDrugDistributors(@Param('drugId') drugId: string){
-    const reports = await this.drugService.drugReporting(drugId);
-    return await reports;
+    return this.drugService.drugReporting(drugId);
   }
 }

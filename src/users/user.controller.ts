@@ -19,7 +19,6 @@ import { UpdateUserDto } from './dto/update-user-dto';
 import { Roles } from 'src/common/roles.decorator';
 import { Role } from 'src/common/role.enum';
 
-
 @ApiTags('User')
 @Controller('users')
 export class UsersController {
@@ -49,7 +48,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   async findOne(@Param('id') id: string) {
     const user = await this.userService.findOne(id);
-    if(!user){
+    if (!user) {
       throw new NotFoundException();
     }
     const { password, ...result } = user;
@@ -67,7 +66,10 @@ export class UsersController {
   @ApiBearerAuth()
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: ObjectId | string, @Body() updateUserDto: UpdateUserDto) {
+  update(
+    @Param('id') id: ObjectId | string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
     return this.userService.update(id, updateUserDto);
   }
 }

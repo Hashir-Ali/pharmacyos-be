@@ -1,9 +1,21 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { DrugService } from './drug.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateDrugDto } from './dto/create-drug.dto';
 
+export enum SortOrder {
+  ascending = 'ASC',
+  descending = 'DESC',
+}
 @ApiTags('drug')
 @Controller('drug')
 export class DrugController {
@@ -22,9 +34,10 @@ export class DrugController {
   findAll(
     @Query('page') page: string,
     @Query('limit') limit: string,
+    @Query('sort') sort: SortOrder,
     @Query() filters: any,
   ) {
-    return this.drugService.findFiltered(page, limit, filters);
+    return this.drugService.findFiltered(page, limit, sort, filters);
   }
 
   @ApiBearerAuth()
@@ -58,7 +71,7 @@ export class DrugController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get(':drugId/reporting')
-  async findDrugDistributors(@Param('drugId') drugId: string){
+  async findDrugDistributors(@Param('drugId') drugId: string) {
     return this.drugService.drugReporting(drugId);
   }
 }

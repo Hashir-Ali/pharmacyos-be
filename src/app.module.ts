@@ -14,7 +14,6 @@ import { DistributorModule } from './distributor/distributor.module';
 import { DrugDistributorModule } from './drug_distributor/drug_distributor.module';
 import { dataSourceOptions } from './database/database.constants';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({

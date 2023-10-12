@@ -8,9 +8,14 @@ import { UsersModule } from 'src/users/users.module';
 import { DrugDistributorModule } from 'src/drug_distributor/drug_distributor.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([DrugOrder]), UsersModule, DistributorModule, DrugDistributorModule],
+  imports: [
+    TypeOrmModule.forFeature([DrugOrder]),
+    UsersModule,
+    DistributorModule,
+    DrugDistributorModule,
+  ],
   controllers: [DrugOrderController],
   providers: [DrugOrderService],
-  exports: [DrugOrderService]
+  exports: [DrugOrderService],
 })
 export class DrugOrderModule {}

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { DrugService } from './drug.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -19,8 +19,12 @@ export class DrugController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.drugService.findAll();
+  findAll(
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+    @Query() filters: any,
+  ) {
+    return this.drugService.findFiltered(page, limit, filters);
   }
 
   @ApiBearerAuth()

@@ -71,8 +71,10 @@ export class DrugService {
   async drugReporting (drugId: string): Promise<Reporting>{
     const data:Reporting = {};
 
-    const drugOrders = await this.drugOrderService.findDrugOrders(drugId);
-    const drugDispense = await this.drugDispenseService.findDrugDispense(drugId);
+    const [drugOrders, drugDispense] = await Promise.all([
+        this.drugOrderService.findDrugOrders(drugId),
+        this.drugDispenseService.findDrugDispense(drugId)
+    ]);
 
     drugOrders.map((drugOrder)=>{
       //get month from expected_delivery_date...

@@ -28,7 +28,7 @@ export class DrugDispenseService {
     // get data for current year months...
     const d = new Date();
     d.setFullYear(d.getFullYear());
-    return await this.drugDispenseRepo.find({where: {drugId: new ObjectId(drugId), created_at: MoreThanOrEqual(d.toISOString())}});
+    return this.drugDispenseRepo.find({where: {drugId: new ObjectId(drugId), created_at: MoreThanOrEqual(d.toISOString())}});
   }
 
   async insertMany (objectDto: DrugDispense[]){

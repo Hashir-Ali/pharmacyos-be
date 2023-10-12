@@ -9,7 +9,16 @@ import { DrugDistributorService } from 'src/drug_distributor/drug_distributor.se
 import { DistributorService } from 'src/distributor/distributor.service';
 import { StockService } from 'src/stock/stock.service';
 import { dateDiff } from 'src/common/utils';
+import { DrugDispenseService } from 'src/drug_dispense/drug_dispense.service';
 
+
+export interface Reporting {
+  [month: string]:
+  {
+  purchased: {quantity: number, value: number},
+  dispensed: {quantity: number, value: number}
+  }
+}
 @Injectable()
 export class DrugService {
   constructor(
@@ -19,6 +28,7 @@ export class DrugService {
     private drugDistributorService: DrugDistributorService,
     private distributorService: DistributorService,
     private stockService: StockService,
+    private drugDispenseService: DrugDispenseService,
   ){}
 
   // commented for later use...!
@@ -56,6 +66,50 @@ export class DrugService {
       });
     }
     return {...Drug, orders: drugOrders, distributors: distributors, stock: deducedStock};
+  }
+
+  async drugReporting (drugId: string): Promise<Reporting>{
+    const data:Reporting = {};
+
+    const [drugOrders, drugDispense] = await Promise.all([
+      this.drugOrderService.findDrugOrders(drugId),
+      this.drugDispenseService.findDrugDispense(drugId)
+    ]);
+
+    drugOrders.map((drugOrder)=>{
+      //get month from expected_delivery_date...
+      // check if month is present in response data structure...
+        // Yes: update quantity and value for that month...
+        // No: add to data with initial quantity and value...
+      const currentMonth = drugOrder.expected_delivery_date.getUTCMonth();
+      if( currentMonth in data){
+        data[currentMonth].purchased.quantity += drugOrder.quantityReceived;
+        data[currentMonth].purchased.value += drugOrder.cost;
+      }else{
+        data[currentMonth] = {
+          purchased: {quantity: drugOrder.quantityReceived, value: drugOrder.cost},
+          dispensed: {quantity: 0, value: 0}
+        };
+      }
+    });
+
+    drugDispense.map((dispense)=>{
+      //get month from when dispense was recorded in DB...
+      // check if month is present in response data structure...
+        // Yes: update quantity and value for that month...
+        // No: add to data with initial quantity and value...
+      const currentMonth = dispense.created_at.getUTCMonth();
+      if(currentMonth in data){
+        data[currentMonth].dispensed.quantity = parseInt(dispense.quantity.toString());
+        data[currentMonth].dispensed.value = parseInt(dispense.dispenseValue.toString());
+      }else{
+        data[currentMonth] = {
+          dispensed: {quantity: parseInt(dispense.quantity.toString()), value: parseInt(dispense.dispenseValue.toString())},
+          purchased: {quantity: 0, value: 0},
+        }
+      }
+    });
+    return await data;
   }
 
   async findDrugOrders(drugId: string){

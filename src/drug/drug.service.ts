@@ -40,6 +40,23 @@ export class DrugService {
     return this.drugRepository.find();
   }
 
+  async findFiltered(page: string, limit: string, filters: any = {}) {
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const [drugs, number] = await this.drugRepository.findAndCount({where: filters.filters, skip: skip, take: parseInt(limit)});
+
+   
+    return [drugs.map((drug)=>{
+      return {
+        ...drug, 
+        status: 'Issue',
+        stock: {min: Math.random(), max: Math.random(), current: Math.random(),
+        ruleType: 'Automatic', 
+        monthlyStockLevels: {5: 43, 6: 19, 7: 42, 8:21, 9: 66}},
+        Orders:{lastOrder: '04/06/23 £2,000 per unit Novartis'}
+      }
+    }), number];
+  }
+
   async findOne(id: string) {
     const Drug = await this.drugRepository.findOne({where: {_id: new ObjectId(id)}});
     const drugOrders = await this.drugOrderService.findDrugOrders(id);
@@ -65,7 +82,14 @@ export class DrugService {
         }
       });
     }
-    return {...Drug, orders: drugOrders, distributors: distributors, stock: deducedStock};
+    return {
+      ...Drug, 
+      orders: drugOrders, 
+      distributors: distributors,
+      stock: deducedStock,
+      passThrough: {thisMonth: 20, lastMonth: 200, fiveMonths: 500, lastYear: 539, allTime: 3680},
+      monthlyStockLevels: {5: 43, 6: 19, 7: 42, 8:21, 9: 66},
+    };
   }
 
   async drugReporting (drugId: string): Promise<Reporting>{

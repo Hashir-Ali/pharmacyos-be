@@ -50,4 +50,12 @@ export class DrugController {
   findStock(@Param('drugId') drugId: string) {
     return this.drugService.findDrugStock(drugId);
   }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get(':drugId/reporting')
+  async findDrugDistributors(@Param('drugId') drugId: string){
+    const reports = await this.drugService.drugReporting(drugId);
+    return await reports;
+  }
 }

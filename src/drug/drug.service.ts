@@ -15,8 +15,8 @@ import { DrugDispenseService } from 'src/drug_dispense/drug_dispense.service';
 export interface Reporting {
   [month: string]:
   {
-  purchased?: {quantity: number, value: number},
-  dispensed?: {quantity: number, value: number}
+  purchased: {quantity: number, value: number},
+  dispensed: {quantity: number, value: number}
   }
 }
 @Injectable()
@@ -72,8 +72,8 @@ export class DrugService {
     const data:Reporting = {};
 
     const [drugOrders, drugDispense] = await Promise.all([
-        this.drugOrderService.findDrugOrders(drugId),
-        this.drugDispenseService.findDrugDispense(drugId)
+      this.drugOrderService.findDrugOrders(drugId),
+      this.drugDispenseService.findDrugDispense(drugId)
     ]);
 
     drugOrders.map((drugOrder)=>{
@@ -104,7 +104,8 @@ export class DrugService {
         data[currentMonth].dispensed.value = parseInt(dispense.dispenseValue.toString());
       }else{
         data[currentMonth] = {
-          dispensed: {quantity: parseInt(dispense.quantity.toString()), value: parseInt(dispense.dispenseValue.toString())}
+          dispensed: {quantity: parseInt(dispense.quantity.toString()), value: parseInt(dispense.dispenseValue.toString())},
+          purchased: {quantity: 0, value: 0},
         }
       }
     });

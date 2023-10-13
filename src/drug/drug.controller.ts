@@ -28,8 +28,8 @@ export class DrugController {
     return this.drugService.create(createDrugDto);
   }
 
-  // @ApiBearerAuth()
-  // @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll(
     @Query('page') page: string,

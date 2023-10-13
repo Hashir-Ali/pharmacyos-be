@@ -31,10 +31,11 @@ export class DrugOrderService {
     filters: any = {},
   ) {
     const skip = (parseInt(page) - 1) * parseInt(limit);
+    const regex = new RegExp(filters.filters, 'i');
     // populate distributor name using supplierId field..
     // get type from drug distributor on basis of drugId and distributorId field..
     const [orders, number] = await this.DrugOrderRepository.findAndCount({
-      where: filters.filters ? { name: filters.filters } : {},
+      where: filters.filters ? { name: { $regex: regex } } : {},
       skip: skip,
       take: parseInt(limit),
       order: { expected_delivery_date: sort },

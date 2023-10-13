@@ -26,8 +26,10 @@ export class DistributorService {
     filters: any = {},
   ) {
     const skip = (parseInt(page) - 1) * parseInt(limit);
+    const regex = new RegExp(filters.filters, 'i');
+
     return this.distributorRepo.findAndCount({
-      where: filters.filters ? { name: filters.filters } : {},
+      where: filters.filters ? { name: { $regex: regex } } : {},
       skip: skip,
       take: parseInt(limit),
       order: { name: sort },

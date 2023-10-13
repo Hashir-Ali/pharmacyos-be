@@ -20,8 +20,10 @@ export class DrugDistributorService {
 
   findAll(page: string, limit: string, sort: SortOrder, filters: any = {}) {
     const skip = (parseInt(page) - 1) * parseInt(limit);
+    const regex = new RegExp(filters.filters, 'i');
+
     return this.drugDistributorRepo.findAndCount({
-      where: filters.filters ? { name: filters.filters } : {},
+      where: filters.filters ? { name: { $regex: regex } } : {},
       skip: skip,
       take: parseInt(limit),
       order: { type: sort },

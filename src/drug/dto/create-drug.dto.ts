@@ -9,7 +9,7 @@ export class CreateDrugDto extends PartialType(BaseDTO) {
 
   @ApiProperty()
   @IsNumber()
-  dosage: Number;
+  dosage: number;
 
   @ApiProperty()
   @IsString()
@@ -33,7 +33,7 @@ export class CreateDrugDto extends PartialType(BaseDTO) {
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
-  containerSize: Number;
+  containerSize: number;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -43,5 +43,5 @@ export class CreateDrugDto extends PartialType(BaseDTO) {
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
-  drugEAN: Number;
+  drugEAN: number;
 }

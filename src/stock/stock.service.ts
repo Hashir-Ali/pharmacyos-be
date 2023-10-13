@@ -25,8 +25,10 @@ export class StockService {
     filters: any = {},
   ) {
     const skip = (parseInt(page) - 1) * parseInt(limit);
+    const regex = new RegExp(filters.filters, 'i');
+
     const stock = await this.stockRepository.findAndCount({
-      where: filters.filters ? { name: filters.filters } : {},
+      where: filters.filters ? { currentStock: { $regex: regex } } : {},
       skip: skip,
       take: parseInt(limit),
       order: { currentStock: sort },

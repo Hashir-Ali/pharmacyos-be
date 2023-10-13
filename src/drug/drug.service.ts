@@ -60,9 +60,9 @@ export class DrugService {
           ...drug,
           status: 'Issue',
           stock: {
-            min: Math.random(),
-            max: Math.random(),
-            current: Math.random(),
+            min: 10,
+            max: 100,
+            current: 50,
             ruleType: 'Automatic',
             monthlyStockLevels: { 5: 43, 6: 19, 7: 42, 8: 21, 9: 66 },
           },

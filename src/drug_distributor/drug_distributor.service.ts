@@ -23,7 +23,7 @@ export class DrugDistributorService {
     const regex = new RegExp(filters.filters, 'i');
 
     return this.drugDistributorRepo.findAndCount({
-      where: filters.filters ? { name: { $regex: regex } } : {},
+      where: filters.filters ? { type: { $regex: regex } } : {},
       skip: skip,
       take: parseInt(limit),
       order: { type: sort },

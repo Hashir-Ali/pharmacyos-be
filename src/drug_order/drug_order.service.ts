@@ -35,7 +35,7 @@ export class DrugOrderService {
     // populate distributor name using supplierId field..
     // get type from drug distributor on basis of drugId and distributorId field..
     const [orders, number] = await this.DrugOrderRepository.findAndCount({
-      where: filters.filters ? { name: { $regex: regex } } : {},
+      where: filters.filters ? { quantityOrdered: { $regex: regex } } : {},
       skip: skip,
       take: parseInt(limit),
       order: { expected_delivery_date: sort },

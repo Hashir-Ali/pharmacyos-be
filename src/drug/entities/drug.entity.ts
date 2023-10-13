@@ -5,7 +5,7 @@ export class Drug extends BasicEntity {
   @Column()
   name: string;
   @Column()
-  dosage: Number;
+  dosage: number;
   @Column()
   dosageUnit: string;
   @Column()
@@ -15,9 +15,9 @@ export class Drug extends BasicEntity {
   @Column()
   fullDescription: string;
   @Column()
-  containerSize: Number;
+  containerSize: number;
   @Column()
   location: string;
   @Column()
-  drugEAN: Number;
+  drugEAN: number;
 }

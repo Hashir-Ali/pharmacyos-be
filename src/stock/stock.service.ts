@@ -28,7 +28,7 @@ export class StockService {
     const regex = new RegExp(filters.filters, 'i');
 
     const stock = await this.stockRepository.findAndCount({
-      where: filters.filters ? { name: { $regex: regex } } : {},
+      where: filters.filters ? { currentStock: { $regex: regex } } : {},
       skip: skip,
       take: parseInt(limit),
       order: { currentStock: sort },

@@ -45,11 +45,9 @@ export class StockService {
   }
 
   async findDrugStock(drugId: string) {
-    return (
-      (await this.stockRepository.findOne({
-        where: { drugId: new ObjectId(drugId) },
-      })) || []
-    );
+    return await this.stockRepository.findOne({
+      where: { drugId: new ObjectId(drugId) },
+    });
   }
 
   async insertMany(objectDto: Stock[]) {

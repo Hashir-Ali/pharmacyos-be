@@ -6,7 +6,7 @@ import { exit } from 'process';
 async function bootstrap() {
   const appContext = await NestFactory.createApplicationContext(SeederModule);
   const seeder = appContext.get(DBSeeder);
-  await seeder.seed(20);
+  await seeder.seed(15);
   console.log('Seeding Completed');
   await appContext.close();
   //as per documentation we don't need manual process exit.

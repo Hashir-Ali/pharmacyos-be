@@ -1,17 +1,18 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
+import { ObjectId } from 'mongodb';
 import { BaseDTO } from 'src/common/base.dto';
 
 export class CreateDrugDistributorDto extends PartialType(BaseDTO) {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  distributorId: string;
+  distributorId: ObjectId | string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  drugId: string;
+  drugId: ObjectId | string;
 
   @ApiProperty()
   @IsNotEmpty()

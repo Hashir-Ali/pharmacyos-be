@@ -1,25 +1,31 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { ObjectId } from 'mongodb';
 import { BaseDTO } from 'src/common/base.dto';
 
 export class CreateStockDto extends PartialType(BaseDTO) {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  drugId: String;
+  drugId: ObjectId | string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
-  stockRuleMin: Number;
+  stockRuleMin: number;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
-  stockRuleMax: Number;
+  stockRuleMax: number;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
-  LooseUnits: Number;
+  currentStock: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  LooseUnits: number;
 }

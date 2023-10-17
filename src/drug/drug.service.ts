@@ -2,7 +2,7 @@ import { DrugOrderService } from './../drug_order/drug_order.service';
 import { Injectable } from '@nestjs/common';
 import { CreateDrugDto } from './dto/create-drug.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Like, MongoRepository } from 'typeorm';
+import { MongoRepository } from 'typeorm';
 import { Drug } from './entities/drug.entity';
 import { ObjectId } from 'mongodb';
 import { DrugDistributorService } from 'src/drug_distributor/drug_distributor.service';
@@ -50,9 +50,22 @@ export class DrugService {
     filters: any = {},
   ) {
     const skip = (parseInt(page) - 1) * parseInt(limit);
-    const regex = new RegExp(filters.filters, 'i');
+    const regex = new RegExp(filters.filters.split(' ')[0], 'i'); // search must include a space after name of the drug if we are passing
+    const dose: number = parseInt(filters.filters.replace(/^\D+|\D+$/g, ''));
     const [drugs, number] = await this.drugRepository.findAndCount({
-      where: filters.filters ? { name: { $regex: regex } } : {},
+      where: filters.filters // check if filters were passed: Yes: evaluate further. No: pass empty brackets for listing all.
+        ? regex.toString().indexOf(dose.toString()) === -1 // if filter contain name and dosage isn't part of the regex, then include name based search.....
+          ? dose //dose is set (not a NaN type): Yes: include name and dosage. No: include only name...
+            ? {
+                name: { $regex: regex },
+                dosage: { $lte: dose },
+              }
+            : { name: { $regex: regex } }
+          : {
+              // else use only dose based search..
+              dosage: { $eq: dose },
+            }
+        : {},
       skip: skip,
       take: parseInt(limit),
       order: { name: sort },

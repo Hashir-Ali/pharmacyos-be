@@ -68,7 +68,6 @@ export class DrugService {
         stock: {
           ...drugStock,
           ruleType: 'Automatic',
-          // monthlyStockLevels: { 5: 43, 6: 19, 7: 42, 8: 21, 9: 66 },
           monthlyStockLevels: await this.monthlyStockLevels(drug._id),
         },
         Orders: {
@@ -115,7 +114,6 @@ export class DrugService {
       distributors: distributors,
       stock: deducedStock,
       passThrough: await this.drugPassThrough(Drug._id),
-      // monthlyStockLevels: { 5: 43, 6: 19, 7: 42, 8: 21, 9: 66 },
       monthlyStockLevels: await this.monthlyStockLevels(Drug._id),
     };
   }

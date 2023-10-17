@@ -18,6 +18,10 @@ export interface Reporting {
     dispensed: { quantity: number; value: number };
   };
 }
+
+export interface StockLevel {
+  [month: string]: number;
+}
 @Injectable()
 export class DrugService {
   constructor(
@@ -54,23 +58,28 @@ export class DrugService {
       order: { name: sort },
     });
 
-    return [
-      drugs.map((drug) => {
-        return {
-          ...drug,
-          status: 'Issue',
-          stock: {
-            min: 10,
-            max: 100,
-            current: 50,
-            ruleType: 'Automatic',
-            monthlyStockLevels: { 5: 43, 6: 19, 7: 42, 8: 21, 9: 66 },
-          },
-          Orders: { lastOrder: '04/06/23 £2,000 per unit Novartis' },
-        };
-      }),
-      number,
-    ];
+    const populatedDrugs = drugs.map(async (drug) => {
+      const drugStock = await this.stockService.findDrugStock(drug._id);
+      const drugOrder = await this.drugOrderService.findDrugOrders(drug._id);
+
+      return {
+        ...drug,
+        status: 'Issue',
+        stock: {
+          ...drugStock,
+          ruleType: 'Automatic',
+          // monthlyStockLevels: { 5: 43, 6: 19, 7: 42, 8: 21, 9: 66 },
+          monthlyStockLevels: await this.monthlyStockLevels(drug._id),
+        },
+        Orders: {
+          lastOrder: `${drugOrder[0].expected_delivery_date.toLocaleDateString(
+            'en-GB',
+          )} £${drugOrder[0].cost} per unit ${drug.name}`,
+        },
+      };
+    });
+
+    return [await Promise.all(populatedDrugs), number];
   }
 
   async findOne(id: string) {
@@ -86,7 +95,7 @@ export class DrugService {
     // new stock is orders delivered and date is not more than 30 days old.
     const deducedStock = { ...stock, onOrder: 0, newStock: 0 };
     if (drugOrders.length > 0) {
-      const stockData = drugOrders.map((order) => {
+      drugOrders.map((order) => {
         if (!order.isReceived) {
           deducedStock.onOrder += order.quantityOrdered;
         } else {
@@ -105,14 +114,9 @@ export class DrugService {
       orders: drugOrders,
       distributors: distributors,
       stock: deducedStock,
-      passThrough: {
-        thisMonth: 20,
-        lastMonth: 200,
-        fiveMonths: 500,
-        lastYear: 539,
-        allTime: 3680,
-      },
-      monthlyStockLevels: { 5: 43, 6: 19, 7: 42, 8: 21, 9: 66 },
+      passThrough: await this.drugPassThrough(Drug._id),
+      // monthlyStockLevels: { 5: 43, 6: 19, 7: 42, 8: 21, 9: 66 },
+      monthlyStockLevels: await this.monthlyStockLevels(Drug._id),
     };
   }
 
@@ -168,6 +172,25 @@ export class DrugService {
       }
     });
     return await data;
+  }
+
+  async drugPassThrough(drugId: string) {
+    const data = await this.drugDispenseService.countAllTimeDispense(drugId);
+    return data;
+  }
+
+  async monthlyStockLevels(drugId: string) {
+    const data: StockLevel = {};
+    const orders = await this.drugOrderService.getCurrentYearDrugOrders(drugId);
+    orders.map((order) => {
+      const month = order.created_at.getMonth();
+      if (month in data) {
+        data[month] += order.quantityReceived;
+      } else {
+        data[month] = order.quantityReceived;
+      }
+    });
+    return data;
   }
 
   async findDrugOrders(drugId: string) {

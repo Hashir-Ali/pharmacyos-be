@@ -70,10 +70,12 @@ export class DBSeeder {
         for (let k = 0; k <= 3; k++) {
           objectDto.push({
             drugId: new ObjectId(drugId),
-            quantity: faker.finance.amount(
-              drugStock.stockRuleMin,
-              drugStock.stockRuleMax,
-              0,
+            quantity: parseInt(
+              faker.finance.amount(
+                drugStock.stockRuleMin,
+                drugStock.stockRuleMax,
+                0,
+              ),
             ),
             dispenseValue: faker.finance.amount(1, 50, 0),
             created_at: faker.date.betweens(

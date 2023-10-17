@@ -70,6 +70,13 @@ export class DrugController {
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @Get(':drugId/stockLevels')
+  findStockLevels(@Param('drugId') drugId: string) {
+    return this.drugService.monthlyStockLevels(drugId);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Get(':drugId/reporting')
   async findDrugDistributors(@Param('drugId') drugId: string) {
     return this.drugService.drugReporting(drugId);

@@ -1,5 +1,5 @@
 import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { BaseDTO } from 'src/common/base.dto';
 export class UpdateDrugDispenseDto extends PartialType(BaseDTO) {
   @ApiPropertyOptional()
@@ -9,8 +9,8 @@ export class UpdateDrugDispenseDto extends PartialType(BaseDTO) {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
-  quantity?: String;
+  @IsNumber()
+  quantity?: number;
 
   @ApiPropertyOptional()
   @IsOptional()

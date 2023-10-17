@@ -96,11 +96,11 @@ export class DBSeeder {
   async seedDrugOrder() {
     const savedDto: DrugOrder[] = [];
     const drugs = await this.drugService.findAll();
-
     const users = await this.userService.findAll();
 
     for (let i = 0; i <= drugs.length - 1; i++) {
       const drugId = drugs[i]._id;
+      const drugStock = await this.stockService.findDrugStock(drugId);
       // we need at least 10 orders per drug...!
       // for each drug, fetch specific drug distributor...!
       // each drug order will be after 30 preceding days...!
@@ -118,8 +118,12 @@ export class DBSeeder {
           ),
           drugId: new ObjectId(drugId),
           ordered_by: new ObjectId(userId), // No magical Strings... This, I know is a bad code and it smells like rotten rats.,
-          quantityOrdered: parseInt(faker.finance.amount(0, 50)),
-          quantityReceived: parseInt(faker.finance.amount(0, 50)),
+          quantityOrdered: randomInt(
+            drugStock.stockRuleMax - drugStock.stockRuleMax,
+          ),
+          quantityReceived: randomInt(
+            drugStock.stockRuleMax - drugStock.stockRuleMax,
+          ),
           cost: parseInt(faker.finance.amount(2, 300)),
           isReceived: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
           expected_delivery_date: faker.date.soon({ days: days }),

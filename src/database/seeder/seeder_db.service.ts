@@ -121,10 +121,10 @@ export class DBSeeder {
           drugId: new ObjectId(drugId),
           ordered_by: new ObjectId(userId), // No magical Strings... This, I know is a bad code and it smells like rotten rats.,
           quantityOrdered: randomInt(
-            drugStock.stockRuleMax - drugStock.stockRuleMax,
+            drugStock.stockRuleMax - drugStock.stockRuleMin,
           ),
           quantityReceived: randomInt(
-            drugStock.stockRuleMax - drugStock.stockRuleMax,
+            drugStock.stockRuleMax - drugStock.stockRuleMin,
           ),
           cost: parseInt(faker.finance.amount(2, 300)),
           isReceived: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...

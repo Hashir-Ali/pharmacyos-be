@@ -7,14 +7,14 @@ export class Stock extends BasicEntity {
   drugId: ObjectId | String;
 
   @Column()
-  stockRuleMin: Number;
+  stockRuleMin: number;
 
   @Column()
-  stockRuleMax: Number;
+  stockRuleMax: number;
 
   @Column()
-  currentStock: Number;
+  currentStock: number;
 
   @Column()
-  LooseUnits: Number;
+  LooseUnits: number;
 }

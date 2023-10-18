@@ -46,4 +46,11 @@ export class StockController {
   findOne(@Param('id') id: string) {
     return this.stockService.findOne(id);
   }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get('/drug/:drugId')
+  findDrugStock(@Param('drugId') drugId: string) {
+    return this.stockService.findDrugStock(drugId);
+  }
 }

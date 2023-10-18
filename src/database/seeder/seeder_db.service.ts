@@ -18,6 +18,7 @@ import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class DBSeeder {
+  private seedCount: number;
   constructor(
     private readonly userService: UsersService,
     private readonly drugService: DrugService,
@@ -26,23 +27,24 @@ export class DBSeeder {
     private drugOrderService: DrugOrderService,
     private drugDispenseService: DrugDispenseService,
     private stockService: StockService,
-  ) {}
+  ) {
+    this.seedCount = 20;
+  }
 
-  async seedStock(seedCount: number) {
+  async seedStock() {
     const objectDto: Stock[] = [];
     const drugs = await this.drugService.findAll();
 
-    for (let i = 0; i <= seedCount; i++) {
-      const drugId = drugs[randomInt(drugs.length - 1)]._id;
+    for (let i = 0; i <= drugs.length - 1; i++) {
       objectDto.push({
-        drugId: new ObjectId(drugId),
+        drugId: new ObjectId(drugs[i]._id),
         stockRuleMin: faker.number.int({ min: 5, max: 20 }),
         stockRuleMax: faker.number.int({ min: 40, max: 100 }),
         currentStock: faker.number.int({ min: 5, max: 100 }),
         LooseUnits: faker.number.int({ min: 5, max: 25 }),
         created_at: faker.date.recent(),
         Updated_at: faker.date.recent(),
-        is_enabled: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
+        is_enabled: faker.datatype.boolean(0.75), // 0-1 : 0.75 means out the possibility of returning true would be 75% and remaining times will return false.
       });
     }
 
@@ -50,56 +52,93 @@ export class DBSeeder {
     return savedStock;
   }
 
-  async seedDrugDispense(seedCount: number) {
+  async seedDrugDispense() {
     const objectDto: DrugDispense[] = [];
     const drugs = await this.drugService.findAll();
 
-    for (let i = 0; i <= seedCount; i++) {
-      const drugId = drugs[randomInt(drugs.length - 1)]._id;
+    // get monthly dates for current year...!
+    const thisYearMonths = Array.from({ length: 12 }, (item, i) => {
+      return new Date(new Date().getFullYear(), i);
+    });
 
-      objectDto.push({
-        drugId: new ObjectId(drugId),
-        quantity: faker.finance.amount(5, 100, 0),
-        dispenseValue: faker.finance.amount(1, 50, 0),
-        created_at: faker.date.recent(),
-        Updated_at: faker.date.recent(),
-        is_enabled: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
-      });
+    for (let i = 0; i <= drugs.length - 1; i++) {
+      const drugId = drugs[i]._id;
+      const drugStock = await this.stockService.findDrugStock(drugId);
+
+      for (let j = 0; j <= thisYearMonths.length - 1; j++) {
+        // for each month generate at least 4 records....
+        for (let k = 0; k <= 3; k++) {
+          objectDto.push({
+            drugId: new ObjectId(drugId),
+            quantity: faker.finance.amount(
+              drugStock.stockRuleMin,
+              drugStock.stockRuleMax,
+              0,
+            ),
+            dispenseValue: faker.finance.amount(1, 50, 0),
+            created_at: faker.date.betweens(
+              thisYearMonths[j],
+              thisYearMonths[j],
+            )[0],
+            Updated_at: faker.date.betweens(
+              thisYearMonths[j],
+              thisYearMonths[j],
+            )[1],
+            is_enabled: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
+          });
+        }
+      }
     }
     const savedItems = await this.drugDispenseService.insertMany(objectDto);
     return savedItems;
   }
 
-  async seedDrugOrder(seedCount: number) {
+  async seedDrugOrder() {
     const savedDto: DrugOrder[] = [];
-    const distributor = await this.distributorService.findAll();
     const drugs = await this.drugService.findAll();
     const users = await this.userService.findAll();
 
-    for (let i = 0; i <= seedCount; i++) {
-      const distributorId = distributor[randomInt(distributor.length - 1)]._id;
-      const drugId = drugs[randomInt(drugs.length - 1)]._id;
-      const userId = users[Math.ceil(Math.random() * users.length - 1)]._id;
+    for (let i = 0; i <= drugs.length - 1; i++) {
+      const drugId = drugs[i]._id;
+      const drugStock = await this.stockService.findDrugStock(drugId);
+      // we need at least 10 orders per drug...!
+      // for each drug, fetch specific drug distributor...!
+      // each drug order will be after 30 preceding days...!
+      const drugDistributor = await this.drugDistributorService.findOne(drugId);
+      let days = 30;
+      for (let j = 0; j <= 10; j++) {
+        const userId =
+          users[Math.abs(Math.ceil(Math.random() * users.length - 1))]._id;
 
-      savedDto.push({
-        supplierId: new ObjectId(distributorId),
-        drugId: new ObjectId(drugId),
-        ordered_by: new ObjectId(userId), // No magical Strings... This, I know is a bad code and it smells like rotten rats.,
-        quantityOrdered: parseInt(faker.finance.amount(0, 50)),
-        quantityReceived: parseInt(faker.finance.amount(0, 50)),
-        cost: parseInt(faker.finance.amount(2, 300)),
-        isReceived: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
-        expected_delivery_date: faker.date.future({ years: 2 }),
-        created_at: faker.date.recent(),
-        Updated_at: faker.date.recent(),
-        is_enabled: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
-      });
+        savedDto.push({
+          supplierId: new ObjectId(
+            drugDistributor[
+              randomInt(drugDistributor.length - 1)
+            ].distributorId,
+          ),
+          drugId: new ObjectId(drugId),
+          ordered_by: new ObjectId(userId), // No magical Strings... This, I know is a bad code and it smells like rotten rats.,
+          quantityOrdered: randomInt(
+            drugStock.stockRuleMax - drugStock.stockRuleMax,
+          ),
+          quantityReceived: randomInt(
+            drugStock.stockRuleMax - drugStock.stockRuleMax,
+          ),
+          cost: parseInt(faker.finance.amount(2, 300)),
+          isReceived: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
+          expected_delivery_date: faker.date.soon({ days: days }),
+          created_at: faker.date.recent(),
+          Updated_at: faker.date.recent(),
+          is_enabled: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
+        });
+        days = days * 30; // each next month..
+      }
     }
     const savedItems = await this.drugOrderService.insertMany(savedDto);
     return savedItems;
   }
 
-  async seedDrugDistributor(seedCount: number) {
+  async seedDrugDistributor() {
     const objectDto: DrugDistributor[] = [];
     const drugDistributorTypes = [
       'Preferred Supplier',
@@ -108,31 +147,36 @@ export class DBSeeder {
     ];
 
     const distributor = await this.distributorService.findAll();
-    const distributorId = distributor[randomInt(distributor.length - 1)]._id;
-
     const drugs = await this.drugService.findAll();
 
-    for (let i = 0; i <= seedCount; i++) {
-      const drugId = drugs[randomInt(drugs.length - 1)]._id;
-      objectDto.push({
-        distributorId: new ObjectId(distributorId),
-        drugId: new ObjectId(drugId),
-        type: drugDistributorTypes[
-          Math.ceil(Math.random() * drugDistributorTypes.length - 1)
-        ],
-        is_preferred: true,
-        created_at: faker.date.recent(),
-        Updated_at: faker.date.recent(),
-        is_enabled: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
-      });
+    for (let i = 0; i <= drugs.length - 1; i++) {
+      const drugId = drugs[i]._id;
+
+      // for each drug, we create at least three distributors per drug...
+      for (let j = 0; j < 3; j++) {
+        const distributorId = distributor[i + j]._id;
+
+        objectDto.push({
+          distributorId: new ObjectId(distributorId),
+          drugId: new ObjectId(drugId),
+          type: drugDistributorTypes[
+            j === 0 ? j : randomInt(drugDistributorTypes.length - 1) // first record set to preferred distributor
+          ],
+          is_preferred: j == 0 ? true : false, // first record set to preferred distributor.
+          created_at: faker.date.recent(),
+          Updated_at: faker.date.recent(),
+          is_enabled: faker.datatype.boolean(0.75), // 0-1 : 0.75 means the possibility for returning true will be 75% times...
+        });
+      }
     }
     const savedData = await this.drugDistributorService.insertMany(objectDto);
     return savedData;
   }
 
-  async seedDistributor(seedCount: number) {
+  async seedDistributor() {
     const objectDto: Distributor[] = [];
-    for (let i = 0; i <= seedCount; i++) {
+    for (let i = 0; i <= this.seedCount * 3; i++) {
+      // create distributors (three times) more than drugs count...
       objectDto.push({
         name: faker.person.fullName(),
         NHS_Contract_End_Date: faker.date.future(),
@@ -146,46 +190,45 @@ export class DBSeeder {
     return savedItems;
   }
 
-  async seedDrug(seedCount: number) {
+  async seedDrug() {
     const drugNames: string[] = [
-      'Omeprazole_Cap',
+      'Ribociclib',
+      'Amoxicillin',
+      'Atorvastatin',
+      'Omeprazole',
       'Dressit Ster Dress Pack',
       'Flaminal Forte',
-      'Co-Magaldrox_Susp',
-      'Antacid/Oxetacaine_Oral Susp',
-      'Simeticone_Susp',
-      'Infacol_Susp',
-      'Gppe Liq_Gaviscon',
-      'Sod Algin/Pot Bicarb_Susp',
-      'Sod Alginate/Pot Bicarb_Tab Chble',
-      'Gastrocote_Tab',
-      'Gaviscon Infant_Sach',
-      'Gaviscon Advance_Liq',
-      'Gaviscon_Liq Sach',
-      'Gaviscon Advance_Liq',
-      'Gaviscon Advance_Tab',
-      'Topal_Antacid Tab',
-      'Peptac_Liq (Aniseed)',
-      'Peptac_Liq (Peppermint)',
+      'Co-Magaldrox',
+      'Antacid',
+      'Simeticone',
+      'Infacol',
+      'Gaviscon',
+      'Sod Algin',
+      'Sod Alginate',
+      'Gastrocote',
+      'Gaviscon',
+      'Topal',
+      'Peptac',
       'Alverine',
       'Dicycloverine',
-      'Dicycloverine HCl_Tab',
-      'Hyoscine Butylbrom_Inj',
-      'Buscopan_Tab',
-      'Mebeverine HCl_Tab',
-      'Mebeverine HCl_Cap',
-      'Cimetidine_Tab 400mg',
+      'Dicycloverine',
+      'Hyoscine',
+      'Buscopan',
+      'Mebeverine',
+      'Mebeverine',
+      'Cimetidine',
     ];
+    const dosageUnits = ['mg', 'ml'];
     // loop till seedCount.
     // create array of objectDTO...
     // pass objectDto to saveMany function...
     const objectDTO: Drug[] = [];
 
-    for (let i = 0; i <= seedCount; i++) {
+    for (let i = 0; i <= this.seedCount; i++) {
       objectDTO.push({
         name: drugNames[randomInt(drugNames.length - 1)],
         dosage: randomInt(500),
-        dosageUnit: faker.science.unit().symbol,
+        dosageUnit: dosageUnits[randomInt(dosageUnits.length - 1)],
         dosageForm: 'Film coated Tablets',
         BNFCode: faker.number.int({ min: 1000000 }).toString(),
         fullDescription: faker.commerce.productDescription(),
@@ -202,12 +245,13 @@ export class DBSeeder {
   }
 
   async seed(seedCount: number) {
-    await this.seedDrug(seedCount);
-    await this.seedDistributor(seedCount);
-    await this.seedDrugDistributor(seedCount);
-    await this.seedDrugOrder(seedCount);
-    await this.seedDrugDispense(seedCount);
-    await this.seedStock(seedCount);
+    this.seedCount = seedCount;
+    await this.seedDrug();
+    await this.seedDistributor();
+    await this.seedDrugDistributor();
+    await this.seedStock();
+    await this.seedDrugOrder();
+    await this.seedDrugDispense();
 
     return Promise.resolve();
   }

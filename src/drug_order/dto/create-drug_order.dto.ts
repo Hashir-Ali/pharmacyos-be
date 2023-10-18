@@ -6,23 +6,24 @@ import {
   IsNumber,
   IsString,
 } from 'class-validator';
+import { ObjectId } from 'mongodb';
 import { BaseDTO } from 'src/common/base.dto';
 
 export class CreateDrugOrderDto extends PartialType(BaseDTO) {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  supplierId: string;
+  supplierId: ObjectId | string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  drugId: string;
+  drugId: ObjectId | string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  ordered_by: string; // user Id....!
+  ordered_by: ObjectId | string; // user Id....!
 
   @ApiProperty()
   @IsNotEmpty()

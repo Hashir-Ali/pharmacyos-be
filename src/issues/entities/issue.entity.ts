@@ -33,6 +33,9 @@ export class Issue extends BasicEntity {
   @Column()
   created_by: ObjectId | string;
 
+  @Column()
+  assigned_to: ObjectId | string;
+
   @Column({
     type: 'enum',
     enum: IssueProgress,
@@ -41,10 +44,4 @@ export class Issue extends BasicEntity {
 
   @Column()
   notes: string[];
-
-  @Column({
-    type: 'boolean',
-    default: true,
-  })
-  is_closed: boolean;
 }

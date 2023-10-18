@@ -40,15 +40,15 @@ export class CreateIssueDto extends PartialType(BaseDTO) {
 
   @ApiProperty()
   @IsNotEmpty()
+  @IsString()
+  assigned_to: ObjectId | string;
+
+  @ApiProperty()
+  @IsNotEmpty()
   progress: IssueProgress;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsArray()
   notes: string[];
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsBoolean()
-  is_closed: boolean;
 }

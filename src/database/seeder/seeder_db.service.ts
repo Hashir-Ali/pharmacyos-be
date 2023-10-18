@@ -72,8 +72,8 @@ export class DBSeeder {
             drugId: new ObjectId(drugId),
             quantity: parseInt(
               faker.finance.amount(
-                drugStock.stockRuleMin,
-                drugStock.stockRuleMax,
+                drugStock.stockRuleMin / 3,
+                drugStock.stockRuleMax / 3,
                 0,
               ),
             ),
@@ -97,6 +97,11 @@ export class DBSeeder {
 
   async seedDrugOrder() {
     const savedDto: DrugOrder[] = [];
+    // get monthly dates for current year...!
+    const thisYearMonths = Array.from({ length: 12 }, (item, i) => {
+      return new Date(new Date().getFullYear(), i);
+    });
+
     const drugs = await this.drugService.findAll();
     const users = await this.userService.findAll();
 
@@ -108,7 +113,7 @@ export class DBSeeder {
       // each drug order will be after 30 preceding days...!
       const drugDistributor = await this.drugDistributorService.findOne(drugId);
       let days = 30;
-      for (let j = 0; j <= 10; j++) {
+      for (let j = 0; j <= thisYearMonths.length; j++) {
         const userId =
           users[Math.abs(Math.ceil(Math.random() * users.length - 1))]._id;
 
@@ -121,19 +126,25 @@ export class DBSeeder {
           drugId: new ObjectId(drugId),
           ordered_by: new ObjectId(userId), // No magical Strings... This, I know is a bad code and it smells like rotten rats.,
           quantityOrdered: randomInt(
-            drugStock.stockRuleMax - drugStock.stockRuleMax,
+            drugStock.stockRuleMax - drugStock.stockRuleMin,
           ),
           quantityReceived: randomInt(
-            drugStock.stockRuleMax - drugStock.stockRuleMax,
+            drugStock.stockRuleMax - drugStock.stockRuleMin,
           ),
           cost: parseInt(faker.finance.amount(2, 300)),
           isReceived: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
           expected_delivery_date: faker.date.soon({ days: days }),
-          created_at: faker.date.recent(),
-          Updated_at: faker.date.recent(),
+          created_at: faker.date.betweens(
+            thisYearMonths[j],
+            thisYearMonths[j],
+          )[0],
+          Updated_at: faker.date.betweens(
+            thisYearMonths[j],
+            thisYearMonths[j],
+          )[1],
           is_enabled: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
         });
-        days = days * 30; // each next month..
+        days = days + 30; // each next month..
       }
     }
     const savedItems = await this.drugOrderService.insertMany(savedDto);

@@ -2,7 +2,7 @@ import { DrugOrderService } from './../drug_order/drug_order.service';
 import { Injectable } from '@nestjs/common';
 import { CreateDrugDto } from './dto/create-drug.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Like, MongoRepository } from 'typeorm';
+import { MongoRepository } from 'typeorm';
 import { Drug } from './entities/drug.entity';
 import { ObjectId } from 'mongodb';
 import { DrugDistributorService } from 'src/drug_distributor/drug_distributor.service';
@@ -17,6 +17,10 @@ export interface Reporting {
     purchased: { quantity: number; value: number };
     dispensed: { quantity: number; value: number };
   };
+}
+
+export interface StockLevel {
+  [month: string]: number;
 }
 @Injectable()
 export class DrugService {
@@ -46,31 +50,54 @@ export class DrugService {
     filters: any = {},
   ) {
     const skip = (parseInt(page) - 1) * parseInt(limit);
-    const regex = new RegExp(filters.filters, 'i');
+
+    const regex = new RegExp(
+      filters.filters ? filters.filters.split(' ')[0] : '',
+      'i',
+    ); // search must include a space after name of the drug if we are passing
+    const dose: number = parseInt(
+      filters.filters ? filters.filters.replace(/^\D+|\D+$/g, '') : 5000, //passing arbitrary highest value.
+    );
+
     const [drugs, number] = await this.drugRepository.findAndCount({
-      where: filters.filters ? { name: { $regex: regex } } : {},
+      where:
+        regex.toString().indexOf(dose.toString()) === -1 // if filter contain name and dosage isn't part of the regex, then include name based search.....
+          ? dose //dose is set (not a NaN type): Yes: include name and dosage. No: include only name...
+            ? {
+                name: { $regex: regex },
+                dosage: { $lte: dose },
+              }
+            : { name: { $regex: regex } }
+          : {
+              // else use only dose based search..
+              dosage: { $eq: dose },
+            },
       skip: skip,
       take: parseInt(limit),
       order: { name: sort },
     });
 
-    return [
-      drugs.map((drug) => {
-        return {
-          ...drug,
-          status: 'Issue',
-          stock: {
-            min: 10,
-            max: 100,
-            current: 50,
-            ruleType: 'Automatic',
-            monthlyStockLevels: { 5: 43, 6: 19, 7: 42, 8: 21, 9: 66 },
-          },
-          Orders: { lastOrder: '04/06/23 £2,000 per unit Novartis' },
-        };
-      }),
-      number,
-    ];
+    const populatedDrugs = drugs.map(async (drug) => {
+      const drugStock = await this.stockService.findDrugStock(drug._id);
+      const drugOrder = await this.drugOrderService.findDrugOrders(drug._id);
+
+      return {
+        ...drug,
+        status: 'Issue',
+        stock: {
+          ...drugStock,
+          ruleType: 'Automatic',
+          monthlyStockLevels: await this.monthlyStockLevels(drug._id),
+        },
+        Orders: {
+          lastOrder: `${drugOrder[0].expected_delivery_date.toLocaleDateString(
+            'en-GB',
+          )} £${drugOrder[0].cost} per unit ${drug.name}`,
+        },
+      };
+    });
+
+    return [await Promise.all(populatedDrugs), number];
   }
 
   async findOne(id: string) {
@@ -86,7 +113,7 @@ export class DrugService {
     // new stock is orders delivered and date is not more than 30 days old.
     const deducedStock = { ...stock, onOrder: 0, newStock: 0 };
     if (drugOrders.length > 0) {
-      const stockData = drugOrders.map((order) => {
+      drugOrders.map((order) => {
         if (!order.isReceived) {
           deducedStock.onOrder += order.quantityOrdered;
         } else {
@@ -105,14 +132,8 @@ export class DrugService {
       orders: drugOrders,
       distributors: distributors,
       stock: deducedStock,
-      passThrough: {
-        thisMonth: 20,
-        lastMonth: 200,
-        fiveMonths: 500,
-        lastYear: 539,
-        allTime: 3680,
-      },
-      monthlyStockLevels: { 5: 43, 6: 19, 7: 42, 8: 21, 9: 66 },
+      passThrough: await this.drugPassThrough(Drug._id),
+      monthlyStockLevels: await this.monthlyStockLevels(Drug._id),
     };
   }
 
@@ -168,6 +189,25 @@ export class DrugService {
       }
     });
     return await data;
+  }
+
+  async drugPassThrough(drugId: string) {
+    const data = await this.drugDispenseService.countAllTimeDispense(drugId);
+    return data;
+  }
+
+  async monthlyStockLevels(drugId: string) {
+    const data: StockLevel = {};
+    const orders = await this.drugOrderService.getCurrentYearDrugOrders(drugId);
+    orders.map((order) => {
+      const month = order.created_at.getMonth();
+      if (month in data) {
+        data[month] += order.quantityReceived;
+      } else {
+        data[month] = order.quantityReceived;
+      }
+    });
+    return data;
   }
 
   async findDrugOrders(drugId: string) {

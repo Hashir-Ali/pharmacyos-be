@@ -28,8 +28,8 @@ export class DrugController {
     return this.drugService.create(createDrugDto);
   }
 
-  // @ApiBearerAuth()
-  // @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll(
     @Query('page') page: string,
@@ -66,6 +66,13 @@ export class DrugController {
   @Get(':drugId/stock')
   findStock(@Param('drugId') drugId: string) {
     return this.drugService.findDrugStock(drugId);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get(':drugId/stockLevels')
+  findStockLevels(@Param('drugId') drugId: string) {
+    return this.drugService.monthlyStockLevels(drugId);
   }
 
   @ApiBearerAuth()

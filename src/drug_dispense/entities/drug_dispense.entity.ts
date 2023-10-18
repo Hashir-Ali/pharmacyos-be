@@ -8,7 +8,7 @@ export class DrugDispense extends BasicEntity {
   drugId: ObjectId | String;
 
   @Column()
-  quantity: String;
+  quantity: number;
 
   @Column()
   dispenseValue: String;

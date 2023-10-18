@@ -52,6 +52,19 @@ export class DrugOrderService {
     return await this.populateOrders(orders);
   }
 
+  async getCurrentYearDrugOrders(drugId: string) {
+    const d = new Date();
+    const orders = await this.DrugOrderRepository.find({
+      where: {
+        drugId: new ObjectId(drugId),
+        isReceived: true,
+        created_at: { $gte: new Date(d.getFullYear(), 0, 1) },
+      },
+    });
+
+    return await this.populateOrders(orders);
+  }
+
   async findOne(id: string | ObjectId) {
     // populate distributor name using supplierId field..
     // get type from drug distributor on basis of drugId and distributorId field..

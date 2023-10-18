@@ -141,7 +141,7 @@ export class DrugService {
     const data: Reporting = {};
 
     const [drugOrders, drugDispense] = await Promise.all([
-      this.drugOrderService.findDrugOrders(drugId),
+      this.drugOrderService.getCurrentYearDrugOrders(drugId),
       this.drugDispenseService.findDrugDispense(drugId),
     ]);
 
@@ -150,7 +150,7 @@ export class DrugService {
       // check if month is present in response data structure...
       // Yes: update quantity and value for that month...
       // No: add to data with initial quantity and value...
-      const currentMonth = drugOrder.expected_delivery_date.getUTCMonth();
+      const currentMonth = drugOrder.created_at.getUTCMonth();
       if (currentMonth in data) {
         data[currentMonth].purchased.quantity += drugOrder.quantityReceived;
         data[currentMonth].purchased.value += drugOrder.cost;

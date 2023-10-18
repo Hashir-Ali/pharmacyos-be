@@ -13,6 +13,7 @@ import { DrugOrderModule } from './drug_order/drug_order.module';
 import { DistributorModule } from './distributor/distributor.module';
 import { DrugDistributorModule } from './drug_distributor/drug_distributor.module';
 import { dataSourceOptions } from './database/database.constants';
+import { IssuesModule } from './issues/issues.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { dataSourceOptions } from './database/database.constants';
     DrugOrderModule,
     DistributorModule,
     DrugDistributorModule,
+    IssuesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

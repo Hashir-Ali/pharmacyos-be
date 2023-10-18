@@ -11,6 +11,7 @@ import { StockService } from 'src/stock/stock.service';
 import { dateDiff } from 'src/common/utils';
 import { DrugDispenseService } from 'src/drug_dispense/drug_dispense.service';
 import { SortOrder } from './drug.controller';
+import { randomInt } from 'crypto';
 
 export interface Reporting {
   [month: string]: {
@@ -77,13 +78,15 @@ export class DrugService {
       order: { name: sort },
     });
 
+    const status: string[] = ['Issue', 'Good', ''];
+
     const populatedDrugs = drugs.map(async (drug) => {
       const drugStock = await this.stockService.findDrugStock(drug._id);
       const drugOrder = await this.drugOrderService.findDrugOrders(drug._id);
 
       return {
         ...drug,
-        status: 'Issue',
+        status: status[randomInt(status.length - 1)],
         stock: {
           ...drugStock,
           ruleType: 'Automatic',

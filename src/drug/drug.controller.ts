@@ -40,6 +40,13 @@ export class DrugController {
     return this.drugService.findFiltered(page, limit, sort, filters);
   }
 
+  // @ApiBearerAuth()
+  // @UseGuards(JwtAuthGuard)
+  @Get('/searchDrugs')
+  searchDrugs(@Query() filters: any) {
+    return this.drugService.findFilter(filters);
+  }
+
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get(':id')

@@ -32,9 +32,16 @@ export class IssuesController {
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  @Get()
+  @Get('inProgress')
   findAll() {
     return this.issuesService.findAll();
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get('/completed')
+  findCompleted() {
+    return this.issuesService.findCompleted();
   }
 
   @ApiBearerAuth()

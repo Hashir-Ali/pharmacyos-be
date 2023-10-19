@@ -1,6 +1,7 @@
 import { BasicEntity } from 'src/common/base.entity';
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
 import { ObjectId } from 'mongodb';
+import { Note } from 'src/notes/entities/note.entity';
 
 export enum IssueTypes {
   RuleNeedsAttention = 'Rule Needs Attention',
@@ -22,7 +23,7 @@ export class Issue extends BasicEntity {
     type: 'enum',
     enum: IssueTypes,
   })
-  issue_type: IssueTypes[];
+  issue_type: IssueTypes;
 
   @Column()
   description: string;
@@ -42,6 +43,6 @@ export class Issue extends BasicEntity {
   })
   progress: IssueProgress;
 
-  @Column()
-  notes: string[];
+  // @OneToMany(() => Note, (Note) => Note.issue)
+  // notes: Note[];
 }

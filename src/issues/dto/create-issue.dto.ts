@@ -1,16 +1,17 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import {
-  IsArray,
-  IsBoolean,
-  IsDate,
   IsDateString,
   IsEnum,
   IsNotEmpty,
+  IsObject,
   IsString,
+  ValidateNested,
 } from 'class-validator';
 import { ObjectId } from 'mongodb';
 import { BaseDTO } from 'src/common/base.dto';
 import { IssueProgress, IssueTypes } from '../entities/issue.entity';
+import { Note } from 'src/notes/entities/note.entity';
+import { CreateNoteDto } from 'src/notes/dto/create-note.dto';
 
 export class CreateIssueDto extends PartialType(BaseDTO) {
   @ApiProperty()
@@ -21,7 +22,7 @@ export class CreateIssueDto extends PartialType(BaseDTO) {
   @ApiProperty({ enum: IssueTypes, required: true })
   @IsNotEmpty()
   @IsEnum(IssueTypes)
-  issue_type: IssueTypes[];
+  issue_type: IssueTypes;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -49,6 +50,5 @@ export class CreateIssueDto extends PartialType(BaseDTO) {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsArray()
-  notes: string[];
+  note: string;
 }

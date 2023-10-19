@@ -12,6 +12,9 @@ import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Role } from 'src/common/role.enum';
+import { Roles } from 'src/common/roles.decorator';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @ApiTags('Notes')
 @Controller('notes')
@@ -19,7 +22,8 @@ export class NotesController {
   constructor(private readonly notesService: NotesService) {}
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
   @Post()
   create(@Body() createNoteDto: CreateNoteDto) {
     return this.notesService.create(createNoteDto);

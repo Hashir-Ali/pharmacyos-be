@@ -1,13 +1,6 @@
 import { BasicEntity } from 'src/common/base.entity';
-import { Entity, Column, OneToMany } from 'typeorm';
+import { Entity, Column } from 'typeorm';
 import { ObjectId } from 'mongodb';
-import { Note } from 'src/notes/entities/note.entity';
-
-export enum IssueTypes {
-  RuleNeedsAttention = 'Rule Needs Attention',
-  LTSupplyIssue = 'LT supply issue',
-  OrderOverdue = 'Order Overdue',
-}
 
 export enum IssueProgress {
   InProgress = 'In Progress',

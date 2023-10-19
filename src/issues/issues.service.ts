@@ -54,8 +54,4 @@ export class IssuesService {
   async update(id: string, updateIssueDto: UpdateIssueDto) {
     return await this.issuesRepository.update(new ObjectId(id), updateIssueDto);
   }
-
-  async delete(id: ObjectId | string) {
-    return await this.issuesRepository.delete(new ObjectId(id));
-  }
 }

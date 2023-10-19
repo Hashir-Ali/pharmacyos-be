@@ -36,9 +36,4 @@ export class IssuesController {
   update(@Param('id') id: string, @Body() updateIssueDto: UpdateIssueDto) {
     return this.issuesService.update(id, updateIssueDto);
   }
-
-  @Get('/delete/:id')
-  delete(@Param('id') id: string) {
-    return this.issuesService.delete(id);
-  }
 }

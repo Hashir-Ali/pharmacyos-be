@@ -35,7 +35,31 @@ export class IssuesService {
   }
 
   async findAll() {
-    const issues = await this.issuesRepository.find();
+    const issues = await this.issuesRepository.find({
+      where: { progress: IssueProgress.InProgress },
+    });
+    const issueNotes = issues.map(async (issue) => {
+      const issueType = await this.issueTypeService.findOne(issue.issue_type);
+      const notes = await this.notesService.findByIssue(issue._id);
+      const created_by = await this.userService.findOne(issue.created_by);
+      const assigned_to = await this.userService.findOne(issue.assigned_to);
+      const drug = await this.drugService.findOne(issue.drugId.toString());
+      return {
+        ...issue,
+        drugId: drug,
+        created_by: created_by,
+        assigned_to: assigned_to,
+        issue_type: issueType.issue_type,
+        notes: notes[notes.length - 1],
+      };
+    });
+    return await Promise.all(issueNotes);
+  }
+
+  async findCompleted() {
+    const issues = await this.issuesRepository.find({
+      where: { progress: IssueProgress.Completed },
+    });
     const issueNotes = issues.map(async (issue) => {
       const issueType = await this.issueTypeService.findOne(issue.issue_type);
       const notes = await this.notesService.findByIssue(issue._id);

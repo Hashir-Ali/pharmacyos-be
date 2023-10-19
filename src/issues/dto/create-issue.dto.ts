@@ -1,17 +1,8 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import {
-  IsDateString,
-  IsEnum,
-  IsNotEmpty,
-  IsObject,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
+import { IsDateString, IsNotEmpty, IsString } from 'class-validator';
 import { ObjectId } from 'mongodb';
 import { BaseDTO } from 'src/common/base.dto';
-import { IssueProgress, IssueTypes } from '../entities/issue.entity';
-import { Note } from 'src/notes/entities/note.entity';
-import { CreateNoteDto } from 'src/notes/dto/create-note.dto';
+import { IssueProgress } from '../entities/issue.entity';
 
 export class CreateIssueDto extends PartialType(BaseDTO) {
   @ApiProperty()
@@ -19,10 +10,10 @@ export class CreateIssueDto extends PartialType(BaseDTO) {
   @IsString()
   drugId: ObjectId | string;
 
-  @ApiProperty({ enum: IssueTypes, required: true })
+  @ApiProperty()
   @IsNotEmpty()
-  @IsEnum(IssueTypes)
-  issue_type: IssueTypes;
+  @IsString()
+  issue_type: ObjectId | string;
 
   @ApiProperty()
   @IsNotEmpty()

@@ -15,6 +15,7 @@ import { DrugDistributorModule } from './drug_distributor/drug_distributor.modul
 import { dataSourceOptions } from './database/database.constants';
 import { IssuesModule } from './issues/issues.module';
 import { NotesModule } from './notes/notes.module';
+import { IssueTypesModule } from './issue-types/issue-types.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { NotesModule } from './notes/notes.module';
     DrugDistributorModule,
     IssuesModule,
     NotesModule,
+    IssueTypesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

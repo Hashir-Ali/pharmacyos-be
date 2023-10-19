@@ -19,11 +19,8 @@ export class Issue extends BasicEntity {
   @Column()
   drugId: ObjectId | string;
 
-  @Column({
-    type: 'enum',
-    enum: IssueTypes,
-  })
-  issue_type: IssueTypes;
+  @Column()
+  issue_type: ObjectId | string;
 
   @Column()
   description: string;

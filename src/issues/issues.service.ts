@@ -7,6 +7,8 @@ import { Issue, IssueProgress } from './entities/issue.entity';
 import { MongoRepository } from 'typeorm';
 import { ObjectId } from 'mongodb';
 import { IssueTypesService } from 'src/issue-types/issue-types.service';
+import { UsersService } from 'src/users/users.service';
+import { DrugService } from 'src/drug/drug.service';
 @Injectable()
 export class IssuesService {
   constructor(
@@ -14,6 +16,8 @@ export class IssuesService {
     private issuesRepository: MongoRepository<Issue>,
     private notesService: NotesService,
     private issueTypeService: IssueTypesService,
+    private userService: UsersService,
+    private drugService: DrugService,
   ) {}
 
   async create(createIssueDto: CreateIssueDto) {
@@ -35,8 +39,14 @@ export class IssuesService {
     const issueNotes = issues.map(async (issue) => {
       const issueType = await this.issueTypeService.findOne(issue.issue_type);
       const notes = await this.notesService.findByIssue(issue._id);
+      const created_by = await this.userService.findOne(issue.created_by);
+      const assigned_to = await this.userService.findOne(issue.assigned_to);
+      const drug = await this.drugService.findOne(issue.drugId.toString());
       return {
         ...issue,
+        drugId: drug,
+        created_by: created_by,
+        assigned_to: assigned_to,
         issue_type: issueType.issue_type,
         notes: notes[notes.length - 1],
       };

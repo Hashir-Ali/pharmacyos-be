@@ -13,6 +13,9 @@ import { CreateIssueDto } from './dto/create-issue.dto';
 import { UpdateIssueDto } from './dto/update-issue.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Role } from 'src/common/role.enum';
+import { Roles } from 'src/common/roles.decorator';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @ApiTags('Issues')
 @Controller('issues')
@@ -20,7 +23,8 @@ export class IssuesController {
   constructor(private readonly issuesService: IssuesService) {}
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
   @Post()
   create(@Body() createIssueDto: CreateIssueDto) {
     return this.issuesService.create(createIssueDto);

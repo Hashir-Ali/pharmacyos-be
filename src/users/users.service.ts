@@ -15,7 +15,11 @@ export class UsersService {
   ) {}
 
   async findOne(id: string | ObjectId): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { _id: new ObjectId(id) } });
+    const user = await this.userRepository.findOne({
+      where: { _id: new ObjectId(id) },
+    });
+    delete user.password;
+    return user;
   }
 
   async findAll() {

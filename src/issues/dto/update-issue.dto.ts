@@ -8,4 +8,9 @@ export class UpdateIssueDto extends PartialType(BaseDTO) {
   @IsOptional()
   @IsString()
   progress: IssueProgress;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  closing_date: Date;
 }

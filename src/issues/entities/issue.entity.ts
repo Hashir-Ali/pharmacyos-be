@@ -6,7 +6,6 @@ export enum IssueProgress {
   InProgress = 'In Progress',
   Completed = 'Completed',
 }
-
 @Entity('Issue')
 export class Issue extends BasicEntity {
   @Column()
@@ -24,6 +23,11 @@ export class Issue extends BasicEntity {
   @Column()
   created_by: ObjectId | string;
 
+  @Column({
+    type: 'date',
+  })
+  closing_date: Date;
+
   @Column()
   assigned_to: ObjectId | string;
 
@@ -32,7 +36,4 @@ export class Issue extends BasicEntity {
     enum: IssueProgress,
   })
   progress: IssueProgress;
-
-  // @OneToMany(() => Note, (Note) => Note.issue)
-  // notes: Note[];
 }

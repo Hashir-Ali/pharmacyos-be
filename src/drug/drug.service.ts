@@ -103,6 +103,32 @@ export class DrugService {
     return [await Promise.all(populatedDrugs), number];
   }
 
+  async findFilter(filters: any = {}) {
+    const regex = new RegExp(
+      filters.filters ? filters.filters.split(' ')[0] : '',
+      'i',
+    ); // search must include a space after name of the drug if we are passing
+    const dose: number = parseInt(
+      filters.filters ? filters.filters.replace(/^\D+|\D+$/g, '') : 5000, //passing arbitrary highest value.
+    );
+
+    const [drugs, number] = await this.drugRepository.findAndCount({
+      where:
+        regex.toString().indexOf(dose.toString()) === -1 // if filter contain name and dosage isn't part of the regex, then include name based search.....
+          ? dose //dose is set (not a NaN type): Yes: include name and dosage. No: include only name...
+            ? {
+                name: { $regex: regex },
+                dosage: { $lte: dose },
+              }
+            : { name: { $regex: regex } }
+          : {
+              // else use only dose based search..
+              dosage: { $eq: dose },
+            },
+    });
+    return [drugs, number];
+  }
+
   async findOne(id: string) {
     const Drug = await this.drugRepository.findOne({
       where: { _id: new ObjectId(id) },

@@ -13,6 +13,9 @@ import { DrugOrderModule } from './drug_order/drug_order.module';
 import { DistributorModule } from './distributor/distributor.module';
 import { DrugDistributorModule } from './drug_distributor/drug_distributor.module';
 import { dataSourceOptions } from './database/database.constants';
+import { IssuesModule } from './issues/issues.module';
+import { NotesModule } from './notes/notes.module';
+import { IssueTypesModule } from './issue-types/issue-types.module';
 
 @Module({
   imports: [
@@ -28,6 +31,9 @@ import { dataSourceOptions } from './database/database.constants';
     DrugOrderModule,
     DistributorModule,
     DrugDistributorModule,
+    IssuesModule,
+    NotesModule,
+    IssueTypesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

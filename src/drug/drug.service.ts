@@ -83,12 +83,30 @@ export class DrugService {
     const populatedDrugs = drugs.map(async (drug) => {
       const drugStock = await this.stockService.findDrugStock(drug._id);
       const drugOrder = await this.drugOrderService.findDrugOrders(drug._id);
-
+      // for on orders and new stock (check in drugOrders array)
+      // orders not delivered/received then (on order = add(quantityOrdered))
+      // new stock is orders delivered and date is not more than 30 days old.
+      const deducedStock = { ...drugStock, onOrder: 0, newStock: 0 };
+      if (drugOrder.length > 0) {
+        drugOrder.map((order) => {
+          if (!order.isReceived) {
+            deducedStock.onOrder += order.quantityOrdered;
+          } else {
+            // order was received:
+            // now check if order is not older than one month (for new stock)...
+            // suggestion: it's better to have actual delivery date stored in collection...
+            const monthDays = 30;
+            if (dateDiff(order.expected_delivery_date).diffDays <= monthDays) {
+              deducedStock.newStock += order.quantityReceived;
+            }
+          }
+        });
+      }
       return {
         ...drug,
         status: status[randomInt(status.length - 1)],
         stock: {
-          ...drugStock,
+          ...deducedStock,
           ruleType: 'Automatic',
           monthlyStockLevels: await this.monthlyStockLevels(drug._id),
         },

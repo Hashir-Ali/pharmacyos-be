@@ -5,7 +5,7 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { IssuesService } from './issues.service';
@@ -16,6 +16,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Role } from 'src/common/role.enum';
 import { Roles } from 'src/common/roles.decorator';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { User } from 'src/users/user.entity';
 
 @ApiTags('Issues')
 @Controller('issues')
@@ -33,15 +34,16 @@ export class IssuesController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('inProgress')
-  findAll() {
-    return this.issuesService.findAll();
+  findAll(@Request() req) {
+    console.log(req.user);
+    return this.issuesService.findAll(req.user);
   }
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('/completed')
-  findCompleted() {
-    return this.issuesService.findCompleted();
+  findCompleted(@Request() req) {
+    return this.issuesService.findCompleted(req.user);
   }
 
   @ApiBearerAuth()
@@ -54,7 +56,11 @@ export class IssuesController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateIssueDto: UpdateIssueDto) {
-    return this.issuesService.update(id, updateIssueDto);
+  update(
+    @Request() req,
+    @Param('id') id: string,
+    @Body() updateIssueDto: UpdateIssueDto,
+  ) {
+    return this.issuesService.update(id, updateIssueDto, req.user);
   }
 }

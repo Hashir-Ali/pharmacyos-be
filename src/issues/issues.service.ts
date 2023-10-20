@@ -36,9 +36,12 @@ export class IssuesService {
     return { issue, notes };
   }
 
-  async findAll(user) {
+  async findAll(user: { userId: string; username: string; roles: string[] }) {
     let issues: Issue[];
-    if (Role.Admin in user.roles && Role.SuperAdmin in user.roles) {
+    if (
+      user.roles.includes(Role.Admin) ||
+      user.roles.includes(Role.SuperAdmin)
+    ) {
       issues = await this.issuesRepository.find({
         where: { progress: IssueProgress.InProgress },
       });
@@ -68,9 +71,16 @@ export class IssuesService {
     return await Promise.all(issueNotes);
   }
 
-  async findCompleted(user) {
+  async findCompleted(user: {
+    userId: string;
+    username: string;
+    roles: string[];
+  }) {
     let issues: Issue[];
-    if (Role.Admin in user.roles && Role.SuperAdmin in user.roles) {
+    if (
+      user.roles.includes(Role.Admin) ||
+      user.roles.includes(Role.SuperAdmin)
+    ) {
       issues = await this.issuesRepository.find({
         where: { progress: IssueProgress.Completed },
       });

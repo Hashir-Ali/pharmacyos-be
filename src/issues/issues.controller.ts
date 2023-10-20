@@ -35,7 +35,6 @@ export class IssuesController {
   @UseGuards(JwtAuthGuard)
   @Get('inProgress')
   findAll(@Request() req) {
-    console.log(req.user);
     return this.issuesService.findAll(req.user);
   }
 

@@ -47,8 +47,10 @@ export class IssuesService {
     let today: boolean = false;
     let drugs: [Drug[], number];
     let drugIds: string[] = [];
-    const skip = Math.abs((parseInt(page) - 1) * parseInt(limit));
-
+    let skip = Math.abs((parseInt(page) - 1) * parseInt(limit));
+    if(skip <= 0){
+      skip = 1;
+    }
     if (query.length > 0) {
       drugs = await this.drugService.findFilter({ filters: query });
       drugIds = drugs[0].map((drug) => {
@@ -214,7 +216,7 @@ export class IssuesService {
         notes: notes[notes.length - 1],
       };
     });
-    return [await Promise.all(issueNotes), issues[1]];
+    return await Promise.all(issueNotes);
   }
 
   async findCompleted(
@@ -233,8 +235,10 @@ export class IssuesService {
     let drugs: [Drug[], number];
     let drugIds: string[] = [];
 
-    const skip = Math.abs((parseInt(page) - 1) * parseInt(limit));
-
+    let skip = Math.abs((parseInt(page) - 1) * parseInt(limit));
+    if(skip <= 0){
+      skip = 1;
+    }
     if (query.length > 0) {
       drugs = await this.drugService.findFilter({ filters: query });
       drugIds = drugs[0].map((drug) => {
@@ -394,7 +398,7 @@ export class IssuesService {
         notes: notes[notes.length - 1],
       };
     });
-    return [await Promise.all(issueNotes), issues[1]];
+    return await Promise.all(issueNotes);
   }
 
   async findOne(id: string) {

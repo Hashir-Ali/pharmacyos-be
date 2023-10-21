@@ -24,8 +24,8 @@ export class IssuesController {
   constructor(private readonly issuesService: IssuesService) {}
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard)
+  // @Roles(Role.Admin)
   @Post()
   create(@Body() createIssueDto: CreateIssueDto) {
     return this.issuesService.create(createIssueDto);

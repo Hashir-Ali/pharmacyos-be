@@ -156,11 +156,19 @@ export class IssuesService {
     filters: string[] = [],
   ) {
     let issues: [Issue[], number];
+    let today: boolean = false;
+
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const drugs = await this.drugService.findFilter({ filters: query });
     const drugIds = drugs[0].map((drug) => {
       return drug._id.toString();
     });
+
+    if (filters.includes('today')) {
+      filters = filters.filter((item) => item != 'today');
+      today = true;
+    }
+
     if (
       user.roles.includes(Role.Admin) ||
       user.roles.includes(Role.SuperAdmin)
@@ -169,12 +177,29 @@ export class IssuesService {
         where:
           filters.length > 0
             ? drugs.length > 0
+              ? today
+                ? {
+                    progress: IssueProgress.Completed,
+                    issue_type: {
+                      $in: filters,
+                    },
+                    drugId: { $in: drugIds },
+                    created_at: { $gte: new Date().toISOString() },
+                  }
+                : {
+                    progress: IssueProgress.Completed,
+                    issue_type: {
+                      $in: filters,
+                    },
+                    drugId: { $in: drugIds },
+                  }
+              : today
               ? {
                   progress: IssueProgress.Completed,
                   issue_type: {
                     $in: filters,
                   },
-                  drugId: { $in: drugIds },
+                  created_at: { $gte: new Date().toISOString() },
                 }
               : {
                   progress: IssueProgress.Completed,
@@ -183,10 +208,16 @@ export class IssuesService {
                   },
                 }
             : drugIds.length > 0
-            ? {
-                progress: IssueProgress.Completed,
-                drugId: { $in: drugIds },
-              }
+            ? today
+              ? {
+                  progress: IssueProgress.Completed,
+                  drugId: { $in: drugIds },
+                  created_at: { $gte: new Date().toISOString() },
+                }
+              : {
+                  progress: IssueProgress.Completed,
+                  drugId: { $in: drugIds },
+                }
             : {
                 progress: IssueProgress.Completed,
               },
@@ -199,13 +230,32 @@ export class IssuesService {
         where:
           filters.length > 0
             ? drugs.length > 0
+              ? today
+                ? {
+                    assigned_to: user.userId,
+                    progress: IssueProgress.Completed,
+                    issue_type: {
+                      $in: filters,
+                    },
+                    drugId: { $in: drugIds },
+                    created_at: { $gte: new Date().toISOString() },
+                  }
+                : {
+                    assigned_to: user.userId,
+                    progress: IssueProgress.Completed,
+                    issue_type: {
+                      $in: filters,
+                    },
+                    drugId: { $in: drugIds },
+                  }
+              : today
               ? {
                   assigned_to: user.userId,
                   progress: IssueProgress.Completed,
                   issue_type: {
                     $in: filters,
                   },
-                  drugId: { $in: drugIds },
+                  created_at: new Date().toISOString(),
                 }
               : {
                   assigned_to: user.userId,
@@ -215,10 +265,23 @@ export class IssuesService {
                   },
                 }
             : drugs.length > 0
+            ? today
+              ? {
+                  assigned_to: user.userId,
+                  progress: IssueProgress.Completed,
+                  drugId: { $in: drugIds },
+                  created_at: new Date().toISOString(),
+                }
+              : {
+                  assigned_to: user.userId,
+                  progress: IssueProgress.Completed,
+                  drugId: { $in: drugIds },
+                }
+            : today
             ? {
                 assigned_to: user.userId,
                 progress: IssueProgress.Completed,
-                drugId: { $in: drugIds },
+                created_at: new Date().toISOString(),
               }
             : {
                 assigned_to: user.userId,

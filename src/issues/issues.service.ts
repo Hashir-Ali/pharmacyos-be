@@ -110,8 +110,24 @@ export class IssuesService {
     return await Promise.all(issueNotes);
   }
 
-  findOne(id: string) {
-    return this.issuesRepository.findOne({ where: { _id: new ObjectId(id) } });
+  async findOne(id: string) {
+    const issue = await this.issuesRepository.findOne({
+      where: { _id: new ObjectId(id) },
+    });
+
+    const issueType = await this.issueTypeService.findOne(issue.issue_type);
+    const notes = await this.notesService.findByIssue(issue._id);
+    const created_by = await this.userService.findOne(issue.created_by);
+    const assigned_to = await this.userService.findOne(issue.assigned_to);
+    const drug = await this.drugService.findOne(issue.drugId.toString());
+    return {
+      ...issue,
+      drugId: drug,
+      created_by: created_by,
+      assigned_to: assigned_to,
+      issue_type: issueType.issue_type,
+      notes: notes,
+    };
   }
 
   async findDrugIssues(drugId: string) {
@@ -135,6 +151,15 @@ export class IssuesService {
       user.roles.includes(Role.Admin) ||
       user.roles.includes(Role.SuperAdmin)
     ) {
+      const issue = await this.issuesRepository.findOne({
+        where: { _id: new ObjectId(id) },
+      });
+
+      const notes = await this.notesService.create({
+        issue: new ObjectId(id),
+        note: updateIssueDto.notes,
+        created_by: new ObjectId(issue.created_by),
+      });
       return await this.issuesRepository.update(
         new ObjectId(id),
         updateIssueDto,
@@ -145,6 +170,16 @@ export class IssuesService {
       });
 
       if (user.userId === issue.assigned_to) {
+        const issue = await this.issuesRepository.findOne({
+          where: { _id: new ObjectId(id) },
+        });
+
+        const notes = await this.notesService.create({
+          issue: new ObjectId(id),
+          note: updateIssueDto.notes,
+          created_by: new ObjectId(issue.created_by),
+        });
+
         return await this.issuesRepository.update(
           new ObjectId(id),
           updateIssueDto,

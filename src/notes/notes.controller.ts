@@ -45,6 +45,13 @@ export class NotesController {
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @Get(':issue_id')
+  findbyIssue(@Param('issue_id') issue_id: string) {
+    return this.notesService.findByIssue(issue_id);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateNoteDto: UpdateNoteDto) {
     return this.notesService.update(id, updateNoteDto);

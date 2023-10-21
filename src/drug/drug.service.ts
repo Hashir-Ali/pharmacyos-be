@@ -130,7 +130,7 @@ export class DrugService {
       filters.filters ? filters.filters.replace(/^\D+|\D+$/g, '') : 5000, //passing arbitrary highest value.
     );
 
-    const [drugs, number] = await this.drugRepository.findAndCount({
+    const drugs = await this.drugRepository.findAndCount({
       where:
         regex.toString().indexOf(dose.toString()) === -1 // if filter contain name and dosage isn't part of the regex, then include name based search.....
           ? dose //dose is set (not a NaN type): Yes: include name and dosage. No: include only name...
@@ -144,7 +144,7 @@ export class DrugService {
               dosage: { $eq: dose },
             },
     });
-    return [drugs, number];
+    return drugs;
   }
 
   async findOne(id: string) {

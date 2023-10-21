@@ -9,7 +9,6 @@ import { ObjectId } from 'mongodb';
 import { IssueTypesService } from 'src/issue-types/issue-types.service';
 import { UsersService } from 'src/users/users.service';
 import { DrugService } from 'src/drug/drug.service';
-import { User } from 'src/users/user.entity';
 import { Role } from 'src/common/role.enum';
 @Injectable()
 export class IssuesService {
@@ -36,24 +35,86 @@ export class IssuesService {
     return { issue, notes };
   }
 
-  async findAll(user: { userId: string; username: string; roles: string[] }) {
-    let issues: Issue[];
+  async findAll(
+    user: { userId: string; username: string; roles: string[] },
+    page: string,
+    limit: string,
+    query: string,
+    filters: string[] = [],
+  ) {
+    let issues: [Issue[], number];
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const drugs = await this.drugService.findFilter({ filters: query });
+    const drugIds = drugs[0].map((drug) => {
+      return drug._id.toString();
+    });
     if (
       user.roles.includes(Role.Admin) ||
       user.roles.includes(Role.SuperAdmin)
     ) {
-      issues = await this.issuesRepository.find({
-        where: { progress: { $ne: IssueProgress.Completed } },
+      issues = await this.issuesRepository.findAndCount({
+        where:
+          filters.length > 0
+            ? drugIds.length > 0
+              ? {
+                  progress: { $ne: IssueProgress.Completed },
+                  issue_type: {
+                    $in: filters,
+                  },
+                  drugId: { $in: drugIds },
+                }
+              : {
+                  progress: { $ne: IssueProgress.Completed },
+                  issue_type: {
+                    $in: filters,
+                  },
+                }
+            : drugIds.length > 0
+            ? {
+                progress: { $ne: IssueProgress.Completed },
+                drugId: { $in: drugIds },
+              }
+            : {
+                progress: { $ne: IssueProgress.Completed },
+              },
+        skip: skip,
+        take: parseInt(limit),
       });
     } else {
-      issues = await this.issuesRepository.find({
-        where: {
-          assigned_to: user.userId,
-          progress: { $ne: IssueProgress.Completed },
-        },
+      issues = await this.issuesRepository.findAndCount({
+        where:
+          filters.length > 0
+            ? drugIds.length > 0
+              ? {
+                  assigned_to: user.userId,
+                  progress: { $ne: IssueProgress.Completed },
+                  issue_type: {
+                    $in: filters,
+                  },
+                  drugId: { $in: drugIds },
+                }
+              : {
+                  assigned_to: user.userId,
+                  progress: { $ne: IssueProgress.Completed },
+                  issue_type: {
+                    $in: filters,
+                  },
+                }
+            : drugIds.length > 0
+            ? {
+                assigned_to: user.userId,
+                progress: { $ne: IssueProgress.Completed },
+                drugId: { $in: drugIds },
+              }
+            : {
+                assigned_to: user.userId,
+                progress: { $ne: IssueProgress.Completed },
+              },
+        skip: skip,
+        take: parseInt(limit),
       });
     }
-    const issueNotes = issues.map(async (issue) => {
+    const issueNotes = issues[0].map(async (issue) => {
       const issueType = await this.issueTypeService.findOne(issue.issue_type);
       const notes = await this.notesService.findByIssue(issue._id);
       const created_by = await this.userService.findOne(issue.created_by);
@@ -63,36 +124,109 @@ export class IssuesService {
         ...issue,
         drugId: drug,
         created_by: created_by,
+        // added below fields for client side sorting...!
+        created_by_name: created_by.first_name + ' ' + created_by.last_name,
+        assigned_to_name: assigned_to.first_name + ' ' + created_by.last_name,
+        drug:
+          drug.name +
+          ' ' +
+          drug.dosage +
+          ' ' +
+          drug.dosageUnit +
+          ' ' +
+          drug.dosageForm,
+        // added above fields for client side sorting...!
         assigned_to: assigned_to,
         issue_type: issueType.issue_type,
         notes: notes[notes.length - 1],
       };
     });
-    return await Promise.all(issueNotes);
+    return (await Promise.all(issueNotes)).reverse();
   }
 
-  async findCompleted(user: {
-    userId: string;
-    username: string;
-    roles: string[];
-  }) {
-    let issues: Issue[];
+  async findCompleted(
+    user: {
+      userId: string;
+      username: string;
+      roles: string[];
+    },
+    page: string,
+    limit: string,
+    query: string,
+    filters: string[] = [],
+  ) {
+    let issues: [Issue[], number];
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const drugs = await this.drugService.findFilter({ filters: query });
+    const drugIds = drugs[0].map((drug) => {
+      return drug._id.toString();
+    });
     if (
       user.roles.includes(Role.Admin) ||
       user.roles.includes(Role.SuperAdmin)
     ) {
-      issues = await this.issuesRepository.find({
-        where: { progress: IssueProgress.Completed },
+      issues = await this.issuesRepository.findAndCount({
+        where:
+          filters.length > 0
+            ? drugs.length > 0
+              ? {
+                  progress: IssueProgress.Completed,
+                  issue_type: {
+                    $in: filters,
+                  },
+                  drugId: { $in: drugIds },
+                }
+              : {
+                  progress: IssueProgress.Completed,
+                  issue_type: {
+                    $in: filters,
+                  },
+                }
+            : drugIds.length > 0
+            ? {
+                progress: IssueProgress.Completed,
+                drugId: { $in: drugIds },
+              }
+            : {
+                progress: IssueProgress.Completed,
+              },
+
+        skip: skip,
+        take: parseInt(limit),
       });
     } else {
-      issues = await this.issuesRepository.find({
-        where: {
-          assigned_to: user.userId,
-          progress: IssueProgress.Completed,
-        },
+      issues = await this.issuesRepository.findAndCount({
+        where:
+          filters.length > 0
+            ? drugs.length > 0
+              ? {
+                  assigned_to: user.userId,
+                  progress: IssueProgress.Completed,
+                  issue_type: {
+                    $in: filters,
+                  },
+                  drugId: { $in: drugIds },
+                }
+              : {
+                  assigned_to: user.userId,
+                  progress: IssueProgress.Completed,
+                  issue_type: {
+                    $in: filters,
+                  },
+                }
+            : drugs.length > 0
+            ? {
+                assigned_to: user.userId,
+                progress: IssueProgress.Completed,
+                drugId: { $in: drugIds },
+              }
+            : {
+                assigned_to: user.userId,
+                progress: IssueProgress.Completed,
+              },
       });
     }
-    const issueNotes = issues.map(async (issue) => {
+    const issueNotes = issues[0].map(async (issue) => {
       const issueType = await this.issueTypeService.findOne(issue.issue_type);
       const notes = await this.notesService.findByIssue(issue._id);
       const created_by = await this.userService.findOne(issue.created_by);
@@ -101,6 +235,18 @@ export class IssuesService {
       return {
         ...issue,
         drugId: drug,
+        // added below fields for client side sorting...!
+        created_by_name: created_by.first_name + ' ' + created_by.last_name,
+        assigned_to_name: assigned_to.first_name + ' ' + created_by.last_name,
+        drug:
+          drug.name +
+          ' ' +
+          drug.dosage +
+          ' ' +
+          drug.dosageUnit +
+          ' ' +
+          drug.dosageForm,
+        // added above fields for client side sorting...!
         created_by: created_by,
         assigned_to: assigned_to,
         issue_type: issueType.issue_type,

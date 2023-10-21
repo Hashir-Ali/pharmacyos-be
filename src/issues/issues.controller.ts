@@ -7,6 +7,7 @@ import {
   Param,
   Request,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { IssuesService } from './issues.service';
 import { CreateIssueDto } from './dto/create-issue.dto';
@@ -30,15 +31,33 @@ export class IssuesController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('inProgress')
-  findAll(@Request() req) {
-    return this.issuesService.findAll(req.user);
+  findAll(
+    @Request() req,
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+    @Query('q') query: string,
+    @Query('filters') filters: string[],
+  ) {
+    return this.issuesService.findAll(req.user, page, limit, query, filters);
   }
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('/completed')
-  findCompleted(@Request() req) {
-    return this.issuesService.findCompleted(req.user);
+  findCompleted(
+    @Request() req,
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+    @Query('q') query: string,
+    @Query('filters') filters: string[],
+  ) {
+    return this.issuesService.findCompleted(
+      req.user,
+      page,
+      limit,
+      query,
+      filters,
+    );
   }
 
   @ApiBearerAuth()

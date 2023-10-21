@@ -131,7 +131,10 @@ export class IssuesService {
     }
     // or if role is of an admin or superAdmin then allow to update...
     // if only user role type then check if requesting user ID and assignedto userId are matching.
-    if (Role.Admin in user.roles && Role.SuperAdmin in user.roles) {
+    if (
+      user.roles.includes(Role.Admin) ||
+      user.roles.includes(Role.SuperAdmin)
+    ) {
       return await this.issuesRepository.update(
         new ObjectId(id),
         updateIssueDto,

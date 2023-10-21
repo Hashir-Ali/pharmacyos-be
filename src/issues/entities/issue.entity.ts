@@ -5,6 +5,7 @@ import { ObjectId } from 'mongodb';
 export enum IssueProgress {
   InProgress = 'In Progress',
   Completed = 'Completed',
+  todo = 'To Do',
 }
 @Entity('Issue')
 export class Issue extends BasicEntity {

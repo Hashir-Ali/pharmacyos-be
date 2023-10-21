@@ -13,4 +13,9 @@ export class UpdateIssueDto extends PartialType(BaseDTO) {
   @IsOptional()
   @IsString()
   closing_date: Date;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  notes: string;
 }

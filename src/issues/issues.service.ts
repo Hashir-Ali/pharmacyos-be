@@ -10,6 +10,7 @@ import { IssueTypesService } from 'src/issue-types/issue-types.service';
 import { UsersService } from 'src/users/users.service';
 import { DrugService } from 'src/drug/drug.service';
 import { Role } from 'src/common/role.enum';
+import { Drug } from 'src/drug/entities/drug.entity';
 @Injectable()
 export class IssuesService {
   constructor(
@@ -44,12 +45,16 @@ export class IssuesService {
   ) {
     let issues: [Issue[], number];
     let today: boolean = false;
+    let drugs: [Drug[], number];
+    let drugIds: string[] = [];
+    const skip = Math.abs((parseInt(page) - 1) * parseInt(limit));
 
-    const skip = (parseInt(page) - 1) * parseInt(limit);
-    const drugs = await this.drugService.findFilter({ filters: query });
-    const drugIds = drugs[0].map((drug) => {
-      return drug._id.toString();
-    });
+    if (query.length > 0) {
+      drugs = await this.drugService.findFilter({ filters: query });
+      drugIds = drugs[0].map((drug) => {
+        return drug._id.toString();
+      });
+    }
 
     if (filters.includes('today')) {
       filters = filters.filter((item) => item != 'today');
@@ -209,7 +214,7 @@ export class IssuesService {
         notes: notes[notes.length - 1],
       };
     });
-    return (await Promise.all(issueNotes)).reverse();
+    return [await Promise.all(issueNotes), issues[1]];
   }
 
   async findCompleted(
@@ -225,12 +230,17 @@ export class IssuesService {
   ) {
     let issues: [Issue[], number];
     let today: boolean = false;
+    let drugs: [Drug[], number];
+    let drugIds: string[] = [];
 
-    const skip = (parseInt(page) - 1) * parseInt(limit);
-    const drugs = await this.drugService.findFilter({ filters: query });
-    const drugIds = drugs[0].map((drug) => {
-      return drug._id.toString();
-    });
+    const skip = Math.abs((parseInt(page) - 1) * parseInt(limit));
+
+    if (query.length > 0) {
+      drugs = await this.drugService.findFilter({ filters: query });
+      drugIds = drugs[0].map((drug) => {
+        return drug._id.toString();
+      });
+    }
 
     if (filters.includes('today')) {
       filters = filters.filter((item) => item != 'today');
@@ -244,7 +254,7 @@ export class IssuesService {
       issues = await this.issuesRepository.findAndCount({
         where:
           filters.length > 0
-            ? drugs.length > 0
+            ? drugIds.length > 0
               ? today
                 ? {
                     progress: IssueProgress.Completed,
@@ -297,7 +307,7 @@ export class IssuesService {
       issues = await this.issuesRepository.findAndCount({
         where:
           filters.length > 0
-            ? drugs.length > 0
+            ? drugIds.length > 0
               ? today
                 ? {
                     assigned_to: user.userId,
@@ -332,7 +342,7 @@ export class IssuesService {
                     $in: filters,
                   },
                 }
-            : drugs.length > 0
+            : drugIds.length > 0
             ? today
               ? {
                   assigned_to: user.userId,
@@ -384,7 +394,7 @@ export class IssuesService {
         notes: notes[notes.length - 1],
       };
     });
-    return await Promise.all(issueNotes);
+    return [await Promise.all(issueNotes), issues[1]];
   }
 
   async findOne(id: string) {

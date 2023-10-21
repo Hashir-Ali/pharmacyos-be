@@ -1,5 +1,10 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsDateString, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsDateString,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { ObjectId } from 'mongodb';
 import { BaseDTO } from 'src/common/base.dto';
 import { IssueProgress } from '../entities/issue.entity';
@@ -40,6 +45,6 @@ export class CreateIssueDto extends PartialType(BaseDTO) {
   progress: IssueProgress;
 
   @ApiProperty()
-  @IsNotEmpty()
-  note: string;
+  @IsOptional()
+  note: string | null;
 }

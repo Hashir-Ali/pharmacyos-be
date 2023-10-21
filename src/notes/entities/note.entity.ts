@@ -10,7 +10,7 @@ export class Note extends BasicEntity {
   issue: ObjectId | string;
 
   @Column()
-  note: string;
+  note: string | null;
 
   @Column()
   created_by: ObjectId | string;

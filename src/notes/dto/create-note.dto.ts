@@ -12,7 +12,7 @@ export class CreateNoteDto extends PartialType(BaseDTO) {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  note: string;
+  note: string | null;
 
   @ApiProperty()
   @IsNotEmpty()

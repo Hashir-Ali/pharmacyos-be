@@ -29,7 +29,7 @@ export class IssuesService {
     });
     const notes = await this.notesService.create({
       issue: new ObjectId(issue._id),
-      note: createIssueDto.note,
+      note: null,
       created_by: new ObjectId(createIssueDto.created_by),
     });
 
@@ -43,13 +43,13 @@ export class IssuesService {
       user.roles.includes(Role.SuperAdmin)
     ) {
       issues = await this.issuesRepository.find({
-        where: { progress: IssueProgress.InProgress },
+        where: { progress: { $ne: IssueProgress.Completed } },
       });
     } else {
       issues = await this.issuesRepository.find({
         where: {
           assigned_to: user.userId,
-          progress: IssueProgress.InProgress,
+          progress: { $ne: IssueProgress.Completed },
         },
       });
     }

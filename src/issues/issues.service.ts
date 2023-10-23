@@ -84,6 +84,112 @@ export class IssuesService {
       today = true;
     }
 
+    console.log(
+      filters.length > 0
+        ? drugIds.length > 0
+          ? today
+            ? {
+                assigned_to: user.userId,
+                progress: { $ne: IssueProgress.Completed },
+                issue_type: {
+                  $in: Object.values(filters),
+                },
+                drugId: { $in: drugIds },
+                due_date: {
+                  $gte: new Date(
+                    todayIs.getFullYear(),
+                    todayIs.getMonth(),
+                    todayIs.getDate(),
+                  ).toISOString(),
+                  $lte: new Date(
+                    todayIs.getFullYear(),
+                    todayIs.getMonth(),
+                    todayIs.getDate() + 1,
+                  ).toISOString(),
+                },
+              }
+            : {
+                assigned_to: user.userId,
+                progress: { $ne: IssueProgress.Completed },
+                issue_type: {
+                  $in: Object.values(filters),
+                },
+                drugId: { $in: drugIds },
+              }
+          : today
+          ? {
+              assigned_to: user.userId,
+              progress: { $ne: IssueProgress.Completed },
+              issue_type: {
+                $in: Object.values(filters),
+              },
+              due_date: {
+                $gte: new Date(
+                  todayIs.getFullYear(),
+                  todayIs.getMonth(),
+                  todayIs.getDate(),
+                ).toISOString(),
+                $lte: new Date(
+                  todayIs.getFullYear(),
+                  todayIs.getMonth(),
+                  todayIs.getDate() + 1,
+                ).toISOString(),
+              },
+            }
+          : {
+              assigned_to: user.userId,
+              progress: { $ne: IssueProgress.Completed },
+              issue_type: {
+                $in: Object.values(filters),
+              },
+            }
+        : drugIds.length > 0
+        ? today
+          ? {
+              assigned_to: user.userId,
+              progress: { $ne: IssueProgress.Completed },
+              drugId: { $in: drugIds },
+              due_date: {
+                $gte: new Date(
+                  todayIs.getFullYear(),
+                  todayIs.getMonth(),
+                  todayIs.getDate(),
+                ).toISOString(),
+                $lte: new Date(
+                  todayIs.getFullYear(),
+                  todayIs.getMonth(),
+                  todayIs.getDate() + 1,
+                ).toISOString(),
+              },
+            }
+          : {
+              assigned_to: user.userId,
+              progress: { $ne: IssueProgress.Completed },
+              drugId: { $in: drugIds },
+            }
+        : today
+        ? {
+            assigned_to: user.userId,
+            progress: { $ne: IssueProgress.Completed },
+            due_date: {
+              $gte: new Date(
+                todayIs.getFullYear(),
+                todayIs.getMonth(),
+                todayIs.getDate(),
+              ).toISOString(),
+              $lte: new Date(
+                todayIs.getFullYear(),
+                todayIs.getMonth(),
+                todayIs.getDate() + 1,
+              ).toISOString(),
+            },
+          }
+        : {
+            assigned_to: user.userId,
+            progress: { $ne: IssueProgress.Completed },
+          },
+    );
+
     if (
       user.roles.includes(Role.Admin) ||
       user.roles.includes(Role.SuperAdmin)

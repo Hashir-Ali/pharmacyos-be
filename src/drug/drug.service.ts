@@ -1,5 +1,5 @@
 import { DrugOrderService } from './../drug_order/drug_order.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, forwardRef, Inject } from '@nestjs/common';
 import { CreateDrugDto } from './dto/create-drug.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
@@ -12,6 +12,7 @@ import { dateDiff } from 'src/common/utils';
 import { DrugDispenseService } from 'src/drug_dispense/drug_dispense.service';
 import { SortOrder } from './drug.controller';
 import { randomInt } from 'crypto';
+import { IssuesService } from 'src/issues/issues.service';
 
 export interface Reporting {
   [month: string]: {
@@ -33,6 +34,8 @@ export class DrugService {
     private distributorService: DistributorService,
     private stockService: StockService,
     private drugDispenseService: DrugDispenseService,
+    @Inject(forwardRef(() => IssuesService))
+    private issuesService: IssuesService,
   ) {}
 
   // commented for later use...!
@@ -78,7 +81,7 @@ export class DrugService {
       order: { name: sort },
     });
 
-    const status: string[] = ['Issue', 'Good', ''];
+    // const status: string[] = ['Issue', 'Good', ''];
 
     const populatedDrugs = drugs.map(async (drug) => {
       const drugStock = await this.stockService.findDrugStock(drug._id);
@@ -102,9 +105,19 @@ export class DrugService {
           }
         });
       }
+      console.log(
+        (await this.issuesService.findDrugIssues(drug._id)).length > 0
+          ? 'Good'
+          : 'Issue',
+        'Drug Is: ',
+        drug.name,
+      );
       return {
         ...drug,
-        status: status[randomInt(status.length - 1)],
+        status:
+          (await this.issuesService.findDrugIssues(drug._id)).length > 0
+            ? 'Good'
+            : 'Issue',
         stock: {
           ...deducedStock,
           ruleType: 'Automatic',

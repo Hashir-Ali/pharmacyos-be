@@ -1,5 +1,10 @@
 import { NotesService } from './../notes/notes.service';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  forwardRef,
+  Inject,
+} from '@nestjs/common';
 import { CreateIssueDto } from './dto/create-issue.dto';
 import { UpdateIssueDto } from './dto/update-issue.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -19,6 +24,7 @@ export class IssuesService {
     private notesService: NotesService,
     private issueTypeService: IssueTypesService,
     private userService: UsersService,
+    @Inject(forwardRef(() => DrugService))
     private drugService: DrugService,
   ) {}
 
@@ -83,104 +89,6 @@ export class IssuesService {
       filters = filters.filter((item) => item != 'today');
       today = true;
     }
-
-    console.log(
-      filters.length > 0
-        ? drugIds.length > 0
-          ? today
-            ? {
-                progress: { $ne: IssueProgress.Completed },
-                issue_type: {
-                  $in: Object.values(filters),
-                },
-                drugId: { $in: drugIds },
-                due_date: {
-                  $gte: new Date(
-                    todayIs.getFullYear(),
-                    todayIs.getMonth(),
-                    todayIs.getDate(),
-                  ).toISOString(),
-                  $lte: new Date(
-                    todayIs.getFullYear(),
-                    todayIs.getMonth(),
-                    todayIs.getDate() + 1,
-                  ).toISOString(),
-                },
-              }
-            : {
-                progress: { $ne: IssueProgress.Completed },
-                issue_type: {
-                  $in: Object.values(filters),
-                },
-                drugId: { $in: drugIds },
-              }
-          : today
-          ? {
-              progress: { $ne: IssueProgress.Completed },
-              issue_type: {
-                $in: Object.values(filters),
-              },
-              due_date: {
-                $gte: new Date(
-                  todayIs.getFullYear(),
-                  todayIs.getMonth(),
-                  todayIs.getDate(),
-                ).toISOString(),
-                $lte: new Date(
-                  todayIs.getFullYear(),
-                  todayIs.getMonth(),
-                  todayIs.getDate() + 1,
-                ).toISOString(),
-              },
-            }
-          : {
-              progress: { $ne: IssueProgress.Completed },
-              issue_type: {
-                $in: Object.values(filters),
-              },
-            }
-        : drugIds.length > 0
-        ? today
-          ? {
-              progress: { $ne: IssueProgress.Completed },
-              drugId: { $in: drugIds },
-              due_date: {
-                $gte: new Date(
-                  todayIs.getFullYear(),
-                  todayIs.getMonth(),
-                  todayIs.getDate(),
-                ).toISOString(),
-                $lte: new Date(
-                  todayIs.getFullYear(),
-                  todayIs.getMonth(),
-                  todayIs.getDate() + 1,
-                ).toISOString(),
-              },
-            }
-          : {
-              progress: { $ne: IssueProgress.Completed },
-              drugId: { $in: drugIds },
-            }
-        : today
-        ? {
-            progress: { $ne: IssueProgress.Completed },
-            due_date: {
-              $gte: new Date(
-                todayIs.getFullYear(),
-                todayIs.getMonth(),
-                todayIs.getDate(),
-              ).toISOString(),
-              $lte: new Date(
-                todayIs.getFullYear(),
-                todayIs.getMonth(),
-                todayIs.getDate() + 1,
-              ).toISOString(),
-            },
-          }
-        : {
-            progress: { $ne: IssueProgress.Completed },
-          },
-    );
 
     if (
       user.roles.includes(Role.Admin) ||
@@ -735,7 +643,10 @@ export class IssuesService {
 
   async findDrugIssues(drugId: string) {
     return await this.issuesRepository.find({
-      where: { drugId: new ObjectId(drugId) },
+      where: {
+        drugId: new ObjectId(drugId),
+        status: { $ne: IssueProgress.Completed },
+      },
     });
   }
 

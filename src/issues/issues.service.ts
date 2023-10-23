@@ -47,6 +47,8 @@ export class IssuesService {
     let today: boolean = false;
     let drugs: [Drug[], number];
     let drugIds: string[] = [];
+    let todayIs: Date = new Date();
+
     const skip = Math.abs((parseInt(page) - 1) * parseInt(limit));
 
     if (query.length > 0) {
@@ -54,6 +56,27 @@ export class IssuesService {
       drugIds = drugs[0].map((drug) => {
         return drug._id.toString();
       });
+    }
+
+    // if there is something inside the filters (check the length first)...
+    //then:
+    // need to check if filters type is array already.
+    // if not convert into array by splitting on basis of ,
+    // else:
+    // who cares about else???
+    if (filters.length > 0) {
+      if (typeof filters !== typeof new Array()) {
+        filters = filters.toString().split(',');
+        // we need to check for this created an array with an empty string..
+        if (
+          filters.length > 0 &&
+          filters[0] !== undefined &&
+          filters[0].length === 0
+        ) {
+          // this means an array was created with an empty string...
+          filters.pop();
+        }
+      }
     }
 
     if (filters.includes('today')) {
@@ -73,15 +96,26 @@ export class IssuesService {
                 ? {
                     progress: { $ne: IssueProgress.Completed },
                     issue_type: {
-                      $in: filters,
+                      $in: Object.values(filters),
                     },
                     drugId: { $in: drugIds },
-                    created_at: new Date().toISOString(),
+                    due_date: {
+                      $gte: new Date(
+                        todayIs.getFullYear(),
+                        todayIs.getMonth(),
+                        todayIs.getDate(),
+                      ).toISOString(),
+                      $lte: new Date(
+                        todayIs.getFullYear(),
+                        todayIs.getMonth(),
+                        todayIs.getDate() + 1,
+                      ).toISOString(),
+                    },
                   }
                 : {
                     progress: { $ne: IssueProgress.Completed },
                     issue_type: {
-                      $in: filters,
+                      $in: Object.values(filters),
                     },
                     drugId: { $in: drugIds },
                   }
@@ -89,14 +123,25 @@ export class IssuesService {
               ? {
                   progress: { $ne: IssueProgress.Completed },
                   issue_type: {
-                    $in: filters,
+                    $in: Object.values(filters),
                   },
-                  created_at: new Date().toISOString(),
+                  due_date: {
+                    $gte: new Date(
+                      todayIs.getFullYear(),
+                      todayIs.getMonth(),
+                      todayIs.getDate(),
+                    ).toISOString(),
+                    $lte: new Date(
+                      todayIs.getFullYear(),
+                      todayIs.getMonth(),
+                      todayIs.getDate() + 1,
+                    ).toISOString(),
+                  },
                 }
               : {
                   progress: { $ne: IssueProgress.Completed },
                   issue_type: {
-                    $in: filters,
+                    $in: Object.values(filters),
                   },
                 }
             : drugIds.length > 0
@@ -104,7 +149,18 @@ export class IssuesService {
               ? {
                   progress: { $ne: IssueProgress.Completed },
                   drugId: { $in: drugIds },
-                  created_at: new Date().toISOString(),
+                  due_date: {
+                    $gte: new Date(
+                      todayIs.getFullYear(),
+                      todayIs.getMonth(),
+                      todayIs.getDate(),
+                    ).toISOString(),
+                    $lte: new Date(
+                      todayIs.getFullYear(),
+                      todayIs.getMonth(),
+                      todayIs.getDate() + 1,
+                    ).toISOString(),
+                  },
                 }
               : {
                   progress: { $ne: IssueProgress.Completed },
@@ -113,7 +169,18 @@ export class IssuesService {
             : today
             ? {
                 progress: { $ne: IssueProgress.Completed },
-                created_at: new Date().toISOString(),
+                due_date: {
+                  $gte: new Date(
+                    todayIs.getFullYear(),
+                    todayIs.getMonth(),
+                    todayIs.getDate(),
+                  ).toISOString(),
+                  $lte: new Date(
+                    todayIs.getFullYear(),
+                    todayIs.getMonth(),
+                    todayIs.getDate() + 1,
+                  ).toISOString(),
+                },
               }
             : {
                 progress: { $ne: IssueProgress.Completed },
@@ -131,16 +198,27 @@ export class IssuesService {
                     assigned_to: user.userId,
                     progress: { $ne: IssueProgress.Completed },
                     issue_type: {
-                      $in: filters,
+                      $in: Object.values(filters),
                     },
                     drugId: { $in: drugIds },
-                    created_at: new Date().toISOString(),
+                    due_date: {
+                      $gte: new Date(
+                        todayIs.getFullYear(),
+                        todayIs.getMonth(),
+                        todayIs.getDate(),
+                      ).toISOString(),
+                      $lte: new Date(
+                        todayIs.getFullYear(),
+                        todayIs.getMonth(),
+                        todayIs.getDate() + 1,
+                      ).toISOString(),
+                    },
                   }
                 : {
                     assigned_to: user.userId,
                     progress: { $ne: IssueProgress.Completed },
                     issue_type: {
-                      $in: filters,
+                      $in: Object.values(filters),
                     },
                     drugId: { $in: drugIds },
                   }
@@ -149,15 +227,26 @@ export class IssuesService {
                   assigned_to: user.userId,
                   progress: { $ne: IssueProgress.Completed },
                   issue_type: {
-                    $in: filters,
+                    $in: Object.values(filters),
                   },
-                  created_at: new Date().toISOString(),
+                  due_date: {
+                    $gte: new Date(
+                      todayIs.getFullYear(),
+                      todayIs.getMonth(),
+                      todayIs.getDate(),
+                    ).toISOString(),
+                    $lte: new Date(
+                      todayIs.getFullYear(),
+                      todayIs.getMonth(),
+                      todayIs.getDate() + 1,
+                    ).toISOString(),
+                  },
                 }
               : {
                   assigned_to: user.userId,
                   progress: { $ne: IssueProgress.Completed },
                   issue_type: {
-                    $in: filters,
+                    $in: Object.values(filters),
                   },
                 }
             : drugIds.length > 0
@@ -166,7 +255,18 @@ export class IssuesService {
                   assigned_to: user.userId,
                   progress: { $ne: IssueProgress.Completed },
                   drugId: { $in: drugIds },
-                  created_at: new Date().toISOString(),
+                  due_date: {
+                    $gte: new Date(
+                      todayIs.getFullYear(),
+                      todayIs.getMonth(),
+                      todayIs.getDate(),
+                    ).toISOString(),
+                    $lte: new Date(
+                      todayIs.getFullYear(),
+                      todayIs.getMonth(),
+                      todayIs.getDate() + 1,
+                    ).toISOString(),
+                  },
                 }
               : {
                   assigned_to: user.userId,
@@ -177,7 +277,18 @@ export class IssuesService {
             ? {
                 assigned_to: user.userId,
                 progress: { $ne: IssueProgress.Completed },
-                created_at: new Date().toISOString(),
+                due_date: {
+                  $gte: new Date(
+                    todayIs.getFullYear(),
+                    todayIs.getMonth(),
+                    todayIs.getDate(),
+                  ).toISOString(),
+                  $lte: new Date(
+                    todayIs.getFullYear(),
+                    todayIs.getMonth(),
+                    todayIs.getDate() + 1,
+                  ).toISOString(),
+                },
               }
             : {
                 assigned_to: user.userId,
@@ -214,7 +325,7 @@ export class IssuesService {
         notes: notes[notes.length - 1],
       };
     });
-    return [await Promise.all(issueNotes), issues[1]];
+    return [(await Promise.all(issueNotes)).reverse(), issues[1]];
   }
 
   async findCompleted(
@@ -232,6 +343,7 @@ export class IssuesService {
     let today: boolean = false;
     let drugs: [Drug[], number];
     let drugIds: string[] = [];
+    let todayIs: Date = new Date();
 
     const skip = Math.abs((parseInt(page) - 1) * parseInt(limit));
 
@@ -240,6 +352,27 @@ export class IssuesService {
       drugIds = drugs[0].map((drug) => {
         return drug._id.toString();
       });
+    }
+
+    // if there is something inside the filters (check the length first)...
+    //then:
+    // need to check if filters type is array already.
+    // if not convert into array by splitting on basis of ,
+    // else:
+    // who cares about else???
+    if (filters.length > 0) {
+      if (typeof filters !== typeof new Array()) {
+        filters = filters.toString().split(',');
+        // we need to check for this created an array with an empty string..
+        if (
+          filters.length > 0 &&
+          filters[0] !== undefined &&
+          filters[0].length === 0
+        ) {
+          // this means an array was created with an empty string...
+          filters.pop();
+        }
+      }
     }
 
     if (filters.includes('today')) {
@@ -259,15 +392,28 @@ export class IssuesService {
                 ? {
                     progress: IssueProgress.Completed,
                     issue_type: {
-                      $in: filters,
+                      $in: Object.values(filters),
                     },
                     drugId: { $in: drugIds },
-                    created_at: { $gte: new Date().toISOString() },
+                    due_date: {
+                      $gte: {
+                        $gte: new Date(
+                          todayIs.getFullYear(),
+                          todayIs.getMonth(),
+                          todayIs.getDate(),
+                        ).toISOString(),
+                        $lte: new Date(
+                          todayIs.getFullYear(),
+                          todayIs.getMonth(),
+                          todayIs.getDate() + 1,
+                        ).toISOString(),
+                      },
+                    },
                   }
                 : {
                     progress: IssueProgress.Completed,
                     issue_type: {
-                      $in: filters,
+                      $in: Object.values(filters),
                     },
                     drugId: { $in: drugIds },
                   }
@@ -275,14 +421,27 @@ export class IssuesService {
               ? {
                   progress: IssueProgress.Completed,
                   issue_type: {
-                    $in: filters,
+                    $in: Object.values(filters),
                   },
-                  created_at: { $gte: new Date().toISOString() },
+                  due_date: {
+                    $gte: {
+                      $gte: new Date(
+                        todayIs.getFullYear(),
+                        todayIs.getMonth(),
+                        todayIs.getDate(),
+                      ).toISOString(),
+                      $lte: new Date(
+                        todayIs.getFullYear(),
+                        todayIs.getMonth(),
+                        todayIs.getDate() + 1,
+                      ).toISOString(),
+                    },
+                  },
                 }
               : {
                   progress: IssueProgress.Completed,
                   issue_type: {
-                    $in: filters,
+                    $in: Object.values(filters),
                   },
                 }
             : drugIds.length > 0
@@ -290,7 +449,20 @@ export class IssuesService {
               ? {
                   progress: IssueProgress.Completed,
                   drugId: { $in: drugIds },
-                  created_at: { $gte: new Date().toISOString() },
+                  due_date: {
+                    $gte: {
+                      $gte: new Date(
+                        todayIs.getFullYear(),
+                        todayIs.getMonth(),
+                        todayIs.getDate(),
+                      ).toISOString(),
+                      $lte: new Date(
+                        todayIs.getFullYear(),
+                        todayIs.getMonth(),
+                        todayIs.getDate() + 1,
+                      ).toISOString(),
+                    },
+                  },
                 }
               : {
                   progress: IssueProgress.Completed,
@@ -316,7 +488,20 @@ export class IssuesService {
                       $in: filters,
                     },
                     drugId: { $in: drugIds },
-                    created_at: { $gte: new Date().toISOString() },
+                    due_date: {
+                      $gte: {
+                        $gte: new Date(
+                          todayIs.getFullYear(),
+                          todayIs.getMonth(),
+                          todayIs.getDate(),
+                        ).toISOString(),
+                        $lte: new Date(
+                          todayIs.getFullYear(),
+                          todayIs.getMonth(),
+                          todayIs.getDate() + 1,
+                        ).toISOString(),
+                      },
+                    },
                   }
                 : {
                     assigned_to: user.userId,
@@ -333,7 +518,18 @@ export class IssuesService {
                   issue_type: {
                     $in: filters,
                   },
-                  created_at: new Date().toISOString(),
+                  due_date: {
+                    $gte: new Date(
+                      todayIs.getFullYear(),
+                      todayIs.getMonth(),
+                      todayIs.getDate(),
+                    ).toISOString(),
+                    $lte: new Date(
+                      todayIs.getFullYear(),
+                      todayIs.getMonth(),
+                      todayIs.getDate() + 1,
+                    ).toISOString(),
+                  },
                 }
               : {
                   assigned_to: user.userId,
@@ -348,7 +544,18 @@ export class IssuesService {
                   assigned_to: user.userId,
                   progress: IssueProgress.Completed,
                   drugId: { $in: drugIds },
-                  created_at: new Date().toISOString(),
+                  due_date: {
+                    $gte: new Date(
+                      todayIs.getFullYear(),
+                      todayIs.getMonth(),
+                      todayIs.getDate(),
+                    ).toISOString(),
+                    $lte: new Date(
+                      todayIs.getFullYear(),
+                      todayIs.getMonth(),
+                      todayIs.getDate() + 1,
+                    ).toISOString(),
+                  },
                 }
               : {
                   assigned_to: user.userId,
@@ -359,7 +566,18 @@ export class IssuesService {
             ? {
                 assigned_to: user.userId,
                 progress: IssueProgress.Completed,
-                created_at: new Date().toISOString(),
+                due_date: {
+                  $gte: new Date(
+                    todayIs.getFullYear(),
+                    todayIs.getMonth(),
+                    todayIs.getDate(),
+                  ).toISOString(),
+                  $lte: new Date(
+                    todayIs.getFullYear(),
+                    todayIs.getMonth(),
+                    todayIs.getDate() + 1,
+                  ).toISOString(),
+                },
               }
             : {
                 assigned_to: user.userId,
@@ -394,7 +612,7 @@ export class IssuesService {
         notes: notes[notes.length - 1],
       };
     });
-    return [await Promise.all(issueNotes), issues[1]];
+    return [(await Promise.all(issueNotes)).reverse(), issues[1]];
   }
 
   async findOne(id: string) {

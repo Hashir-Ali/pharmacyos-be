@@ -325,7 +325,7 @@ export class IssuesService {
         notes: notes[notes.length - 1],
       };
     });
-    return [(await Promise.all(issueNotes)).reverse(), issues[1]];
+    return [await Promise.all(issueNotes), issues[1]];
   }
 
   async findCompleted(
@@ -612,7 +612,7 @@ export class IssuesService {
         notes: notes[notes.length - 1],
       };
     });
-    return [(await Promise.all(issueNotes)).reverse(), issues[1]];
+    return [await Promise.all(issueNotes), issues[1]];
   }
 
   async findOne(id: string) {

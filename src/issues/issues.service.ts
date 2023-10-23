@@ -104,7 +104,7 @@ export class IssuesService {
                   $lte: new Date(
                     todayIs.getFullYear(),
                     todayIs.getMonth(),
-                    todayIs.getDate() + 1,
+                    todayIs.getDate(),
                   ).toISOString(),
                 },
               }
@@ -132,7 +132,7 @@ export class IssuesService {
                 $lte: new Date(
                   todayIs.getFullYear(),
                   todayIs.getMonth(),
-                  todayIs.getDate() + 1,
+                  todayIs.getDate(),
                 ).toISOString(),
               },
             }
@@ -158,7 +158,7 @@ export class IssuesService {
                 $lte: new Date(
                   todayIs.getFullYear(),
                   todayIs.getMonth(),
-                  todayIs.getDate() + 1,
+                  todayIs.getDate(),
                 ).toISOString(),
               },
             }
@@ -180,7 +180,7 @@ export class IssuesService {
               $lte: new Date(
                 todayIs.getFullYear(),
                 todayIs.getMonth(),
-                todayIs.getDate() + 1,
+                todayIs.getDate(),
               ).toISOString(),
             },
           }
@@ -209,12 +209,12 @@ export class IssuesService {
                       $gte: new Date(
                         todayIs.getFullYear(),
                         todayIs.getMonth(),
-                        todayIs.getDate(),
+                        todayIs.getDate() - 1,
                       ).toISOString(),
                       $lte: new Date(
                         todayIs.getFullYear(),
                         todayIs.getMonth(),
-                        todayIs.getDate() + 1,
+                        todayIs.getDate(),
                       ).toISOString(),
                     },
                   }
@@ -240,7 +240,7 @@ export class IssuesService {
                     $lte: new Date(
                       todayIs.getFullYear(),
                       todayIs.getMonth(),
-                      todayIs.getDate() + 1,
+                      todayIs.getDate(),
                     ).toISOString(),
                   },
                 }
@@ -264,7 +264,7 @@ export class IssuesService {
                     $lte: new Date(
                       todayIs.getFullYear(),
                       todayIs.getMonth(),
-                      todayIs.getDate() + 1,
+                      todayIs.getDate(),
                     ).toISOString(),
                   },
                 }
@@ -284,7 +284,7 @@ export class IssuesService {
                   $lte: new Date(
                     todayIs.getFullYear(),
                     todayIs.getMonth(),
-                    todayIs.getDate() + 1,
+                    todayIs.getDate(),
                   ).toISOString(),
                 },
               }
@@ -311,12 +311,12 @@ export class IssuesService {
                       $gte: new Date(
                         todayIs.getFullYear(),
                         todayIs.getMonth(),
-                        todayIs.getDate(),
+                        todayIs.getDate() - 1,
                       ).toISOString(),
                       $lte: new Date(
                         todayIs.getFullYear(),
                         todayIs.getMonth(),
-                        todayIs.getDate() + 1,
+                        todayIs.getDate(),
                       ).toISOString(),
                     },
                   }
@@ -344,7 +344,7 @@ export class IssuesService {
                     $lte: new Date(
                       todayIs.getFullYear(),
                       todayIs.getMonth(),
-                      todayIs.getDate() + 1,
+                      todayIs.getDate(),
                     ).toISOString(),
                   },
                 }
@@ -370,7 +370,7 @@ export class IssuesService {
                     $lte: new Date(
                       todayIs.getFullYear(),
                       todayIs.getMonth(),
-                      todayIs.getDate() + 1,
+                      todayIs.getDate(),
                     ).toISOString(),
                   },
                 }
@@ -392,7 +392,7 @@ export class IssuesService {
                   $lte: new Date(
                     todayIs.getFullYear(),
                     todayIs.getMonth(),
-                    todayIs.getDate() + 1,
+                    todayIs.getDate(),
                   ).toISOString(),
                 },
               }
@@ -511,7 +511,7 @@ export class IssuesService {
                         $lte: new Date(
                           todayIs.getFullYear(),
                           todayIs.getMonth(),
-                          todayIs.getDate() + 1,
+                          todayIs.getDate(),
                         ).toISOString(),
                       },
                     },
@@ -534,12 +534,12 @@ export class IssuesService {
                       $gte: new Date(
                         todayIs.getFullYear(),
                         todayIs.getMonth(),
-                        todayIs.getDate(),
+                        todayIs.getDate() - 1,
                       ).toISOString(),
                       $lte: new Date(
                         todayIs.getFullYear(),
                         todayIs.getMonth(),
-                        todayIs.getDate() + 1,
+                        todayIs.getDate(),
                       ).toISOString(),
                     },
                   },
@@ -560,12 +560,12 @@ export class IssuesService {
                       $gte: new Date(
                         todayIs.getFullYear(),
                         todayIs.getMonth(),
-                        todayIs.getDate(),
+                        todayIs.getDate() - 1,
                       ).toISOString(),
                       $lte: new Date(
                         todayIs.getFullYear(),
                         todayIs.getMonth(),
-                        todayIs.getDate() + 1,
+                        todayIs.getDate(),
                       ).toISOString(),
                     },
                   },
@@ -604,7 +604,7 @@ export class IssuesService {
                         $lte: new Date(
                           todayIs.getFullYear(),
                           todayIs.getMonth(),
-                          todayIs.getDate() + 1,
+                          todayIs.getDate(),
                         ).toISOString(),
                       },
                     },
@@ -633,7 +633,7 @@ export class IssuesService {
                     $lte: new Date(
                       todayIs.getFullYear(),
                       todayIs.getMonth(),
-                      todayIs.getDate() + 1,
+                      todayIs.getDate(),
                     ).toISOString(),
                   },
                 }
@@ -659,7 +659,7 @@ export class IssuesService {
                     $lte: new Date(
                       todayIs.getFullYear(),
                       todayIs.getMonth(),
-                      todayIs.getDate() + 1,
+                      todayIs.getDate(),
                     ).toISOString(),
                   },
                 }
@@ -681,7 +681,7 @@ export class IssuesService {
                   $lte: new Date(
                     todayIs.getFullYear(),
                     todayIs.getMonth(),
-                    todayIs.getDate() + 1,
+                    todayIs.getDate(),
                   ).toISOString(),
                 },
               }

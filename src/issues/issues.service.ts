@@ -644,7 +644,7 @@ export class IssuesService {
   async findDrugIssues(drugId: string) {
     return await this.issuesRepository.find({
       where: {
-        drugId: new ObjectId(drugId),
+        drugId: drugId.toString(),
         status: { $ne: IssueProgress.Completed },
       },
     });

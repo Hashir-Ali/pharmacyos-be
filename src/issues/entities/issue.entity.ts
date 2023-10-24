@@ -1,5 +1,5 @@
 import { BasicEntity } from 'src/common/base.entity';
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, Index } from 'typeorm';
 import { ObjectId } from 'mongodb';
 
 export enum IssueProgress {
@@ -18,7 +18,7 @@ export class Issue extends BasicEntity {
   @Column()
   description: string;
 
-  @Column()
+  @Column({ type: 'date' })
   due_date: Date;
 
   @Column()

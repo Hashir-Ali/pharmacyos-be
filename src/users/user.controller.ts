@@ -28,10 +28,8 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   async getProfile(@Request() req) {
-    // return req.user;
     const profile = await this.userService.findOne(req.user.userId);
-    const { password, ...result } = profile;
-    return result;
+    return profile;
   }
 
   // @ApiBearerAuth()

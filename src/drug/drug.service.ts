@@ -209,7 +209,7 @@ export class DrugService {
     }
     const [drugOrders, drugDispense] = await Promise.all([
       this.drugOrderService.getCurrentYearDrugOrders(drugId),
-      this.drugDispenseService.findDrugDispense(drugId),
+      this.drugDispenseService.getCurrentYearDispense(drugId),
     ]);
 
     drugOrders.map((drugOrder) => {

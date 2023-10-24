@@ -11,7 +11,6 @@ import { StockService } from 'src/stock/stock.service';
 import { dateDiff } from 'src/common/utils';
 import { DrugDispenseService } from 'src/drug_dispense/drug_dispense.service';
 import { SortOrder } from './drug.controller';
-import { randomInt } from 'crypto';
 import { IssuesService } from 'src/issues/issues.service';
 
 export interface Reporting {
@@ -106,9 +105,7 @@ export class DrugService {
         });
       }
       console.log(
-        (await this.issuesService.findDrugIssues(drug._id)).length > 0
-          ? 'Good'
-          : 'Issue',
+        await this.issuesService.findDrugIssues(drug._id),
         'Drug Is: ',
         drug.name,
       );
@@ -116,8 +113,8 @@ export class DrugService {
         ...drug,
         status:
           (await this.issuesService.findDrugIssues(drug._id)).length > 0
-            ? 'Good'
-            : 'Issue',
+            ? 'Issue'
+            : 'Good',
         stock: {
           ...deducedStock,
           ruleType: 'Automatic',
@@ -200,6 +197,16 @@ export class DrugService {
   async drugReporting(drugId: string): Promise<Reporting> {
     const data: Reporting = {};
 
+    // add 0 as value for months without any data...
+    for (let i = 0; i < 12; i++) {
+      data[i] = {
+        purchased: {
+          quantity: 0,
+          value: 0,
+        },
+        dispensed: { quantity: 0, value: 0 },
+      };
+    }
     const [drugOrders, drugDispense] = await Promise.all([
       this.drugOrderService.getCurrentYearDrugOrders(drugId),
       this.drugDispenseService.findDrugDispense(drugId),
@@ -258,13 +265,20 @@ export class DrugService {
 
   async monthlyStockLevels(drugId: string) {
     const data: StockLevel = {};
-    const orders = await this.drugOrderService.getCurrentYearDrugOrders(drugId);
-    orders.map((order) => {
-      const month = order.created_at.getMonth();
+    // const orders = await this.drugOrderService.getCurrentYearDrugOrders(drugId);
+    // create Data structure for each month.
+    for (let i = 0; i < 12; i++) {
+      data[i] = 0;
+    }
+    const dispense =
+      await this.drugDispenseService.getCurrentYearDispense(drugId);
+
+    dispense.map((dispense) => {
+      const month = dispense.created_at.getMonth();
       if (month in data) {
-        data[month] += order.quantityReceived;
+        data[month] += dispense.quantity;
       } else {
-        data[month] = order.quantityReceived;
+        data[month] = dispense.quantity;
       }
     });
     return data;

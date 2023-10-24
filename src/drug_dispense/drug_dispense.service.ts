@@ -54,6 +54,17 @@ export class DrugDispenseService {
     });
   }
 
+  async getCurrentYearDispense(drugId: string) {
+    const d = new Date();
+
+    return await this.drugDispenseRepo.find({
+      where: {
+        drugId: new ObjectId(drugId),
+        created_at: { $gte: new Date(d.getFullYear(), 0, 1) },
+      },
+    });
+  }
+
   async insertMany(objectDto: DrugDispense[]) {
     const savedData = await this.drugDispenseRepo.insertMany(objectDto);
     return savedData;

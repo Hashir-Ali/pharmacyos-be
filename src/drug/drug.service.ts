@@ -80,8 +80,6 @@ export class DrugService {
       order: { name: sort },
     });
 
-    // const status: string[] = ['Issue', 'Good', ''];
-
     const populatedDrugs = drugs.map(async (drug) => {
       const drugStock = await this.stockService.findDrugStock(drug._id);
       const drugOrder = await this.drugOrderService.findDrugOrders(drug._id);
@@ -104,11 +102,7 @@ export class DrugService {
           }
         });
       }
-      console.log(
-        await this.issuesService.findDrugIssues(drug._id),
-        'Drug Is: ',
-        drug.name,
-      );
+
       return {
         ...drug,
         status:

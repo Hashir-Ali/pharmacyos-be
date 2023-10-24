@@ -46,7 +46,7 @@ export class DrugDispenseService {
     // get data for current year months...
     const d = new Date();
     // d.setFullYear(d.getFullYear(), 0, 1);
-    return this.drugDispenseRepo.find({
+    return await this.drugDispenseRepo.find({
       where: {
         drugId: new ObjectId(drugId),
         created_at: { $gte: new Date(d.getFullYear(), 0, 1) },

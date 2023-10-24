@@ -217,7 +217,7 @@ export class DrugService {
       // check if month is present in response data structure...
       // Yes: update quantity and value for that month...
       // No: add to data with initial quantity and value...
-      const currentMonth = drugOrder.created_at.getUTCMonth();
+      const currentMonth = drugOrder.created_at.getMonth();
       if (currentMonth in data) {
         data[currentMonth].purchased.quantity += drugOrder.quantityReceived;
         data[currentMonth].purchased.value += drugOrder.cost;
@@ -237,12 +237,12 @@ export class DrugService {
       // check if month is present in response data structure...
       // Yes: update quantity and value for that month...
       // No: add to data with initial quantity and value...
-      const currentMonth = dispense.created_at.getUTCMonth();
+      const currentMonth = dispense.created_at.getMonth();
       if (currentMonth in data) {
-        data[currentMonth].dispensed.quantity = parseInt(
+        data[currentMonth].dispensed.quantity += parseInt(
           dispense.quantity.toString(),
         );
-        data[currentMonth].dispensed.value = parseInt(
+        data[currentMonth].dispensed.value += parseInt(
           dispense.dispenseValue.toString(),
         );
       } else {

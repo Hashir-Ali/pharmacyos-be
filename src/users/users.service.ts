@@ -18,8 +18,10 @@ export class UsersService {
     const user = await this.userRepository.findOne({
       where: { _id: new ObjectId(id) },
     });
-    delete user.password;
-    return user;
+    user
+      ? delete user.password
+      : console.log('tried to fetch a user without password');
+    return user ? user : undefined;
   }
 
   async findAll() {

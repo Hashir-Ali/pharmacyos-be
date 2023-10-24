@@ -111,7 +111,7 @@ export class IssuesService {
                         todayIs.getMonth(),
                         todayIs.getDate(),
                       ).toISOString(),
-                      $lte: new Date(
+                      $lt: new Date(
                         todayIs.getFullYear(),
                         todayIs.getMonth(),
                         todayIs.getDate() + 1,
@@ -137,7 +137,7 @@ export class IssuesService {
                       todayIs.getMonth(),
                       todayIs.getDate(),
                     ).toISOString(),
-                    $lte: new Date(
+                    $lt: new Date(
                       todayIs.getFullYear(),
                       todayIs.getMonth(),
                       todayIs.getDate() + 1,
@@ -161,7 +161,7 @@ export class IssuesService {
                       todayIs.getMonth(),
                       todayIs.getDate(),
                     ).toISOString(),
-                    $lte: new Date(
+                    $lt: new Date(
                       todayIs.getFullYear(),
                       todayIs.getMonth(),
                       todayIs.getDate() + 1,
@@ -181,7 +181,7 @@ export class IssuesService {
                     todayIs.getMonth(),
                     todayIs.getDate(),
                   ).toISOString(),
-                  $lte: new Date(
+                  $lt: new Date(
                     todayIs.getFullYear(),
                     todayIs.getMonth(),
                     todayIs.getDate() + 1,
@@ -213,7 +213,7 @@ export class IssuesService {
                         todayIs.getMonth(),
                         todayIs.getDate(),
                       ).toISOString(),
-                      $lte: new Date(
+                      $lt: new Date(
                         todayIs.getFullYear(),
                         todayIs.getMonth(),
                         todayIs.getDate() + 1,
@@ -241,7 +241,7 @@ export class IssuesService {
                       todayIs.getMonth(),
                       todayIs.getDate(),
                     ).toISOString(),
-                    $lte: new Date(
+                    $lt: new Date(
                       todayIs.getFullYear(),
                       todayIs.getMonth(),
                       todayIs.getDate() + 1,
@@ -267,7 +267,7 @@ export class IssuesService {
                       todayIs.getMonth(),
                       todayIs.getDate(),
                     ).toISOString(),
-                    $lte: new Date(
+                    $lt: new Date(
                       todayIs.getFullYear(),
                       todayIs.getMonth(),
                       todayIs.getDate() + 1,
@@ -289,7 +289,7 @@ export class IssuesService {
                     todayIs.getMonth(),
                     todayIs.getDate(),
                   ).toISOString(),
-                  $lte: new Date(
+                  $lt: new Date(
                     todayIs.getFullYear(),
                     todayIs.getMonth(),
                     todayIs.getDate() + 1,
@@ -315,8 +315,8 @@ export class IssuesService {
         drugId: drug,
         created_by: created_by,
         // added below fields for client side sorting...!
-        created_by_name: created_by.first_name + ' ' + created_by.last_name,
-        assigned_to_name: assigned_to.first_name + ' ' + created_by.last_name,
+        created_by_name: created_by?.first_name + ' ' + created_by?.last_name,
+        assigned_to_name: assigned_to?.first_name + ' ' + created_by?.last_name,
         drug:
           drug.name +
           ' ' +
@@ -327,7 +327,7 @@ export class IssuesService {
           drug.dosageForm,
         // added above fields for client side sorting...!
         assigned_to: assigned_to,
-        issue_type: issueType.issue_type,
+        issue_type: issueType?.issue_type,
         notes: notes[notes.length - 1],
       };
     });
@@ -408,7 +408,7 @@ export class IssuesService {
                           todayIs.getMonth(),
                           todayIs.getDate(),
                         ).toISOString(),
-                        $lte: new Date(
+                        $lt: new Date(
                           todayIs.getFullYear(),
                           todayIs.getMonth(),
                           todayIs.getDate() + 1,
@@ -436,7 +436,7 @@ export class IssuesService {
                         todayIs.getMonth(),
                         todayIs.getDate(),
                       ).toISOString(),
-                      $lte: new Date(
+                      $lt: new Date(
                         todayIs.getFullYear(),
                         todayIs.getMonth(),
                         todayIs.getDate() + 1,
@@ -462,7 +462,7 @@ export class IssuesService {
                         todayIs.getMonth(),
                         todayIs.getDate(),
                       ).toISOString(),
-                      $lte: new Date(
+                      $lt: new Date(
                         todayIs.getFullYear(),
                         todayIs.getMonth(),
                         todayIs.getDate() + 1,
@@ -501,7 +501,7 @@ export class IssuesService {
                           todayIs.getMonth(),
                           todayIs.getDate(),
                         ).toISOString(),
-                        $lte: new Date(
+                        $lt: new Date(
                           todayIs.getFullYear(),
                           todayIs.getMonth(),
                           todayIs.getDate() + 1,
@@ -530,7 +530,7 @@ export class IssuesService {
                       todayIs.getMonth(),
                       todayIs.getDate(),
                     ).toISOString(),
-                    $lte: new Date(
+                    $lt: new Date(
                       todayIs.getFullYear(),
                       todayIs.getMonth(),
                       todayIs.getDate() + 1,
@@ -556,7 +556,7 @@ export class IssuesService {
                       todayIs.getMonth(),
                       todayIs.getDate(),
                     ).toISOString(),
-                    $lte: new Date(
+                    $lt: new Date(
                       todayIs.getFullYear(),
                       todayIs.getMonth(),
                       todayIs.getDate() + 1,
@@ -578,7 +578,7 @@ export class IssuesService {
                     todayIs.getMonth(),
                     todayIs.getDate(),
                   ).toISOString(),
-                  $lte: new Date(
+                  $lt: new Date(
                     todayIs.getFullYear(),
                     todayIs.getMonth(),
                     todayIs.getDate() + 1,
@@ -597,20 +597,22 @@ export class IssuesService {
       const created_by = await this.userService.findOne(issue.created_by);
       const assigned_to = await this.userService.findOne(issue.assigned_to);
       const drug = await this.drugService.findOne(issue.drugId.toString());
+
+      //
       return {
         ...issue,
         drugId: drug,
         // added below fields for client side sorting...!
-        created_by_name: created_by.first_name + ' ' + created_by.last_name,
-        assigned_to_name: assigned_to.first_name + ' ' + created_by.last_name,
+        created_by_name: created_by?.first_name + ' ' + created_by?.last_name,
+        assigned_to_name: assigned_to?.first_name + ' ' + created_by?.last_name,
         drug:
-          drug.name +
+          drug?.name +
           ' ' +
-          drug.dosage +
+          drug?.dosage +
           ' ' +
-          drug.dosageUnit +
+          drug?.dosageUnit +
           ' ' +
-          drug.dosageForm,
+          drug?.dosageForm,
         // added above fields for client side sorting...!
         created_by: created_by,
         assigned_to: assigned_to,

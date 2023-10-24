@@ -402,18 +402,16 @@ export class IssuesService {
                     },
                     drugId: { $in: drugIds },
                     due_date: {
-                      $gte: {
-                        $gte: new Date(
-                          todayIs.getFullYear(),
-                          todayIs.getMonth(),
-                          todayIs.getDate(),
-                        ).toISOString(),
-                        $lt: new Date(
-                          todayIs.getFullYear(),
-                          todayIs.getMonth(),
-                          todayIs.getDate() + 1,
-                        ).toISOString(),
-                      },
+                      $gte: new Date(
+                        todayIs.getFullYear(),
+                        todayIs.getMonth(),
+                        todayIs.getDate(),
+                      ).toISOString(),
+                      $lt: new Date(
+                        todayIs.getFullYear(),
+                        todayIs.getMonth(),
+                        todayIs.getDate() + 1,
+                      ).toISOString(),
                     },
                   }
                 : {
@@ -430,18 +428,16 @@ export class IssuesService {
                     $in: Object.values(filters),
                   },
                   due_date: {
-                    $gte: {
-                      $gte: new Date(
-                        todayIs.getFullYear(),
-                        todayIs.getMonth(),
-                        todayIs.getDate(),
-                      ).toISOString(),
-                      $lt: new Date(
-                        todayIs.getFullYear(),
-                        todayIs.getMonth(),
-                        todayIs.getDate() + 1,
-                      ).toISOString(),
-                    },
+                    $gte: new Date(
+                      todayIs.getFullYear(),
+                      todayIs.getMonth(),
+                      todayIs.getDate(),
+                    ).toISOString(),
+                    $lt: new Date(
+                      todayIs.getFullYear(),
+                      todayIs.getMonth(),
+                      todayIs.getDate() + 1,
+                    ).toISOString(),
                   },
                 }
               : {
@@ -456,18 +452,16 @@ export class IssuesService {
                   progress: IssueProgress.Completed,
                   drugId: { $in: drugIds },
                   due_date: {
-                    $gte: {
-                      $gte: new Date(
-                        todayIs.getFullYear(),
-                        todayIs.getMonth(),
-                        todayIs.getDate(),
-                      ).toISOString(),
-                      $lt: new Date(
-                        todayIs.getFullYear(),
-                        todayIs.getMonth(),
-                        todayIs.getDate() + 1,
-                      ).toISOString(),
-                    },
+                    $gte: new Date(
+                      todayIs.getFullYear(),
+                      todayIs.getMonth(),
+                      todayIs.getDate(),
+                    ).toISOString(),
+                    $lt: new Date(
+                      todayIs.getFullYear(),
+                      todayIs.getMonth(),
+                      todayIs.getDate() + 1,
+                    ).toISOString(),
                   },
                 }
               : {
@@ -495,18 +489,16 @@ export class IssuesService {
                     },
                     drugId: { $in: drugIds },
                     due_date: {
-                      $gte: {
-                        $gte: new Date(
-                          todayIs.getFullYear(),
-                          todayIs.getMonth(),
-                          todayIs.getDate(),
-                        ).toISOString(),
-                        $lt: new Date(
-                          todayIs.getFullYear(),
-                          todayIs.getMonth(),
-                          todayIs.getDate() + 1,
-                        ).toISOString(),
-                      },
+                      $gte: new Date(
+                        todayIs.getFullYear(),
+                        todayIs.getMonth(),
+                        todayIs.getDate(),
+                      ).toISOString(),
+                      $lt: new Date(
+                        todayIs.getFullYear(),
+                        todayIs.getMonth(),
+                        todayIs.getDate() + 1,
+                      ).toISOString(),
                     },
                   }
                 : {

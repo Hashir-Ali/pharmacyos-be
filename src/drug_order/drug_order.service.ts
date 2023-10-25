@@ -28,6 +28,7 @@ export class DrugOrderService {
     page: string,
     limit: string,
     sort: SortOrder,
+
     filters: any = {},
   ) {
     const skip = (parseInt(page) - 1) * parseInt(limit);
@@ -89,12 +90,14 @@ export class DrugOrderService {
           value.supplierId,
         );
         const { supplierId, drugId, ...result } = value;
-        return {
-          ...result,
-          From: distributor?.name,
-          ordered_by: ordered_by,
-          type: type,
-        };
+        if (value.quantityOrdered > 0) {
+          return {
+            ...result,
+            From: distributor?.name,
+            ordered_by: ordered_by,
+            type: type,
+          };
+        }
       }),
     );
   }

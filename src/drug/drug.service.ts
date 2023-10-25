@@ -50,6 +50,7 @@ export class DrugService {
     page: string,
     limit: string,
     sort: SortOrder,
+    sortColumn: string,
     filters: any = {},
   ) {
     const skip = (parseInt(page) - 1) * parseInt(limit);
@@ -88,16 +89,16 @@ export class DrugService {
       // new stock is orders delivered and date is not more than 30 days old.
       const deducedStock = { ...drugStock, onOrder: 0, newStock: 0 };
       if (drugOrder.length > 0) {
-        drugOrder.map((order) => {
-          if (!order.isReceived) {
-            deducedStock.onOrder += order.quantityOrdered;
+        drugOrder?.map((order) => {
+          if (!order?.isReceived) {
+            deducedStock.onOrder += order?.quantityOrdered;
           } else {
             // order was received:
             // now check if order is not older than one month (for new stock)...
             // suggestion: it's better to have actual delivery date stored in collection...
             const monthDays = 30;
-            if (dateDiff(order.expected_delivery_date).diffDays <= monthDays) {
-              deducedStock.newStock += order.quantityReceived;
+            if (dateDiff(order?.expected_delivery_date).diffDays <= monthDays) {
+              deducedStock.newStock += order?.quantityReceived;
             }
           }
         });
@@ -155,7 +156,7 @@ export class DrugService {
     const Drug = await this.drugRepository.findOne({
       where: { _id: new ObjectId(id) },
     });
-    const drugOrders = await this.drugOrderService.findDrugOrders(id);
+    const drugOrders = await this.drugOrderService.getCurrentYearDrugOrders(id);
     const distributors = await this.findDrugDistributors(Drug._id);
     const stock = await this.stockService.findDrugStock(Drug._id);
 
@@ -213,12 +214,12 @@ export class DrugService {
       // No: add to data with initial quantity and value...
       const currentMonth = drugOrder.created_at.getMonth();
       if (currentMonth in data) {
-        data[currentMonth].purchased.quantity += drugOrder.quantityReceived;
+        data[currentMonth].purchased.quantity += drugOrder.quantityOrdered;
         data[currentMonth].purchased.value += drugOrder.cost;
       } else {
         data[currentMonth] = {
           purchased: {
-            quantity: drugOrder.quantityReceived,
+            quantity: drugOrder.quantityOrdered,
             value: drugOrder.cost,
           },
           dispensed: { quantity: 0, value: 0 },

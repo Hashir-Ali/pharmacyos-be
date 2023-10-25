@@ -84,6 +84,7 @@ export class DrugService {
     const populatedDrugs = drugs.map(async (drug) => {
       const drugStock = await this.stockService.findDrugStock(drug._id);
       const drugOrder = await this.drugOrderService.findDrugOrders(drug._id);
+      drugStock.currentStock = await this.calculateInStock(drug._id);
       // for on orders and new stock (check in drugOrders array)
       // orders not delivered/received then (on order = add(quantityOrdered))
       // new stock is orders delivered and date is not more than 30 days old.
@@ -152,6 +153,19 @@ export class DrugService {
     return drugs;
   }
 
+  async calculateInStock(drugId) {
+    // calculating in stock value as drug orders added minus drugs dispensed...
+    const dispense =
+      await this.drugDispenseService.countAllTimeDispense(drugId);
+    const orders = await this.drugOrderService.findDrugOrders(drugId);
+    let ordersAdded = 0;
+    orders.map((order) => {
+      ordersAdded += order.quantityOrdered;
+    });
+
+    return ordersAdded - dispense.allTime;
+  }
+
   async findOne(id: string) {
     const Drug = await this.drugRepository.findOne({
       where: { _id: new ObjectId(id) },
@@ -159,6 +173,8 @@ export class DrugService {
     const drugOrders = await this.drugOrderService.getCurrentYearDrugOrders(id);
     const distributors = await this.findDrugDistributors(Drug._id);
     const stock = await this.stockService.findDrugStock(Drug._id);
+
+    stock.currentStock = await this.calculateInStock(Drug._id);
 
     // for on orders and new stock (check in drugOrders array)
     // orders not delivered/received then (on order = add(quantityOrdered))

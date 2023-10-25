@@ -329,7 +329,8 @@ export class IssuesService {
         created_by: created_by,
         // added below fields for client side sorting...!
         created_by_name: created_by?.first_name + ' ' + created_by?.last_name,
-        assigned_to_name: assigned_to?.first_name + ' ' + created_by?.last_name,
+        assigned_to_name:
+          assigned_to?.first_name + ' ' + assigned_to?.last_name,
         drug:
           drug.name +
           ' ' +
@@ -489,7 +490,7 @@ export class IssuesService {
         skip: skip,
         take: parseInt(limit),
         order: {
-          due_date:
+          created_at:
             sortOrder && sortOrder.length > 0 && sortOrder !== 'undefined'
               ? sortOrder
               : 'ASC',
@@ -604,7 +605,7 @@ export class IssuesService {
         skip: skip,
         take: parseInt(limit),
         order: {
-          due_date:
+          created_at:
             sortOrder && sortOrder.length > 0 && sortOrder !== 'undefined'
               ? sortOrder
               : 'ASC',
@@ -624,7 +625,8 @@ export class IssuesService {
         drugId: drug,
         // added below fields for client side sorting...!
         created_by_name: created_by?.first_name + ' ' + created_by?.last_name,
-        assigned_to_name: assigned_to?.first_name + ' ' + created_by?.last_name,
+        assigned_to_name:
+          assigned_to?.first_name + ' ' + assigned_to?.last_name,
         drug:
           drug?.name +
           ' ' +

@@ -60,6 +60,7 @@ export class DrugOrderService {
         drugId: new ObjectId(drugId),
         isReceived: true,
         created_at: { $gte: new Date(d.getFullYear(), 0, 1) },
+        quantityReceived: { $gte: 0 },
       },
     });
 
@@ -90,14 +91,13 @@ export class DrugOrderService {
           value.supplierId,
         );
         const { supplierId, drugId, ...result } = value;
-        if (value.quantityOrdered > 0) {
-          return {
-            ...result,
-            From: distributor?.name,
-            ordered_by: ordered_by,
-            type: type,
-          };
-        }
+
+        return {
+          ...result,
+          From: distributor?.name,
+          ordered_by: ordered_by,
+          type: type,
+        };
       }),
     );
   }

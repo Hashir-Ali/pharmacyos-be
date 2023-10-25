@@ -194,7 +194,9 @@ export class IssuesService {
               },
         skip: skip,
         take: parseInt(limit),
-        order: { due_date: sortOrder },
+        order: {
+          due_date: sortOrder && sortOrder.length > 0 ? sortOrder : 'ASC',
+        },
       });
     } else {
       issues = await this.issuesRepository.findAndCount({
@@ -304,7 +306,9 @@ export class IssuesService {
               },
         skip: skip,
         take: parseInt(limit),
-        order: { due_date: sortOrder },
+        order: {
+          due_date: sortOrder && sortOrder.length > 0 ? sortOrder : 'ASC',
+        },
       });
     }
     const issueNotes = issues[0].map(async (issue) => {
@@ -478,7 +482,9 @@ export class IssuesService {
 
         skip: skip,
         take: parseInt(limit),
-        order: { due_date: sortOrder },
+        order: {
+          due_date: sortOrder && sortOrder.length > 0 ? sortOrder : 'ASC',
+        },
       });
     } else {
       issues = await this.issuesRepository.findAndCount({
@@ -588,7 +594,9 @@ export class IssuesService {
               },
         skip: skip,
         take: parseInt(limit),
-        order: { due_date: sortOrder },
+        order: {
+          due_date: sortOrder && sortOrder.length > 0 ? sortOrder : 'ASC',
+        },
       });
     }
     const issueNotes = issues[0].map(async (issue) => {

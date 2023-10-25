@@ -154,9 +154,9 @@ export class DBSeeder {
   async seedDrugDistributor() {
     const objectDto: DrugDistributor[] = [];
     const drugDistributorTypes = [
-      'Preferred Supplier',
-      'Other Supplier',
-      'Contracted Supplier',
+      'Preferred Distributor',
+      'Contracted Distributor',
+      'Other Distributor',
     ];
 
     const distributor = await this.distributorService.findAll();

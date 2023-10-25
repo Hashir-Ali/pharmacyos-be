@@ -45,4 +45,11 @@ export class DrugDistributorController {
   findOne(@Param('drugId') drugId: string) {
     return this.drugDistributorService.findOne(drugId);
   }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get(':id/:type')
+  updateMany(@Param('id') id: string, @Param('type') type: string) {
+    return this.drugDistributorService.updateAllDistributorTypes(id, type);
+  }
 }

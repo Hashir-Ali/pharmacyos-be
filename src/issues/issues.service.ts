@@ -46,6 +46,7 @@ export class IssuesService {
     user: { userId: string; username: string; roles: string[] },
     page: string,
     limit: string,
+    sortOrder: 'ASC' | 'DESC',
     query: string,
     filters: string[] = [],
   ) {
@@ -193,6 +194,7 @@ export class IssuesService {
               },
         skip: skip,
         take: parseInt(limit),
+        order: { due_date: sortOrder },
       });
     } else {
       issues = await this.issuesRepository.findAndCount({
@@ -302,6 +304,7 @@ export class IssuesService {
               },
         skip: skip,
         take: parseInt(limit),
+        order: { due_date: sortOrder },
       });
     }
     const issueNotes = issues[0].map(async (issue) => {
@@ -342,6 +345,7 @@ export class IssuesService {
     },
     page: string,
     limit: string,
+    sortOrder: 'ASC' | 'DESC',
     query: string,
     filters: string[] = [],
   ) {
@@ -474,6 +478,7 @@ export class IssuesService {
 
         skip: skip,
         take: parseInt(limit),
+        order: { due_date: sortOrder },
       });
     } else {
       issues = await this.issuesRepository.findAndCount({
@@ -581,6 +586,9 @@ export class IssuesService {
                 assigned_to: user.userId,
                 progress: IssueProgress.Completed,
               },
+        skip: skip,
+        take: parseInt(limit),
+        order: { due_date: sortOrder },
       });
     }
     const issueNotes = issues[0].map(async (issue) => {

@@ -156,7 +156,7 @@ export class DrugService {
     const Drug = await this.drugRepository.findOne({
       where: { _id: new ObjectId(id) },
     });
-    const drugOrders = await this.drugOrderService.findDrugOrders(id);
+    const drugOrders = await this.drugOrderService.getCurrentYearDrugOrders(id);
     const distributors = await this.findDrugDistributors(Drug._id);
     const stock = await this.stockService.findDrugStock(Drug._id);
 
@@ -214,12 +214,12 @@ export class DrugService {
       // No: add to data with initial quantity and value...
       const currentMonth = drugOrder.created_at.getMonth();
       if (currentMonth in data) {
-        data[currentMonth].purchased.quantity += drugOrder.quantityReceived;
+        data[currentMonth].purchased.quantity += drugOrder.quantityOrdered;
         data[currentMonth].purchased.value += drugOrder.cost;
       } else {
         data[currentMonth] = {
           purchased: {
-            quantity: drugOrder.quantityReceived,
+            quantity: drugOrder.quantityOrdered,
             value: drugOrder.cost,
           },
           dispensed: { quantity: 0, value: 0 },

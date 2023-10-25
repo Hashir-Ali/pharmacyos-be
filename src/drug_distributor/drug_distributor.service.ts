@@ -58,4 +58,8 @@ export class DrugDistributorService {
     const savedData = await this.drugDistributorRepo.insertMany(objectDto);
     return savedData;
   }
+
+  async updateAllDistributorTypes(id: string, type: string) {
+    await this.drugDistributorRepo.update(new ObjectId(id), { type: type });
+  }
 }

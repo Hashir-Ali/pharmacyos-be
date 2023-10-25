@@ -46,7 +46,7 @@ export class IssuesService {
     user: { userId: string; username: string; roles: string[] },
     page: string,
     limit: string,
-    sortOrder: 'ASC' | 'DESC',
+    sortOrder: 'ASC' | 'DESC' | 'undefined',
     query: string,
     filters: string[] = [],
   ) {
@@ -195,7 +195,10 @@ export class IssuesService {
         skip: skip,
         take: parseInt(limit),
         order: {
-          due_date: sortOrder && sortOrder.length > 0 ? sortOrder : 'ASC',
+          due_date:
+            sortOrder && sortOrder.length > 0 && sortOrder != 'undefined'
+              ? sortOrder
+              : 'ASC',
         },
       });
     } else {
@@ -307,7 +310,10 @@ export class IssuesService {
         skip: skip,
         take: parseInt(limit),
         order: {
-          due_date: sortOrder && sortOrder.length > 0 ? sortOrder : 'ASC',
+          due_date:
+            sortOrder && sortOrder.length > 0 && sortOrder !== 'undefined'
+              ? sortOrder
+              : 'ASC',
         },
       });
     }
@@ -349,7 +355,7 @@ export class IssuesService {
     },
     page: string,
     limit: string,
-    sortOrder: 'ASC' | 'DESC',
+    sortOrder: 'ASC' | 'DESC' | 'undefined',
     query: string,
     filters: string[] = [],
   ) {
@@ -483,7 +489,10 @@ export class IssuesService {
         skip: skip,
         take: parseInt(limit),
         order: {
-          due_date: sortOrder && sortOrder.length > 0 ? sortOrder : 'ASC',
+          due_date:
+            sortOrder && sortOrder.length > 0 && sortOrder !== 'undefined'
+              ? sortOrder
+              : 'ASC',
         },
       });
     } else {
@@ -595,7 +604,10 @@ export class IssuesService {
         skip: skip,
         take: parseInt(limit),
         order: {
-          due_date: sortOrder && sortOrder.length > 0 ? sortOrder : 'ASC',
+          due_date:
+            sortOrder && sortOrder.length > 0 && sortOrder !== 'undefined'
+              ? sortOrder
+              : 'ASC',
         },
       });
     }

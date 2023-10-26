@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { IssuesService } from './issues.service';
 import { IssuesController } from './issues.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -13,7 +13,7 @@ import { DrugModule } from 'src/drug/drug.module';
     NotesModule,
     IssueTypesModule,
     UsersModule,
-    DrugModule,
+    forwardRef(() => DrugModule),
   ],
   controllers: [IssuesController],
   providers: [IssuesService],

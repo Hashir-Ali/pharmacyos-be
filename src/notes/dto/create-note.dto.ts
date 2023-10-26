@@ -5,9 +5,9 @@ import { BaseDTO } from 'src/common/base.dto';
 import { Issue } from 'src/issues/entities/issue.entity';
 
 export class CreateNoteDto extends PartialType(BaseDTO) {
-  @ApiProperty()
-  @IsNotEmpty()
-  issue: ObjectId | string;
+  // @ApiProperty()
+  // @IsNotEmpty()
+  // issue: ObjectId | string;
 
   @ApiProperty()
   @IsNotEmpty()

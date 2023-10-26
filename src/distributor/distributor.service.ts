@@ -22,7 +22,7 @@ export class DistributorService {
   findAndCount(
     page: string,
     limit: string,
-    sort: SortOrder,
+    sortOrder: SortOrder,
     filters: any = {},
   ) {
     const skip = (parseInt(page) - 1) * parseInt(limit);
@@ -32,7 +32,12 @@ export class DistributorService {
       where: filters.filters ? { name: { $regex: regex } } : {},
       skip: skip,
       take: parseInt(limit),
-      order: { name: sort },
+      order: {
+        name:
+          sortOrder && sortOrder.length > 0 && sortOrder !== 'undefined'
+            ? sortOrder
+            : 'ASC',
+      },
     });
   }
 

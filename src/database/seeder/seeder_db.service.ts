@@ -144,6 +144,27 @@ export class DBSeeder {
           )[1],
           is_enabled: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
         });
+
+        const drug = await this.drugService.findOne(drugId);
+        // update drug for last_order status...!
+        this.drugService.updateDrug(drugId, {
+          rule_type: drug.rule_type,
+          name: drug.name,
+          dosage: drug.dosage,
+          dosageUnit: drug.dosageUnit,
+          dosageForm: drug.dosageForm,
+          BNFCode: drug.BNFCode,
+          fullDescription: drug.fullDescription,
+          containerSize: drug.containerSize,
+          location: drug.location,
+          drugEAN: drug.drugEAN,
+          status: true,
+          last_order: `${savedDto[
+            savedDto.length - 1
+          ].expected_delivery_date.toLocaleDateString('en-GB')} £${
+            savedDto[savedDto.length - 1].cost
+          } per unit ${drug.name}`,
+        });
         days = days + 30; // each next month..
       }
     }
@@ -154,9 +175,9 @@ export class DBSeeder {
   async seedDrugDistributor() {
     const objectDto: DrugDistributor[] = [];
     const drugDistributorTypes = [
-      'Preferred Supplier',
-      'Other Supplier',
-      'Contracted Supplier',
+      'Preferred Distributor',
+      'Contracted Distributor',
+      'Other Distributor',
     ];
 
     const distributor = await this.distributorService.findAll();
@@ -237,6 +258,15 @@ export class DBSeeder {
     // pass objectDto to saveMany function...
     const objectDTO: Drug[] = [];
 
+    const statusArray = [true, false, true, false, true, false];
+    const ruleTypeArray = [
+      'Automatic',
+      'Manual',
+      'Automatic',
+      'Manual',
+      'Automatic',
+      'Manual',
+    ];
     for (let i = 0; i <= this.seedCount; i++) {
       objectDTO.push({
         name: drugNames[randomInt(drugNames.length - 1)],
@@ -251,6 +281,9 @@ export class DBSeeder {
         created_at: faker.date.recent(),
         Updated_at: faker.date.recent(),
         is_enabled: faker.datatype.boolean(0.75), // 0-1 : 0.75 means 75% of true boolean value...
+        status: statusArray[randomInt(statusArray.length - 1)],
+        last_order: '',
+        rule_type: ruleTypeArray[randomInt(ruleTypeArray.length - 1)],
       });
     }
     const seedThem = await this.drugService.insertMany(objectDTO);

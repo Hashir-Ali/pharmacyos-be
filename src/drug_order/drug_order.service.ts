@@ -21,13 +21,29 @@ export class DrugOrderService {
   ) {}
 
   async create(CreateDrugOrderDto: CreateDrugOrderDto) {
+    // update drug here.. for last_order...
+    // await this.drugService.updateDrug(CreateDrugOrderDto.drugId, {
+    //   status: false,
+    //   name: drug.name,
+    //   dosage: drug.dosage,
+    //   dosageUnit: drug.dosageUnit,
+    //   dosageForm: drug.dosageForm,
+    //   BNFCode: drug.BNFCode,
+    //   fullDescription: drug.fullDescription,
+    //   containerSize: drug.containerSize,
+    //   location: drug.location,
+    //   drugEAN: drug.drugEAN,
+    //   last_order: drug.last_order,
+    //   rule_type: drug.rule_type,
+    // });
+    // above creates a circular dependency...!
     return await this.DrugOrderRepository.save(CreateDrugOrderDto);
   }
 
   async findAll(
     page: string,
     limit: string,
-    sort: SortOrder,
+    sortOrder: SortOrder,
     filters: any = {},
   ) {
     const skip = (parseInt(page) - 1) * parseInt(limit);
@@ -38,7 +54,12 @@ export class DrugOrderService {
       where: filters.filters ? { quantityOrdered: { $regex: regex } } : {},
       skip: skip,
       take: parseInt(limit),
-      order: { expected_delivery_date: sort },
+      order: {
+        expected_delivery_date:
+          sortOrder && sortOrder.length > 0 && sortOrder !== 'undefined'
+            ? sortOrder
+            : 'ASC',
+      },
     });
     const populatedOrders = await this.populateOrders(orders);
 
@@ -59,6 +80,7 @@ export class DrugOrderService {
         drugId: new ObjectId(drugId),
         isReceived: true,
         created_at: { $gte: new Date(d.getFullYear(), 0, 1) },
+        quantityReceived: { $gte: 0 },
       },
     });
 
@@ -89,6 +111,7 @@ export class DrugOrderService {
           value.supplierId,
         );
         const { supplierId, drugId, ...result } = value;
+
         return {
           ...result,
           From: distributor?.name,

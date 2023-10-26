@@ -1,5 +1,5 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { BaseDTO } from 'src/common/base.dto';
 
 export class CreateDrugDto extends PartialType(BaseDTO) {
@@ -44,4 +44,19 @@ export class CreateDrugDto extends PartialType(BaseDTO) {
   @IsNotEmpty()
   @IsNumber()
   drugEAN: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsBoolean()
+  status: boolean;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  last_order: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  rule_type: string;
 }

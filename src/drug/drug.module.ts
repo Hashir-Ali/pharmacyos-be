@@ -8,6 +8,7 @@ import { DrugDistributorModule } from 'src/drug_distributor/drug_distributor.mod
 import { DistributorModule } from 'src/distributor/distributor.module';
 import { StockModule } from 'src/stock/stock.module';
 import { DrugDispenseModule } from 'src/drug_dispense/drug_dispense.module';
+import { IssuesModule } from 'src/issues/issues.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { DrugDispenseModule } from 'src/drug_dispense/drug_dispense.module';
     DistributorModule,
     StockModule,
     DrugDispenseModule,
+    forwardRef(() => IssuesModule),
   ],
   controllers: [DrugController],
   providers: [DrugService],

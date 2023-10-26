@@ -20,4 +20,17 @@ export class Drug extends BasicEntity {
   location: string;
   @Column()
   drugEAN: number;
+  @Column({
+    type: 'boolean',
+  })
+  status: boolean;
+
+  @Column({
+    type: 'string',
+  })
+  last_order: string;
+  @Column({
+    type: 'string',
+  })
+  rule_type: string;
 }

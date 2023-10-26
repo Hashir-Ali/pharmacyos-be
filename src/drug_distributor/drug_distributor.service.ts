@@ -18,7 +18,12 @@ export class DrugDistributorService {
     return await this.drugDistributorRepo.save(createDrugDistributorDto);
   }
 
-  findAll(page: string, limit: string, sort: SortOrder, filters: any = {}) {
+  findAll(
+    page: string,
+    limit: string,
+    sortOrder: SortOrder,
+    filters: any = {},
+  ) {
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const regex = new RegExp(filters.filters, 'i');
 
@@ -26,7 +31,12 @@ export class DrugDistributorService {
       where: filters.filters ? { type: { $regex: regex } } : {},
       skip: skip,
       take: parseInt(limit),
-      order: { type: sort },
+      order: {
+        type:
+          sortOrder && sortOrder.length > 0 && sortOrder !== 'undefined'
+            ? sortOrder
+            : 'ASC',
+      },
     });
   }
 
@@ -57,5 +67,9 @@ export class DrugDistributorService {
   async insertMany(objectDto: DrugDistributor[]) {
     const savedData = await this.drugDistributorRepo.insertMany(objectDto);
     return savedData;
+  }
+
+  async updateAllDistributorTypes(id: string, type: string) {
+    await this.drugDistributorRepo.update(new ObjectId(id), { type: type });
   }
 }

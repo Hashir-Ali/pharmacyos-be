@@ -1,5 +1,10 @@
 import { DrugOrderService } from './../drug_order/drug_order.service';
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  forwardRef,
+  Inject,
+  BadRequestException,
+} from '@nestjs/common';
 import { CreateDrugDto } from './dto/create-drug.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
@@ -11,7 +16,8 @@ import { StockService } from 'src/stock/stock.service';
 import { dateDiff } from 'src/common/utils';
 import { DrugDispenseService } from 'src/drug_dispense/drug_dispense.service';
 import { SortOrder } from './drug.controller';
-import { randomInt } from 'crypto';
+import { IssuesService } from 'src/issues/issues.service';
+import { UpdateDrugDto } from './dto/update-drug.dto';
 
 export interface Reporting {
   [month: string]: {
@@ -23,6 +29,19 @@ export interface Reporting {
 export interface StockLevel {
   [month: string]: number;
 }
+
+function resolveSortFields(sortField: string) {
+  switch (sortField) {
+    case 'status':
+    case 'last_order':
+    case 'rule_type':
+    case 'Updated_at':
+      return sortField;
+    case 'name':
+    default:
+      return 'name';
+  }
+}
 @Injectable()
 export class DrugService {
   constructor(
@@ -33,11 +52,18 @@ export class DrugService {
     private distributorService: DistributorService,
     private stockService: StockService,
     private drugDispenseService: DrugDispenseService,
+    @Inject(forwardRef(() => IssuesService))
+    private issuesService: IssuesService,
   ) {}
 
   // commented for later use...!
   async create(createDrugDto: CreateDrugDto) {
-    return await this.drugRepository.save(createDrugDto);
+    return await this.drugRepository.save({
+      ...createDrugDto,
+      status: true,
+      last_order: null,
+      rule_type: null,
+    });
   }
 
   findAll() {
@@ -48,6 +74,7 @@ export class DrugService {
     page: string,
     limit: string,
     sort: SortOrder,
+    sortColumn: string,
     filters: any = {},
   ) {
     const skip = (parseInt(page) - 1) * parseInt(limit);
@@ -57,7 +84,7 @@ export class DrugService {
       'i',
     ); // search must include a space after name of the drug if we are passing
     const dose: number = parseInt(
-      filters.filters ? filters.filters.replace(/^\D+|\D+$/g, '') : 5000, //passing arbitrary highest value.
+      filters.filters ? filters.filters.replace(/^\D+|\D+$/g, '') : '5000', //passing arbitrary highest value.
     );
 
     const [drugs, number] = await this.drugRepository.findAndCount({
@@ -75,50 +102,49 @@ export class DrugService {
             },
       skip: skip,
       take: parseInt(limit),
-      order: { name: sort },
+      order: {
+        [resolveSortFields(sortColumn)]:
+          sort && sort.length > 0 && sort !== 'undefined' ? sort : 'ASC',
+      },
     });
-
-    const status: string[] = ['Issue', 'Good', ''];
 
     const populatedDrugs = drugs.map(async (drug) => {
       const drugStock = await this.stockService.findDrugStock(drug._id);
       const drugOrder = await this.drugOrderService.findDrugOrders(drug._id);
+      // drugStock.currentStock = await this.calculateInStock(drug._id);
       // for on orders and new stock (check in drugOrders array)
       // orders not delivered/received then (on order = add(quantityOrdered))
       // new stock is orders delivered and date is not more than 30 days old.
       const deducedStock = { ...drugStock, onOrder: 0, newStock: 0 };
       if (drugOrder.length > 0) {
-        drugOrder.map((order) => {
-          if (!order.isReceived) {
-            deducedStock.onOrder += order.quantityOrdered;
+        drugOrder?.map((order) => {
+          if (!order?.isReceived) {
+            deducedStock.onOrder += order?.quantityOrdered;
           } else {
             // order was received:
             // now check if order is not older than one month (for new stock)...
             // suggestion: it's better to have actual delivery date stored in collection...
             const monthDays = 30;
-            if (dateDiff(order.expected_delivery_date).diffDays <= monthDays) {
-              deducedStock.newStock += order.quantityReceived;
+            if (dateDiff(order?.expected_delivery_date).diffDays <= monthDays) {
+              deducedStock.newStock += order?.quantityReceived;
             }
           }
         });
       }
       return {
         ...drug,
-        status: status[randomInt(status.length - 1)],
         stock: {
           ...deducedStock,
-          ruleType: 'Automatic',
           monthlyStockLevels: await this.monthlyStockLevels(drug._id),
-        },
-        Orders: {
-          lastOrder: `${drugOrder[0].expected_delivery_date.toLocaleDateString(
-            'en-GB',
-          )} £${drugOrder[0].cost} per unit ${drug.name}`,
         },
       };
     });
 
     return [await Promise.all(populatedDrugs), number];
+  }
+
+  async updateDrug(id: string, updateDrugDto: UpdateDrugDto) {
+    return await this.drugRepository.update(id, updateDrugDto);
   }
 
   async findFilter(filters: any = {}) {
@@ -147,13 +173,31 @@ export class DrugService {
     return drugs;
   }
 
+  async calculateInStock(drugId) {
+    // calculating in stock value as drug orders added minus drugs dispensed...
+    const dispense =
+      await this.drugDispenseService.countAllTimeDispense(drugId);
+    const orders = await this.drugOrderService.findDrugOrders(drugId);
+    let ordersAdded = 0;
+    orders.map((order) => {
+      ordersAdded += order.quantityOrdered;
+    });
+
+    return ordersAdded - dispense.allTime;
+  }
+
   async findOne(id: string) {
-    const Drug = await this.drugRepository.findOne({
+    const drug = await this.drugRepository.findOne({
       where: { _id: new ObjectId(id) },
     });
-    const drugOrders = await this.drugOrderService.findDrugOrders(id);
-    const distributors = await this.findDrugDistributors(Drug._id);
-    const stock = await this.stockService.findDrugStock(Drug._id);
+
+    if (!drug) {
+      throw new BadRequestException('Drug not Found');
+    }
+    const drugOrders = await this.drugOrderService.getCurrentYearDrugOrders(id);
+    const distributors = await this.findDrugDistributors(drug._id);
+    const stock = await this.stockService.findDrugStock(drug._id);
+    // stock.currentStock = await this.calculateInStock(Drug._id);
 
     // for on orders and new stock (check in drugOrders array)
     // orders not delivered/received then (on order = add(quantityOrdered))
@@ -175,21 +219,31 @@ export class DrugService {
       });
     }
     return {
-      ...Drug,
+      ...drug,
       orders: drugOrders,
       distributors: distributors,
       stock: deducedStock,
-      passThrough: await this.drugPassThrough(Drug._id),
-      monthlyStockLevels: await this.monthlyStockLevels(Drug._id),
+      passThrough: await this.drugPassThrough(drug._id),
+      monthlyStockLevels: await this.monthlyStockLevels(drug._id),
     };
   }
 
   async drugReporting(drugId: string): Promise<Reporting> {
     const data: Reporting = {};
 
+    // add 0 as value for months without any data...
+    for (let i = 0; i < 12; i++) {
+      data[i] = {
+        purchased: {
+          quantity: 0,
+          value: 0,
+        },
+        dispensed: { quantity: 0, value: 0 },
+      };
+    }
     const [drugOrders, drugDispense] = await Promise.all([
       this.drugOrderService.getCurrentYearDrugOrders(drugId),
-      this.drugDispenseService.findDrugDispense(drugId),
+      this.drugDispenseService.getCurrentYearDispense(drugId),
     ]);
 
     drugOrders.map((drugOrder) => {
@@ -197,14 +251,14 @@ export class DrugService {
       // check if month is present in response data structure...
       // Yes: update quantity and value for that month...
       // No: add to data with initial quantity and value...
-      const currentMonth = drugOrder.created_at.getUTCMonth();
+      const currentMonth = drugOrder.created_at.getMonth();
       if (currentMonth in data) {
-        data[currentMonth].purchased.quantity += drugOrder.quantityReceived;
+        data[currentMonth].purchased.quantity += drugOrder.quantityOrdered;
         data[currentMonth].purchased.value += drugOrder.cost;
       } else {
         data[currentMonth] = {
           purchased: {
-            quantity: drugOrder.quantityReceived,
+            quantity: drugOrder.quantityOrdered,
             value: drugOrder.cost,
           },
           dispensed: { quantity: 0, value: 0 },
@@ -217,12 +271,12 @@ export class DrugService {
       // check if month is present in response data structure...
       // Yes: update quantity and value for that month...
       // No: add to data with initial quantity and value...
-      const currentMonth = dispense.created_at.getUTCMonth();
+      const currentMonth = dispense.created_at.getMonth();
       if (currentMonth in data) {
-        data[currentMonth].dispensed.quantity = parseInt(
+        data[currentMonth].dispensed.quantity += parseInt(
           dispense.quantity.toString(),
         );
-        data[currentMonth].dispensed.value = parseInt(
+        data[currentMonth].dispensed.value += parseInt(
           dispense.dispenseValue.toString(),
         );
       } else {
@@ -245,13 +299,20 @@ export class DrugService {
 
   async monthlyStockLevels(drugId: string) {
     const data: StockLevel = {};
-    const orders = await this.drugOrderService.getCurrentYearDrugOrders(drugId);
-    orders.map((order) => {
-      const month = order.created_at.getMonth();
+    // const orders = await this.drugOrderService.getCurrentYearDrugOrders(drugId);
+    // create Data structure for each month.
+    for (let i = 0; i < 12; i++) {
+      data[i] = 0;
+    }
+    const dispense =
+      await this.drugDispenseService.getCurrentYearDispense(drugId);
+
+    dispense.map((dispense) => {
+      const month = dispense.created_at.getMonth();
       if (month in data) {
-        data[month] += order.quantityReceived;
+        data[month] += dispense.quantity;
       } else {
-        data[month] = order.quantityReceived;
+        data[month] = dispense.quantity;
       }
     });
     return data;

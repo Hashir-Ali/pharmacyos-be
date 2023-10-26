@@ -8,6 +8,7 @@ import {
   Request,
   UseGuards,
   Query,
+  Delete,
 } from '@nestjs/common';
 import { IssuesService } from './issues.service';
 import { CreateIssueDto } from './dto/create-issue.dto';
@@ -96,5 +97,14 @@ export class IssuesController {
     @Body() updateIssueDto: UpdateIssueDto,
   ) {
     return this.issuesService.update(id, updateIssueDto, req.user);
+  }
+
+  // temporarily added delete many. because I don't want to seed again...
+  // reason is we aren't seeding issueTypes and user.... so might have to manually do that...
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Delete('deleteMany')
+  deleteMany(@Query('ids') ids: string[]) {
+    return this.deleteMany(ids);
   }
 }

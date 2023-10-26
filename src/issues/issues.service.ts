@@ -262,6 +262,10 @@ export class IssuesService {
     throw new BadRequestException('User not allowed to update this record');
   }
 
+  async deleteMany(ids: string[]) {
+    return await this.issuesRepository.deleteMany(ids);
+  }
+
   buildSearchQuery({ user, progress, filterTags, drugQuery }) {
     const todayIs = new Date();
     const progressOp = progress == IssueProgress.Completed ? '$eq' : '$ne';

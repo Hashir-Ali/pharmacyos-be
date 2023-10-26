@@ -67,8 +67,25 @@ export class IssuesService {
       created_by: new ObjectId(createIssueDto.created_by),
     });
 
+    await this.drugService.updateDrug(drug._id, {
+      status: false,
+      name: drug.name,
+      dosage: drug.dosage,
+      dosageUnit: drug.dosageUnit,
+      dosageForm: drug.dosageForm,
+      BNFCode: drug.BNFCode,
+      fullDescription: drug.fullDescription,
+      containerSize: drug.containerSize,
+      location: drug.location,
+      drugEAN: drug.drugEAN,
+      last_order: drug.last_order,
+      rule_type: drug.rule_type,
+    });
+
+    // update drug status here....!
     const issue = await this.issuesRepository.save({
       drugId: {
+        _id: drug._id,
         name: drug.name,
         dosage: drug.dosage,
         unit: drug.dosageUnit,
@@ -146,7 +163,7 @@ export class IssuesService {
         skip: skip,
         take: parseInt(limit),
         order: {
-          [sortField]:
+          [resolveSortFields(sortField)]:
             sortOrder && sortOrder.length > 0 && sortOrder !== 'undefined'
               ? sortOrder
               : 'ASC',
@@ -220,7 +237,7 @@ export class IssuesService {
   async findDrugIssues(drugId: string) {
     return await this.issuesRepository.find({
       where: {
-        drugId: drugId.toString(),
+        'drugId._id': drugId.toString(),
         status: { $ne: IssueProgress.Completed },
       },
     });

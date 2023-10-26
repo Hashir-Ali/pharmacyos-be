@@ -15,6 +15,7 @@ import { CreateDrugDto } from './dto/create-drug.dto';
 export enum SortOrder {
   ascending = 'ASC',
   descending = 'DESC',
+  undefined = 'undefined',
 }
 @ApiTags('drug')
 @Controller('drug')
@@ -34,8 +35,8 @@ export class DrugController {
   findAll(
     @Query('page') page: string,
     @Query('limit') limit: string,
-    @Query('sort') sort: SortOrder,
-    @Query('sortColumn') sortColumn: string,
+    @Query('sortOrder') sort: SortOrder,
+    @Query('sortField') sortColumn: string,
     @Query() filters: any,
   ) {
     return this.drugService.findFiltered(

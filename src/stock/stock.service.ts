@@ -21,7 +21,7 @@ export class StockService {
   async findAll(
     page: string,
     limit: string,
-    sort: SortOrder,
+    sortOrder: SortOrder,
     filters: any = {},
   ) {
     const skip = (parseInt(page) - 1) * parseInt(limit);
@@ -31,7 +31,12 @@ export class StockService {
       where: filters.filters ? { currentStock: { $regex: regex } } : {},
       skip: skip,
       take: parseInt(limit),
-      order: { currentStock: sort },
+      order: {
+        currentStock:
+          sortOrder && sortOrder.length > 0 && sortOrder !== 'undefined'
+            ? sortOrder
+            : 'ASC',
+      },
     });
     return stock;
   }

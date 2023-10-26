@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateIssueTypeDto } from './dto/create-issue-type.dto';
 import { UpdateIssueTypeDto } from './dto/update-issue-type.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -21,9 +21,14 @@ export class IssueTypesService {
   }
 
   async findOne(id: ObjectId | string) {
-    return await this.issueTypeRepository.findOne({
+    const issue = await this.issueTypeRepository.findOne({
       where: { _id: new ObjectId(id) },
     });
+    if (!issue) {
+      throw new BadRequestException('No issue type found for given id');
+    }
+
+    return issue;
   }
 
   update(id: string, updateIssueTypeDto: UpdateIssueTypeDto) {

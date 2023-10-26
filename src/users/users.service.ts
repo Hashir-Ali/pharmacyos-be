@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { MongoRepository } from 'typeorm';
@@ -18,6 +18,11 @@ export class UsersService {
     const user = await this.userRepository.findOne({
       where: { _id: new ObjectId(id) },
     });
+
+    if (!user) {
+      throw new BadRequestException('No user found');
+    }
+
     user
       ? delete user.password
       : console.log('tried to fetch a user without password');

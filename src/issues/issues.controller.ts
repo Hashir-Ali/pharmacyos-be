@@ -38,18 +38,20 @@ export class IssuesController {
     @Request() req,
     @Query('page') page: string,
     @Query('limit') limit: string,
+    @Query('sortField') sortField: string,
     @Query('sortOrder') sortOrder: 'ASC' | 'DESC',
     @Query('q') query: string,
     @Query('filters') filters: string[],
   ) {
-    return this.issuesService.findAll(
-      req.user,
+    return this.issuesService.findAll({
+      user: req.user,
       page,
       limit,
+      sortField,
       sortOrder,
       query,
       filters,
-    );
+    });
   }
 
   @ApiBearerAuth()
@@ -59,6 +61,7 @@ export class IssuesController {
     @Request() req,
     @Query('page') page: string,
     @Query('limit') limit: string,
+    @Query('sortField') sortField: string,
     @Query('sortOrder') sortOrder: 'ASC' | 'DESC',
     @Query('q') query: string,
     @Query('filters') filters: string[],
@@ -67,6 +70,7 @@ export class IssuesController {
       req.user,
       page,
       limit,
+      sortField,
       sortOrder,
       query,
       filters,

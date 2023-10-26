@@ -6,8 +6,8 @@ import { Issue } from 'src/issues/entities/issue.entity';
 @Entity('Note')
 export class Note extends BasicEntity {
   //   @ManyToOne(() => Issue, (Issue) => Issue.notes)
-  @Column()
-  issue: ObjectId | string;
+  // @Column()
+  // issue: ObjectId | string;
 
   @Column()
   note: string | null;

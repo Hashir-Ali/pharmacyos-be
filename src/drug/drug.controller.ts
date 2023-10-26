@@ -35,9 +35,16 @@ export class DrugController {
     @Query('page') page: string,
     @Query('limit') limit: string,
     @Query('sort') sort: SortOrder,
+    @Query('sortColumn') sortColumn: string,
     @Query() filters: any,
   ) {
-    return this.drugService.findFiltered(page, limit, sort, filters);
+    return this.drugService.findFiltered(
+      page,
+      limit,
+      sort,
+      sortColumn,
+      filters,
+    );
   }
 
   // @ApiBearerAuth()

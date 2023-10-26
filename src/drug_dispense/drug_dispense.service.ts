@@ -25,14 +25,24 @@ export class DrugDispenseService {
     return await this.drugDispenseRepo.save(CreateDrugDispenseDto);
   }
 
-  findAll(page: string, limit: string, sort: SortOrder, filters: any = {}) {
+  findAll(
+    page: string,
+    limit: string,
+    sortOrder: SortOrder,
+    filters: any = {},
+  ) {
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const regex = new RegExp(filters.filters, 'i');
     return this.drugDispenseRepo.findAndCount({
       where: filters.filters ? { quantity: { $regex: regex } } : {},
       skip: skip,
       take: parseInt(limit),
-      order: { dispenseValue: sort },
+      order: {
+        dispenseValue:
+          sortOrder && sortOrder.length > 0 && sortOrder !== 'undefined'
+            ? sortOrder
+            : 'ASC',
+      },
     });
   }
 

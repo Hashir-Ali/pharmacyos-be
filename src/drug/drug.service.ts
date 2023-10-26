@@ -1,5 +1,10 @@
 import { DrugOrderService } from './../drug_order/drug_order.service';
-import { Injectable, forwardRef, Inject } from '@nestjs/common';
+import {
+  Injectable,
+  forwardRef,
+  Inject,
+  BadRequestException,
+} from '@nestjs/common';
 import { CreateDrugDto } from './dto/create-drug.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
@@ -12,6 +17,7 @@ import { dateDiff } from 'src/common/utils';
 import { DrugDispenseService } from 'src/drug_dispense/drug_dispense.service';
 import { SortOrder } from './drug.controller';
 import { IssuesService } from 'src/issues/issues.service';
+import { UpdateDrugDto } from './dto/update-drug.dto';
 
 export interface Reporting {
   [month: string]: {
@@ -22,6 +28,19 @@ export interface Reporting {
 
 export interface StockLevel {
   [month: string]: number;
+}
+
+function resolveSortFields(sortField: string) {
+  switch (sortField) {
+    case 'status':
+    case 'last_order':
+    case 'rule_type':
+    case 'Updated_at':
+      return sortField;
+    case 'name':
+    default:
+      return 'name';
+  }
 }
 @Injectable()
 export class DrugService {
@@ -39,7 +58,12 @@ export class DrugService {
 
   // commented for later use...!
   async create(createDrugDto: CreateDrugDto) {
-    return await this.drugRepository.save(createDrugDto);
+    return await this.drugRepository.save({
+      ...createDrugDto,
+      status: true,
+      last_order: null,
+      rule_type: null,
+    });
   }
 
   findAll() {
@@ -60,7 +84,7 @@ export class DrugService {
       'i',
     ); // search must include a space after name of the drug if we are passing
     const dose: number = parseInt(
-      filters.filters ? filters.filters.replace(/^\D+|\D+$/g, '') : 5000, //passing arbitrary highest value.
+      filters.filters ? filters.filters.replace(/^\D+|\D+$/g, '') : '5000', //passing arbitrary highest value.
     );
 
     const [drugs, number] = await this.drugRepository.findAndCount({
@@ -78,7 +102,10 @@ export class DrugService {
             },
       skip: skip,
       take: parseInt(limit),
-      order: { name: sort },
+      order: {
+        [resolveSortFields(sortColumn)]:
+          sort && sort.length > 0 && sort !== 'undefined' ? sort : 'ASC',
+      },
     });
 
     const populatedDrugs = drugs.map(async (drug) => {
@@ -104,27 +131,20 @@ export class DrugService {
           }
         });
       }
-
       return {
         ...drug,
-        status:
-          (await this.issuesService.findDrugIssues(drug._id)).length > 0
-            ? 'Issue'
-            : 'Good',
         stock: {
           ...deducedStock,
-          ruleType: 'Automatic',
           monthlyStockLevels: await this.monthlyStockLevels(drug._id),
-        },
-        Orders: {
-          lastOrder: `${drugOrder[0].expected_delivery_date.toLocaleDateString(
-            'en-GB',
-          )} £${drugOrder[0].cost} per unit ${drug.name}`,
         },
       };
     });
 
     return [await Promise.all(populatedDrugs), number];
+  }
+
+  async updateDrug(id: string, updateDrugDto: UpdateDrugDto) {
+    return await this.drugRepository.update(id, updateDrugDto);
   }
 
   async findFilter(filters: any = {}) {
@@ -167,12 +187,16 @@ export class DrugService {
   }
 
   async findOne(id: string) {
-    const Drug = await this.drugRepository.findOne({
+    const drug = await this.drugRepository.findOne({
       where: { _id: new ObjectId(id) },
     });
+
+    if (!drug) {
+      throw new BadRequestException('Drug not Found');
+    }
     const drugOrders = await this.drugOrderService.getCurrentYearDrugOrders(id);
-    const distributors = await this.findDrugDistributors(Drug._id);
-    const stock = await this.stockService.findDrugStock(Drug._id);
+    const distributors = await this.findDrugDistributors(drug._id);
+    const stock = await this.stockService.findDrugStock(drug._id);
     // stock.currentStock = await this.calculateInStock(Drug._id);
 
     // for on orders and new stock (check in drugOrders array)
@@ -195,12 +219,12 @@ export class DrugService {
       });
     }
     return {
-      ...Drug,
+      ...drug,
       orders: drugOrders,
       distributors: distributors,
       stock: deducedStock,
-      passThrough: await this.drugPassThrough(Drug._id),
-      monthlyStockLevels: await this.monthlyStockLevels(Drug._id),
+      passThrough: await this.drugPassThrough(drug._id),
+      monthlyStockLevels: await this.monthlyStockLevels(drug._id),
     };
   }
 

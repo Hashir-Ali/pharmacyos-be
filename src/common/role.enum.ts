@@ -3,3 +3,9 @@ export enum Role {
   Admin = 'admin',
   SuperAdmin = 'superAdmin',
 }
+
+export enum DistributorType{
+  Preferred = 'Preferred Contracted',
+  Contracted = 'Contracted',
+  Other = 'Other'
+}

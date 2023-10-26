@@ -15,6 +15,7 @@ import { CreateDrugDto } from './dto/create-drug.dto';
 export enum SortOrder {
   ascending = 'ASC',
   descending = 'DESC',
+  undefined = 'undefined',
 }
 @ApiTags('drug')
 @Controller('drug')

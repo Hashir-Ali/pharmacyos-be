@@ -328,10 +328,10 @@ export class IssuesService {
     }
 
     if (
-      !user.roles.includes(Role.Admin) ||
-      !user.roles.includes(Role.SuperAdmin)
+      user.roles.length === 1 && user.roles.includes(Role.User)
     ) {
-      searchQueryObject.assigned_to = { _id: { $eq: user.userId } };
+      // searchQueryObject.assigned_to = { _id: { $eq: user.userId } };
+      searchQueryObject = {...searchQueryObject, 'assigned_to._id': new ObjectId(user.userId) };
     }
 
     if (drugQuery) {
@@ -367,6 +367,7 @@ export class IssuesService {
         };
       }
     }
+    console.log(searchQueryObject);
     return searchQueryObject;
   }
 }

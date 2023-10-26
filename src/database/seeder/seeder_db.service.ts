@@ -158,7 +158,7 @@ export class DBSeeder {
           containerSize: drug.containerSize,
           location: drug.location,
           drugEAN: drug.drugEAN,
-          status: false,
+          status: true,
           last_order: `${savedDto[
             savedDto.length - 1
           ].expected_delivery_date.toLocaleDateString('en-GB')} £${

@@ -35,8 +35,8 @@ export class DrugController {
   findAll(
     @Query('page') page: string,
     @Query('limit') limit: string,
-    @Query('sort') sort: SortOrder,
-    @Query('sortColumn') sortColumn: string,
+    @Query('sortOrder') sort: SortOrder,
+    @Query('sortField') sortColumn: string,
     @Query() filters: any,
   ) {
     return this.drugService.findFiltered(

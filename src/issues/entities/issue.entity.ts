@@ -10,10 +10,10 @@ export enum IssueProgress {
 @Entity('Issue')
 export class Issue extends BasicEntity {
   @Column()
-  drugId: ObjectId | string;
+  drugId: { name: string; dosage: number; unit: string; type: string } | string;
 
   @Column()
-  issue_type: ObjectId | string;
+  issue_type: string;
 
   @Column()
   description: string;
@@ -22,19 +22,22 @@ export class Issue extends BasicEntity {
   due_date: Date;
 
   @Column()
-  created_by: ObjectId | string;
+  created_by: { _id: ObjectId; firstName: string; lastName: string };
 
   @Column({
     type: 'date',
   })
-  closing_date: Date;
+  closing_date: Date | null;
 
   @Column()
-  assigned_to: ObjectId | string;
+  assigned_to: { _id: ObjectId; firstName: string; lastName: string } | string;
 
   @Column({
     type: 'enum',
     enum: IssueProgress,
   })
   progress: IssueProgress;
+
+  @Column()
+  last_note: { _id: ObjectId; note: string; created_by: ObjectId } | null;
 }

@@ -17,5 +17,5 @@ export class UpdateIssueDto extends PartialType(BaseDTO) {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  notes: string;
+  note: string;
 }

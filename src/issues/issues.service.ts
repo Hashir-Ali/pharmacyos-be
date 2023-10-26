@@ -16,6 +16,26 @@ import { UsersService } from 'src/users/users.service';
 import { DrugService } from 'src/drug/drug.service';
 import { Role } from 'src/common/role.enum';
 import { Drug } from 'src/drug/entities/drug.entity';
+
+function resolveSortFields(sortField: string) {
+  switch (sortField) {
+    case 'notes':
+      return 'last_note.note';
+    case 'created_by_name':
+      return 'created_by.firstName';
+    case 'assigned_to_name':
+      return 'assigned_to.firstName';
+    case 'Updated_at':
+    case 'description':
+    case 'progress':
+    case 'due_date':
+      return sortField;
+    case 'drug':
+    default:
+      return 'drugId.name';
+  }
+}
+
 @Injectable()
 export class IssuesService {
   constructor(
@@ -29,173 +49,87 @@ export class IssuesService {
   ) {}
 
   async create(createIssueDto: CreateIssueDto) {
-    const issue = await this.issuesRepository.save({
-      ...createIssueDto,
-      closing_date: '',
-    });
-    const notes = await this.notesService.create({
-      issue: new ObjectId(issue._id),
+    const drug = await this.drugService.findOne(
+      createIssueDto.drugId.toString(),
+    );
+    const issueType = await this.issueTypeService.findOne(
+      createIssueDto.issue_type,
+    );
+    const created_by = await this.userService.findOne(
+      createIssueDto.created_by,
+    );
+    const assigned_to = await this.userService.findOne(
+      createIssueDto.assigned_to,
+    );
+
+    const note = await this.notesService.create({
       note: null,
       created_by: new ObjectId(createIssueDto.created_by),
     });
 
-    return { issue, notes };
+    const issue = await this.issuesRepository.save({
+      drugId: {
+        name: drug.name,
+        dosage: drug.dosage,
+        unit: drug.dosageUnit,
+        type: drug.dosageForm,
+      },
+      issue_type: issueType.issue_type,
+      description: createIssueDto.description,
+      due_date: createIssueDto.due_date,
+      created_by: {
+        _id: created_by._id,
+        firstName: created_by.first_name,
+        lastName: created_by.last_name,
+      },
+      closing_date: null,
+      assigned_to: {
+        _id: assigned_to._id,
+        firstName: assigned_to.first_name,
+        lastName: assigned_to.last_name,
+      },
+      progress: createIssueDto.progress,
+      last_note: { _id: note._id, note: note.note, created_by: created_by._id },
+    });
+
+    return { issue, note };
   }
 
-  async findAll(
-    user: { userId: string; username: string; roles: string[] },
-    page: string,
-    limit: string,
-    sortOrder: 'ASC' | 'DESC' | 'undefined',
-    query: string,
-    filters: string[] = [],
-  ) {
+  async findAll({
+    user,
+    page,
+    limit,
+    sortField,
+    sortOrder,
+    query,
+    filters = [],
+  }: {
+    user: { userId: string; username: string; roles: string[] };
+    page: string;
+    limit: string;
+    sortField: string;
+    sortOrder: 'ASC' | 'DESC' | 'undefined';
+    query: string;
+    filters?: string[];
+  }) {
     let issues: [Issue[], number];
-    let today: boolean = false;
-    let drugs: [Drug[], number];
-    let drugIds: string[] = [];
-    let todayIs: Date = new Date();
-
     const skip = Math.abs((parseInt(page) - 1) * parseInt(limit));
-
-    if (query.length > 0) {
-      drugs = await this.drugService.findFilter({ filters: query });
-      drugIds = drugs[0].map((drug) => {
-        return drug._id.toString();
-      });
-    }
-
-    // if there is something inside the filters (check the length first)...
-    //then:
-    // need to check if filters type is array already.
-    // if not convert into array by splitting on basis of ,
-    // else:
-    // who cares about else???
-    if (filters.length > 0) {
-      if (typeof filters !== typeof new Array()) {
-        filters = filters.toString().split(',');
-        // we need to check for this created an array with an empty string..
-        if (
-          filters.length > 0 &&
-          filters[0] !== undefined &&
-          filters[0].length === 0
-        ) {
-          // this means an array was created with an empty string...
-          filters.pop();
-        }
-      }
-    }
-
-    if (filters.includes('today')) {
-      filters = filters.filter((item) => item != 'today');
-      today = true;
-    }
 
     if (
       user.roles.includes(Role.Admin) ||
       user.roles.includes(Role.SuperAdmin)
     ) {
       issues = await this.issuesRepository.findAndCount({
-        where:
-          filters.length > 0
-            ? drugIds.length > 0
-              ? today
-                ? {
-                    progress: { $ne: IssueProgress.Completed },
-                    issue_type: {
-                      $in: Object.values(filters),
-                    },
-                    drugId: { $in: drugIds },
-                    due_date: {
-                      $gte: new Date(
-                        todayIs.getFullYear(),
-                        todayIs.getMonth(),
-                        todayIs.getDate(),
-                      ).toISOString(),
-                      $lt: new Date(
-                        todayIs.getFullYear(),
-                        todayIs.getMonth(),
-                        todayIs.getDate() + 1,
-                      ).toISOString(),
-                    },
-                  }
-                : {
-                    progress: { $ne: IssueProgress.Completed },
-                    issue_type: {
-                      $in: Object.values(filters),
-                    },
-                    drugId: { $in: drugIds },
-                  }
-              : today
-              ? {
-                  progress: { $ne: IssueProgress.Completed },
-                  issue_type: {
-                    $in: Object.values(filters),
-                  },
-                  due_date: {
-                    $gte: new Date(
-                      todayIs.getFullYear(),
-                      todayIs.getMonth(),
-                      todayIs.getDate(),
-                    ).toISOString(),
-                    $lt: new Date(
-                      todayIs.getFullYear(),
-                      todayIs.getMonth(),
-                      todayIs.getDate() + 1,
-                    ).toISOString(),
-                  },
-                }
-              : {
-                  progress: { $ne: IssueProgress.Completed },
-                  issue_type: {
-                    $in: Object.values(filters),
-                  },
-                }
-            : drugIds.length > 0
-            ? today
-              ? {
-                  progress: { $ne: IssueProgress.Completed },
-                  drugId: { $in: drugIds },
-                  due_date: {
-                    $gte: new Date(
-                      todayIs.getFullYear(),
-                      todayIs.getMonth(),
-                      todayIs.getDate(),
-                    ).toISOString(),
-                    $lt: new Date(
-                      todayIs.getFullYear(),
-                      todayIs.getMonth(),
-                      todayIs.getDate() + 1,
-                    ).toISOString(),
-                  },
-                }
-              : {
-                  progress: { $ne: IssueProgress.Completed },
-                  drugId: { $in: drugIds },
-                }
-            : today
-            ? {
-                progress: { $ne: IssueProgress.Completed },
-                due_date: {
-                  $gte: new Date(
-                    todayIs.getFullYear(),
-                    todayIs.getMonth(),
-                    todayIs.getDate(),
-                  ).toISOString(),
-                  $lt: new Date(
-                    todayIs.getFullYear(),
-                    todayIs.getMonth(),
-                    todayIs.getDate() + 1,
-                  ).toISOString(),
-                },
-              }
-            : {
-                progress: { $ne: IssueProgress.Completed },
-              },
+        where: this.buildSearchQuery({
+          user: user,
+          progress: IssueProgress.InProgress,
+          filterTags: filters,
+          drugQuery: query,
+        }),
         skip: skip,
         take: parseInt(limit),
         order: {
-          due_date:
+          [resolveSortFields(sortField)]:
             sortOrder && sortOrder.length > 0 && sortOrder != 'undefined'
               ? sortOrder
               : 'ASC',
@@ -203,294 +137,53 @@ export class IssuesService {
       });
     } else {
       issues = await this.issuesRepository.findAndCount({
-        where:
-          filters.length > 0
-            ? drugIds.length > 0
-              ? today
-                ? {
-                    assigned_to: user.userId,
-                    progress: { $ne: IssueProgress.Completed },
-                    issue_type: {
-                      $in: Object.values(filters),
-                    },
-                    drugId: { $in: drugIds },
-                    due_date: {
-                      $gte: new Date(
-                        todayIs.getFullYear(),
-                        todayIs.getMonth(),
-                        todayIs.getDate(),
-                      ).toISOString(),
-                      $lt: new Date(
-                        todayIs.getFullYear(),
-                        todayIs.getMonth(),
-                        todayIs.getDate() + 1,
-                      ).toISOString(),
-                    },
-                  }
-                : {
-                    assigned_to: user.userId,
-                    progress: { $ne: IssueProgress.Completed },
-                    issue_type: {
-                      $in: Object.values(filters),
-                    },
-                    drugId: { $in: drugIds },
-                  }
-              : today
-              ? {
-                  assigned_to: user.userId,
-                  progress: { $ne: IssueProgress.Completed },
-                  issue_type: {
-                    $in: Object.values(filters),
-                  },
-                  due_date: {
-                    $gte: new Date(
-                      todayIs.getFullYear(),
-                      todayIs.getMonth(),
-                      todayIs.getDate(),
-                    ).toISOString(),
-                    $lt: new Date(
-                      todayIs.getFullYear(),
-                      todayIs.getMonth(),
-                      todayIs.getDate() + 1,
-                    ).toISOString(),
-                  },
-                }
-              : {
-                  assigned_to: user.userId,
-                  progress: { $ne: IssueProgress.Completed },
-                  issue_type: {
-                    $in: Object.values(filters),
-                  },
-                }
-            : drugIds.length > 0
-            ? today
-              ? {
-                  assigned_to: user.userId,
-                  progress: { $ne: IssueProgress.Completed },
-                  drugId: { $in: drugIds },
-                  due_date: {
-                    $gte: new Date(
-                      todayIs.getFullYear(),
-                      todayIs.getMonth(),
-                      todayIs.getDate(),
-                    ).toISOString(),
-                    $lt: new Date(
-                      todayIs.getFullYear(),
-                      todayIs.getMonth(),
-                      todayIs.getDate() + 1,
-                    ).toISOString(),
-                  },
-                }
-              : {
-                  assigned_to: user.userId,
-                  progress: { $ne: IssueProgress.Completed },
-                  drugId: { $in: drugIds },
-                }
-            : today
-            ? {
-                assigned_to: user.userId,
-                progress: { $ne: IssueProgress.Completed },
-                due_date: {
-                  $gte: new Date(
-                    todayIs.getFullYear(),
-                    todayIs.getMonth(),
-                    todayIs.getDate(),
-                  ).toISOString(),
-                  $lt: new Date(
-                    todayIs.getFullYear(),
-                    todayIs.getMonth(),
-                    todayIs.getDate() + 1,
-                  ).toISOString(),
-                },
-              }
-            : {
-                assigned_to: user.userId,
-                progress: { $ne: IssueProgress.Completed },
-              },
+        where: this.buildSearchQuery({
+          user: user,
+          progress: IssueProgress.InProgress,
+          filterTags: filters,
+          drugQuery: query,
+        }),
         skip: skip,
         take: parseInt(limit),
         order: {
-          due_date:
+          [sortField]:
             sortOrder && sortOrder.length > 0 && sortOrder !== 'undefined'
               ? sortOrder
               : 'ASC',
         },
       });
     }
-    const issueNotes = issues[0].map(async (issue) => {
-      const issueType = await this.issueTypeService.findOne(issue.issue_type);
-      const notes = await this.notesService.findByIssue(issue._id);
-      const created_by = await this.userService.findOne(issue.created_by);
-      const assigned_to = await this.userService.findOne(issue.assigned_to);
-      const drug = await this.drugService.findOne(issue.drugId.toString());
-      return {
-        ...issue,
-        drugId: drug,
-        created_by: created_by,
-        // added below fields for client side sorting...!
-        created_by_name: created_by?.first_name + ' ' + created_by?.last_name,
-        assigned_to_name:
-          assigned_to?.first_name + ' ' + assigned_to?.last_name,
-        drug:
-          drug.name +
-          ' ' +
-          drug.dosage +
-          ' ' +
-          drug.dosageUnit +
-          ' ' +
-          drug.dosageForm,
-        // added above fields for client side sorting...!
-        assigned_to: assigned_to,
-        issue_type: issueType?.issue_type,
-        notes: notes[notes.length - 1],
-      };
-    });
-    return [(await Promise.all(issueNotes)).reverse(), issues[1]];
+    return issues;
   }
 
   async findCompleted(
-    user: {
-      userId: string;
-      username: string;
-      roles: string[];
-    },
+    user: { userId: string; username: string; roles: string[] },
     page: string,
     limit: string,
+    sortField: string,
     sortOrder: 'ASC' | 'DESC' | 'undefined',
     query: string,
     filters: string[] = [],
   ) {
     let issues: [Issue[], number];
-    let today: boolean = false;
-    let drugs: [Drug[], number];
-    let drugIds: string[] = [];
-    let todayIs: Date = new Date();
-
     const skip = Math.abs((parseInt(page) - 1) * parseInt(limit));
-
-    if (query.length > 0) {
-      drugs = await this.drugService.findFilter({ filters: query });
-      drugIds = drugs[0].map((drug) => {
-        return drug._id.toString();
-      });
-    }
-
-    // if there is something inside the filters (check the length first)...
-    //then:
-    // need to check if filters type is array already.
-    // if not convert into array by splitting on basis of ,
-    // else:
-    // who cares about else???
-    if (filters.length > 0) {
-      if (typeof filters !== typeof new Array()) {
-        filters = filters.toString().split(',');
-        // we need to check for this created an array with an empty string..
-        if (
-          filters.length > 0 &&
-          filters[0] !== undefined &&
-          filters[0].length === 0
-        ) {
-          // this means an array was created with an empty string...
-          filters.pop();
-        }
-      }
-    }
-
-    if (filters.includes('today')) {
-      filters = filters.filter((item) => item != 'today');
-      today = true;
-    }
 
     if (
       user.roles.includes(Role.Admin) ||
       user.roles.includes(Role.SuperAdmin)
     ) {
       issues = await this.issuesRepository.findAndCount({
-        where:
-          filters.length > 0
-            ? drugIds.length > 0
-              ? today
-                ? {
-                    progress: IssueProgress.Completed,
-                    issue_type: {
-                      $in: Object.values(filters),
-                    },
-                    drugId: { $in: drugIds },
-                    due_date: {
-                      $gte: new Date(
-                        todayIs.getFullYear(),
-                        todayIs.getMonth(),
-                        todayIs.getDate(),
-                      ).toISOString(),
-                      $lt: new Date(
-                        todayIs.getFullYear(),
-                        todayIs.getMonth(),
-                        todayIs.getDate() + 1,
-                      ).toISOString(),
-                    },
-                  }
-                : {
-                    progress: IssueProgress.Completed,
-                    issue_type: {
-                      $in: Object.values(filters),
-                    },
-                    drugId: { $in: drugIds },
-                  }
-              : today
-              ? {
-                  progress: IssueProgress.Completed,
-                  issue_type: {
-                    $in: Object.values(filters),
-                  },
-                  due_date: {
-                    $gte: new Date(
-                      todayIs.getFullYear(),
-                      todayIs.getMonth(),
-                      todayIs.getDate(),
-                    ).toISOString(),
-                    $lt: new Date(
-                      todayIs.getFullYear(),
-                      todayIs.getMonth(),
-                      todayIs.getDate() + 1,
-                    ).toISOString(),
-                  },
-                }
-              : {
-                  progress: IssueProgress.Completed,
-                  issue_type: {
-                    $in: Object.values(filters),
-                  },
-                }
-            : drugIds.length > 0
-            ? today
-              ? {
-                  progress: IssueProgress.Completed,
-                  drugId: { $in: drugIds },
-                  due_date: {
-                    $gte: new Date(
-                      todayIs.getFullYear(),
-                      todayIs.getMonth(),
-                      todayIs.getDate(),
-                    ).toISOString(),
-                    $lt: new Date(
-                      todayIs.getFullYear(),
-                      todayIs.getMonth(),
-                      todayIs.getDate() + 1,
-                    ).toISOString(),
-                  },
-                }
-              : {
-                  progress: IssueProgress.Completed,
-                  drugId: { $in: drugIds },
-                }
-            : {
-                progress: IssueProgress.Completed,
-              },
+        where: this.buildSearchQuery({
+          user: user,
+          progress: IssueProgress.Completed,
+          filterTags: filters,
+          drugQuery: query,
+        }),
 
         skip: skip,
         take: parseInt(limit),
         order: {
-          created_at:
+          [resolveSortFields(sortField)]:
             sortOrder && sortOrder.length > 0 && sortOrder !== 'undefined'
               ? sortOrder
               : 'ASC',
@@ -498,171 +191,30 @@ export class IssuesService {
       });
     } else {
       issues = await this.issuesRepository.findAndCount({
-        where:
-          filters.length > 0
-            ? drugIds.length > 0
-              ? today
-                ? {
-                    assigned_to: user.userId,
-                    progress: IssueProgress.Completed,
-                    issue_type: {
-                      $in: filters,
-                    },
-                    drugId: { $in: drugIds },
-                    due_date: {
-                      $gte: new Date(
-                        todayIs.getFullYear(),
-                        todayIs.getMonth(),
-                        todayIs.getDate(),
-                      ).toISOString(),
-                      $lt: new Date(
-                        todayIs.getFullYear(),
-                        todayIs.getMonth(),
-                        todayIs.getDate() + 1,
-                      ).toISOString(),
-                    },
-                  }
-                : {
-                    assigned_to: user.userId,
-                    progress: IssueProgress.Completed,
-                    issue_type: {
-                      $in: filters,
-                    },
-                    drugId: { $in: drugIds },
-                  }
-              : today
-              ? {
-                  assigned_to: user.userId,
-                  progress: IssueProgress.Completed,
-                  issue_type: {
-                    $in: filters,
-                  },
-                  due_date: {
-                    $gte: new Date(
-                      todayIs.getFullYear(),
-                      todayIs.getMonth(),
-                      todayIs.getDate(),
-                    ).toISOString(),
-                    $lt: new Date(
-                      todayIs.getFullYear(),
-                      todayIs.getMonth(),
-                      todayIs.getDate() + 1,
-                    ).toISOString(),
-                  },
-                }
-              : {
-                  assigned_to: user.userId,
-                  progress: IssueProgress.Completed,
-                  issue_type: {
-                    $in: filters,
-                  },
-                }
-            : drugIds.length > 0
-            ? today
-              ? {
-                  assigned_to: user.userId,
-                  progress: IssueProgress.Completed,
-                  drugId: { $in: drugIds },
-                  due_date: {
-                    $gte: new Date(
-                      todayIs.getFullYear(),
-                      todayIs.getMonth(),
-                      todayIs.getDate(),
-                    ).toISOString(),
-                    $lt: new Date(
-                      todayIs.getFullYear(),
-                      todayIs.getMonth(),
-                      todayIs.getDate() + 1,
-                    ).toISOString(),
-                  },
-                }
-              : {
-                  assigned_to: user.userId,
-                  progress: IssueProgress.Completed,
-                  drugId: { $in: drugIds },
-                }
-            : today
-            ? {
-                assigned_to: user.userId,
-                progress: IssueProgress.Completed,
-                due_date: {
-                  $gte: new Date(
-                    todayIs.getFullYear(),
-                    todayIs.getMonth(),
-                    todayIs.getDate(),
-                  ).toISOString(),
-                  $lt: new Date(
-                    todayIs.getFullYear(),
-                    todayIs.getMonth(),
-                    todayIs.getDate() + 1,
-                  ).toISOString(),
-                },
-              }
-            : {
-                assigned_to: user.userId,
-                progress: IssueProgress.Completed,
-              },
+        where: this.buildSearchQuery({
+          user: user,
+          progress: IssueProgress.Completed,
+          filterTags: filters,
+          drugQuery: query,
+        }),
         skip: skip,
         take: parseInt(limit),
         order: {
-          created_at:
+          [resolveSortFields(sortField)]:
             sortOrder && sortOrder.length > 0 && sortOrder !== 'undefined'
               ? sortOrder
               : 'ASC',
         },
       });
     }
-    const issueNotes = issues[0].map(async (issue) => {
-      const issueType = await this.issueTypeService.findOne(issue.issue_type);
-      const notes = await this.notesService.findByIssue(issue._id);
-      const created_by = await this.userService.findOne(issue.created_by);
-      const assigned_to = await this.userService.findOne(issue.assigned_to);
-      const drug = await this.drugService.findOne(issue.drugId.toString());
-
-      //
-      return {
-        ...issue,
-        drugId: drug,
-        // added below fields for client side sorting...!
-        created_by_name: created_by?.first_name + ' ' + created_by?.last_name,
-        assigned_to_name:
-          assigned_to?.first_name + ' ' + assigned_to?.last_name,
-        drug:
-          drug?.name +
-          ' ' +
-          drug?.dosage +
-          ' ' +
-          drug?.dosageUnit +
-          ' ' +
-          drug?.dosageForm,
-        // added above fields for client side sorting...!
-        created_by: created_by,
-        assigned_to: assigned_to,
-        issue_type: issueType.issue_type,
-        notes: notes[notes.length - 1],
-      };
-    });
-    return [(await Promise.all(issueNotes)).reverse(), issues[1]];
+    return issues;
   }
 
   async findOne(id: string) {
     const issue = await this.issuesRepository.findOne({
       where: { _id: new ObjectId(id) },
     });
-
-    const issueType = await this.issueTypeService.findOne(issue.issue_type);
-    const notes = await this.notesService.findByIssue(issue._id);
-    const created_by = await this.userService.findOne(issue.created_by);
-    const assigned_to = await this.userService.findOne(issue.assigned_to);
-    const drug = await this.drugService.findOne(issue.drugId.toString());
-    return {
-      ...issue,
-      drugId: drug,
-      created_by: created_by,
-      assigned_to: assigned_to,
-      issue_type: issueType.issue_type,
-      notes: notes,
-    };
+    return issue;
   }
 
   async findDrugIssues(drugId: string) {
@@ -683,48 +235,117 @@ export class IssuesService {
         'No closing date specified with completed status...',
       );
     }
+    const issue = await this.issuesRepository.findOne({
+      where: { _id: new ObjectId(id) },
+    });
+    const notes = await this.notesService.create({
+      note: updateIssueDto.note,
+      created_by: new ObjectId(issue.created_by._id),
+    });
     // or if role is of an admin or superAdmin then allow to update...
     // if only user role type then check if requesting user ID and assignedto userId are matching.
     if (
       user.roles.includes(Role.Admin) ||
-      user.roles.includes(Role.SuperAdmin)
+      user.roles.includes(Role.SuperAdmin) ||
+      user.userId === issue.assigned_to
     ) {
-      const issue = await this.issuesRepository.findOne({
-        where: { _id: new ObjectId(id) },
+      return await this.issuesRepository.update(new ObjectId(id), {
+        ...updateIssueDto,
+        last_note: {
+          _id: notes._id,
+          note: notes.note,
+          created_by: notes.created_by,
+        },
       });
+    }
 
-      const notes = await this.notesService.create({
-        issue: new ObjectId(id),
-        note: updateIssueDto.notes,
-        created_by: new ObjectId(issue.created_by),
-      });
-      return await this.issuesRepository.update(
-        new ObjectId(id),
-        updateIssueDto,
-      );
-    } else {
-      const issue = await this.issuesRepository.findOne({
-        where: { _id: new ObjectId(id) },
-      });
+    throw new BadRequestException('User not allowed to update this record');
+  }
 
-      if (user.userId === issue.assigned_to) {
-        const issue = await this.issuesRepository.findOne({
-          where: { _id: new ObjectId(id) },
-        });
+  buildSearchQuery({ user, progress, filterTags, drugQuery }) {
+    const todayIs = new Date();
+    const progressOp = progress == IssueProgress.Completed ? '$eq' : '$ne';
+    let today = false;
+    let searchQueryObject: any = {};
 
-        const notes = await this.notesService.create({
-          issue: new ObjectId(id),
-          note: updateIssueDto.notes,
-          created_by: new ObjectId(issue.created_by),
-        });
+    if (filterTags.length > 0) {
+      if (typeof filterTags !== typeof new Array()) {
+        filterTags = filterTags.toString().split(',');
+        // we need to check for this created an array with an empty string..
+        if (filterTags[0] !== undefined && filterTags[0].length === 0) {
+          // this means an array was created with an empty string...
+          filterTags.pop();
+        }
 
-        return await this.issuesRepository.update(
-          new ObjectId(id),
-          updateIssueDto,
-        );
-      } else {
-        throw new BadRequestException('User not allowed to update this record');
+        if (filterTags.includes('Issues for today')) {
+          filterTags = filterTags.filter((item) => item != 'Issues for today');
+          today = true;
+        }
       }
     }
+
+    let filters = [...filterTags];
+    if (today) {
+      searchQueryObject.due_date = {
+        $gte: new Date(
+          todayIs.getFullYear(),
+          todayIs.getMonth(),
+          todayIs.getDate(),
+        ).toISOString(),
+        $lt: new Date(
+          todayIs.getFullYear(),
+          todayIs.getMonth(),
+          todayIs.getDate() + 1,
+        ).toISOString(),
+      };
+    }
+
+    searchQueryObject.progress = { [progressOp]: IssueProgress.Completed };
+
+    if (filters.length) {
+      searchQueryObject.issue_type = { $in: filters };
+    }
+
+    if (
+      !user.roles.includes(Role.Admin) ||
+      !user.roles.includes(Role.SuperAdmin)
+    ) {
+      searchQueryObject.assigned_to = { _id: { $eq: user.userId } };
+    }
+
+    if (drugQuery) {
+      let queryWords = drugQuery.split(' ');
+      queryWords = queryWords.map((word) => {
+        const word2Number = parseInt(word.replace(/^\D+|\D+$/g, ''));
+        if (isNaN(word2Number)) {
+          return word;
+        } else {
+          return word2Number;
+        }
+      });
+
+      const queryDrugName = queryWords.find((word) => {
+        return typeof word == typeof 'string';
+      });
+      const queryDrugDose = queryWords.find((word) => {
+        return typeof word == typeof 1;
+      });
+      if (queryDrugName) {
+        searchQueryObject = {
+          ...searchQueryObject,
+          'drugId.name': {
+            $regex: new RegExp(queryDrugName, 'i'),
+          },
+        };
+      }
+
+      if (queryDrugDose) {
+        searchQueryObject = {
+          ...searchQueryObject,
+          'drugId.dosage': { $lte: queryDrugDose },
+        };
+      }
+    }
+    return searchQueryObject;
   }
 }

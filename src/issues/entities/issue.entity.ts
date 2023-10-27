@@ -10,9 +10,7 @@ export enum IssueProgress {
 @Entity('Issue')
 export class Issue extends BasicEntity {
   @Column()
-  drugId:
-    | { _id: string; name: string; dosage: number; unit: string; type: string }
-    | string;
+  drugId: { _id: string; name: string; dosage: number; unit: string; type: string };
 
   @Column()
   issue_type: string;

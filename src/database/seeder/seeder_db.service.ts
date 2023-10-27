@@ -40,7 +40,7 @@ export class DBSeeder {
         drugId: new ObjectId(drugs[i]._id),
         stockRuleMin: faker.number.int({ min: 5, max: 20 }),
         stockRuleMax: faker.number.int({ min: 40, max: 100 }),
-        currentStock: faker.number.int({ min: 5, max: 100 }),
+        currentStock: faker.number.int({ min: 4, max: 50 }),
         LooseUnits: faker.number.int({ min: 5, max: 25 }),
         created_at: faker.date.recent(),
         Updated_at: faker.date.recent(),
@@ -179,7 +179,6 @@ export class DBSeeder {
       'Contracted Distributor',
       'Other Distributor',
     ];
-
     const distributor = await this.distributorService.findAll();
     const drugs = await this.drugService.findAll();
 
@@ -194,7 +193,7 @@ export class DBSeeder {
           distributorId: new ObjectId(distributorId),
           drugId: new ObjectId(drugId),
           type: drugDistributorTypes[
-            j === 0 ? j : randomInt(drugDistributorTypes.length - 1) // first record set to preferred distributor
+            j === 0 ? j : randomInt(drugDistributorTypes.length) // first record set to preferred distributor
           ],
           is_preferred: j == 0 ? true : false, // first record set to preferred distributor.
           created_at: faker.date.recent(),
@@ -209,10 +208,12 @@ export class DBSeeder {
 
   async seedDistributor() {
     const objectDto: Distributor[] = [];
+    const supplierNames = ['AAH', 'NOVARTIS PHARMACEUTICALS', 'PHEONIX HEALTHCARE']
+
     for (let i = 0; i <= this.seedCount * 3; i++) {
       // create distributors (three times) more than drugs count...
       objectDto.push({
-        name: faker.person.fullName(),
+        name: supplierNames[randomInt(supplierNames.length)],
         NHS_Contract_End_Date: faker.date.future(),
         created_at: faker.date.recent(),
         Updated_at: faker.date.recent(),

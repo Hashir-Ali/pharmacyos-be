@@ -227,6 +227,13 @@ export class IssuesService {
     return issues;
   }
 
+  async findNotCompletedIssues(drugId: string){
+    return await this.issuesRepository.find({
+      'drugId._id' : new ObjectId(drugId),
+      progress: {$ne: IssueProgress.Completed}
+    });
+  }
+
   async findOne(id: string) {
     const issue = await this.issuesRepository.findOne({
       where: { _id: new ObjectId(id) },
@@ -261,6 +268,13 @@ export class IssuesService {
     });
     // or if role is of an admin or superAdmin then allow to update...
     // if only user role type then check if requesting user ID and assignedto userId are matching.
+    // const notCompletedIssues = await this.findNotCompletedIssues(issue.drugId._id);
+
+    // if(notCompletedIssues.length > 0){
+      
+    // }
+    // check on length of issues and update drug if no other exixt...!
+  
     if (
       user.roles.includes(Role.Admin) ||
       user.roles.includes(Role.SuperAdmin) ||

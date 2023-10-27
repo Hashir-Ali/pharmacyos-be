@@ -73,7 +73,20 @@ export class DrugOrderService {
     return await this.populateOrders(orders);
   }
 
-  async getCurrentYearDrugOrders(drugId: string) {
+  async findCurrentYearOrders(drugId: string){
+    const d = new Date();
+    const orders = await this.DrugOrderRepository.find({
+      where: {
+        drugId: new ObjectId(drugId),
+        created_at: { $gte: new Date(d.getFullYear(), 0, 1) },
+        quantityReceived: { $gte: 0 },
+      }
+    });
+
+    return await this.populateOrders(orders);
+  }
+
+  async getCurrentYearReceivedOrders(drugId: string) {
     const d = new Date();
     const orders = await this.DrugOrderRepository.find({
       where: {

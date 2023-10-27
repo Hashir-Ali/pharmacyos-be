@@ -110,7 +110,7 @@ export class DrugService {
 
     const populatedDrugs = drugs.map(async (drug) => {
       const drugStock = await this.stockService.findDrugStock(drug._id);
-      const drugOrder = await this.drugOrderService.findDrugOrders(drug._id);
+      const drugOrder = await this.drugOrderService.findCurrentYearOrders(drug._id);
       // drugStock.currentStock = await this.calculateInStock(drug._id);
       // for on orders and new stock (check in drugOrders array)
       // orders not delivered/received then (on order = add(quantityOrdered))
@@ -194,7 +194,7 @@ export class DrugService {
     if (!drug) {
       throw new BadRequestException('Drug not Found');
     }
-    const drugOrders = await this.drugOrderService.getCurrentYearDrugOrders(id);
+    const drugOrders = await this.drugOrderService.findCurrentYearOrders(id);
     const distributors = await this.findDrugDistributors(drug._id);
     const stock = await this.stockService.findDrugStock(drug._id);
     // stock.currentStock = await this.calculateInStock(Drug._id);
@@ -242,7 +242,7 @@ export class DrugService {
       };
     }
     const [drugOrders, drugDispense] = await Promise.all([
-      this.drugOrderService.getCurrentYearDrugOrders(drugId),
+      this.drugOrderService.getCurrentYearReceivedOrders(drugId),
       this.drugDispenseService.getCurrentYearDispense(drugId),
     ]);
 
